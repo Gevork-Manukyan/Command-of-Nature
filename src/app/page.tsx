@@ -1,7 +1,7 @@
 "use client";
-import { loginAsGuest, logout } from "@/lib/auth";
-import { auth, db } from "@/lib/firebase";
-import { createGuestSession } from "@/lib/game";
+import { loginAsGuest } from "@/lib/firebase/auth";
+import { auth, db } from "@/lib/firebase/firebase";
+import { createGuestSession } from "@/lib/firebase/game";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useEffect } from "react";
 
@@ -14,14 +14,6 @@ async function handleGuestLogin() {
     console.log("Guest user logged in: ", user);
     createGuestSession(user.uid);
   }
-}
-
-async function handleLogin() {}
-
-async function handleRegister() {}
-
-async function handleSignOut() {
-  await logout();
 }
 
 async function handleDelete() {
@@ -48,28 +40,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-y-2 w-[100px]">
-      <MyButton onClick={handleGuestLogin}>Guest Login</MyButton>
-      {/* <MyButton onClick={handleLogin}>Login</MyButton> */}
-      {/* <MyButton onClick={handleRegister}>Register</MyButton> */}
-      {/* <MyButton onClick={handleSignOut}>Sign Out</MyButton> */}
-      {/* <MyButton onClick={handleDelete}>Delete</MyButton> */}
-      {/* <MyButton onClick={handleConnect}>Connect</MyButton> */}
-      {/* <MyButton onClick={handleUpdate}>Update</MyButton> */}
-      {/* <MyButton onClick={handleDisconnect}>Disconnect</MyButton> */}
+    <div className="">
+      
     </div>
-  );
-}
-
-type MyButtonProps = {
-  children: React.ReactNode;
-  onClick: () => void;
-};
-
-function MyButton({ children, onClick }: MyButtonProps) {
-  return (
-    <button className="border-solid border-black border-2" onClick={onClick}>
-      {children}
-    </button>
   );
 }
