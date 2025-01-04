@@ -11,7 +11,6 @@ export const createGuestSession = async (userId: string) => {
         createdAt: new Date(),
         playerName: `Guest_${Math.floor(Math.random() * 1000)}`
       });
-      localStorage.setItem('guestSession', userId)
     } catch (error) {
       console.error('Error creating guest session:', error);
     }

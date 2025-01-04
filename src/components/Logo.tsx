@@ -4,10 +4,10 @@ import Link from "next/link";
 export default function Logo() {
     return (
         <Link href={'/'}>
-            <Image 
+            {/* <Image 
                 src={''}
                 alt="Command of Nature Logo"
-            />
+            /> */}
         </Link>
     )
 }
