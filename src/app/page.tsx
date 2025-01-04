@@ -4,26 +4,6 @@ import { auth, db } from "@/lib/firebase";
 import { createGuestSession } from "@/lib/game";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useEffect } from "react";
-import io, { Socket } from "socket.io-client";
-
-// WEB SOCKETS
-let socket: Socket;
-
-function handleConnect() {
-  socket.connect();
-  console.log("Attempting to connect...");
-}
-
-function handleDisconnect() {
-  if (socket) {
-    socket.disconnect();
-    console.log("Socket disconnected");
-  }
-}
-
-function handleUpdate() {
-  socket.emit("move", { x: 10, y: 20 });
-}
 
 // FIRE BASE
 const LOCALSTORAGE_GUEST_KEY = 'guestSession'
@@ -61,23 +41,6 @@ async function handleDelete() {
 
 export default function Home() {
   useEffect(() => {
-    // Initialize the socket with autoConnect: false to prevent automatic connection
-    socket = io("http://localhost:3002", { autoConnect: false });
-
-    socket.on("update", (data) => {
-      console.log("Received update:", data);
-    });
-
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    return () => {
-      handleDisconnect();
-    };
-  }, []);
-
-  useEffect(() => {
     const guestSessionId = localStorage.getItem(LOCALSTORAGE_GUEST_KEY);
     if (guestSessionId) {
       console.log(`Reconnecting session: ${guestSessionId}`);
@@ -90,10 +53,10 @@ export default function Home() {
       {/* <MyButton onClick={handleLogin}>Login</MyButton> */}
       {/* <MyButton onClick={handleRegister}>Register</MyButton> */}
       {/* <MyButton onClick={handleSignOut}>Sign Out</MyButton> */}
-      <MyButton onClick={handleDelete}>Delete</MyButton>
-      <MyButton onClick={handleConnect}>Connect</MyButton>
-      <MyButton onClick={handleUpdate}>Update</MyButton>
-      <MyButton onClick={handleDisconnect}>Disconnect</MyButton>
+      {/* <MyButton onClick={handleDelete}>Delete</MyButton> */}
+      {/* <MyButton onClick={handleConnect}>Connect</MyButton> */}
+      {/* <MyButton onClick={handleUpdate}>Update</MyButton> */}
+      {/* <MyButton onClick={handleDisconnect}>Disconnect</MyButton> */}
     </div>
   );
 }
