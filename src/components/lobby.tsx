@@ -1,5 +1,6 @@
+'use client'
+
 import { useState, ChangeEvent, FormEvent } from "react";
-import Button from "./form/Button";
 import Label from "./form/Label";
 import TextInput from "./form/TextInput";
 
@@ -50,5 +51,18 @@ export default function Lobby() {
         </Button>
       </div>
     </form>
+  );
+}
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+function Button({ children, ...props }: ButtonProps) {
+  return (
+    <button
+      {...props}
+      className="mt-4 px-3 py-2 bg-green-400 border-2 border-black rounded-md"
+    >
+      {children}
+    </button>
   );
 }

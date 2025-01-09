@@ -1,18 +1,18 @@
+"use client";
+
 import { loginAsGuest } from "@/lib/firebase/auth";
-import {
-  createGuestSession,
-} from "@/lib/firebase/game";
+import { createGuestSession } from "@/lib/firebase/game";
 import { setGuestLocalStorage } from "@/lib/localstorage";
 import { ChangeEvent, FormEvent, useState } from "react";
-import Button from "./form/Button";
 import Label from "./form/Label";
 import TextInput from "./form/TextInput";
+import Link from "next/link";
 
 type LoginProps = {
-  onSubmit: () => void;
+  onSubmit?: () => void;
 };
 
-export default function Login({ onSubmit }: LoginProps) {
+export default function Login({ onSubmit = () => {} }: LoginProps) {
   const [formData, setFormData] = useState({
     guest_name: "",
   });
@@ -43,7 +43,7 @@ export default function Login({ onSubmit }: LoginProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col border-2 border-black rounded-md p-10"
+      className="w-96 flex flex-col border-2 border-black rounded-md p-10"
     >
       <Label htmlFor="guest_name">Guest Name</Label>
       <TextInput
@@ -51,7 +51,12 @@ export default function Login({ onSubmit }: LoginProps) {
         value={formData.guest_name}
         onChange={handleChange}
       />
-      <Button>Enter as Guest</Button>
+      <Link
+        href={"/lobby"}
+        className="mt-4 px-3 py-2 bg-green-400 border-2 border-black rounded-md"
+      >
+        Enter as Guest
+      </Link>
     </form>
   );
 }

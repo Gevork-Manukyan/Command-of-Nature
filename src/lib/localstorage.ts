@@ -1,3 +1,5 @@
+'use client'
+
 const GUEST_KEY = 'guestSession'
 
 type GuestSession = {
