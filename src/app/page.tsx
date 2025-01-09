@@ -1,17 +1,17 @@
 "use client";
-import EntryForm from "@/components/EntryForm";
+import Login from "@/components/login";
 import { auth, db } from "@/lib/firebase/firebase";
 import { clearGuestStorage, getUserId } from "@/lib/localstorage";
 import { deleteDoc, doc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [hasGuestSession, setHasGuestSession] = useState(false)
+  const [hasGuestSession, setHasGuestSession] = useState(false);
 
   useEffect(() => {
     const guestSessionId = getUserId();
     if (guestSessionId) {
-      setHasGuestSession(true)
+      setHasGuestSession(true);
       console.log(`Reconnecting session: ${guestSessionId}`);
     }
   }, []);
@@ -23,8 +23,8 @@ export default function Home() {
         const sessionRef = doc(db, "sessions", user.uid);
         await deleteDoc(sessionRef);
         await user.delete();
-        clearGuestStorage()
-        setHasGuestSession(false)
+        clearGuestStorage();
+        setHasGuestSession(false);
         console.log("Guest user deleted");
       } catch (error) {
         console.error("Error deleting session:", error);
@@ -34,12 +34,12 @@ export default function Home() {
 
   return (
     <div className="w-[100vw] h-[100vh] flex justify-center items-center">
-      {!hasGuestSession &&
-        <EntryForm onSubmit={() => setHasGuestSession(true)} />
-      }
-      {hasGuestSession && 
-        <button className="border-2 border-black" onClick={handleDelete}>Delete</button>
-      }
+      {!hasGuestSession && <Login onSubmit={() => setHasGuestSession(true)} />}
+      {hasGuestSession && (
+        <button className="border-2 border-black" onClick={handleDelete}>
+          Delete
+        </button>
+      )}
     </div>
   );
 }
