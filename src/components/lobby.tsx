@@ -3,6 +3,8 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Label from "./form/Label";
 import TextInput from "./form/TextInput";
+import { createGameSession, joinGameSession } from "@/lib/firebase/game";
+import { auth } from "@/lib/firebase/firebase";
 
 export default function Lobby() {
   const [formData, setFormData] = useState({
@@ -18,16 +20,15 @@ export default function Lobby() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
+    const buttonClicked = submitter.name
 
-    const form = event.target as HTMLFormElement;
-    const buttonClicked = (
-      form.elements.namedItem("game_start") as HTMLInputElement
-    )?.value;
-
-    if (buttonClicked === "create") {
-      // Create Game
-    } else if (buttonClicked === "join") {
-      // Join Game
+    const user = auth.currentUser;
+    const userId = user?.uid
+    if (userId && buttonClicked === "create_game") {
+        createGameSession(userId)
+    } else if (userId && buttonClicked === "join_game") {
+        joinGameSession(formData.game_room_code, userId)
     }
   }
 
@@ -43,10 +44,10 @@ export default function Lobby() {
         onChange={handleChange}
       />
       <div className="flex gap-2">
-        <Button name="game_start" value={"create"} type="submit">
+        <Button name="create_game" type="submit">
           Create Game
         </Button>
-        <Button name="game_start" value={"join"} type="submit">
+        <Button name="join_game" type="submit">
           Join Game
         </Button>
       </div>

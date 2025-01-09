@@ -6,13 +6,14 @@ import { setGuestLocalStorage } from "@/lib/localstorage";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Label from "./form/Label";
 import TextInput from "./form/TextInput";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type LoginProps = {
   onSubmit?: () => void;
 };
 
 export default function Login({ onSubmit = () => {} }: LoginProps) {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     guest_name: "",
   });
@@ -37,6 +38,7 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
         guestName: formData.guest_name,
       });
       onSubmit();
+      router.push("/lobby")
     }
   }
 
@@ -51,12 +53,12 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
         value={formData.guest_name}
         onChange={handleChange}
       />
-      <Link
-        href={"/lobby"}
+      <button
         className="mt-4 px-3 py-2 bg-green-400 border-2 border-black rounded-md"
+        type="submit"
       >
         Enter as Guest
-      </Link>
+      </button>
     </form>
   );
 }

@@ -1,7 +1,6 @@
-// lib/game.ts
-import { GUEST_SESSIONS_COLLECTION } from '../constants';
+import { GAME_SESSIONS_COLLECTION, GUEST_SESSIONS_COLLECTION } from '../constants';
 import { db } from './firebase';
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
 
 export const createGuestSession = async (userId: string, guestName = "") => {
@@ -14,5 +13,38 @@ export const createGuestSession = async (userId: string, guestName = "") => {
     });
   } catch (error) {
     console.error('Error creating guest session:', error);
+  }
+}
+
+export const createGameSession = async (userId: string) => {
+  try {
+    const sessionRef = collection(db, GAME_SESSIONS_COLLECTION)
+
+     // Add a new document with automatically generated ID
+     const newSession = {
+      // roomCode: 
+      players: [userId],
+      createdAt: new Date().toISOString(),
+    };
+
+    const docRef = await addDoc(sessionRef, newSession);
+
+    console.log('Game session created with ID:', docRef.id);
+  } catch (error) {
+    console.error('Error creating game session:', error);
+  }
+}
+
+export const joinGameSession = async (gameId: string, userId: string) => {
+  try {
+    const gameSessionRef = doc(db, GAME_SESSIONS_COLLECTION, gameId)
+
+    await updateDoc(gameSessionRef, {
+      players: arrayUnion(userId)
+    })
+
+    console.log(`Player ${userId} added to game session ${gameId}`);
+  } catch (error) {
+    console.error('Error joining game session:', error);
   }
 }
