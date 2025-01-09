@@ -1,5 +1,6 @@
 "use client";
 import Login from "@/components/login";
+import { GUEST_SESSIONS_COLLECTION } from "@/lib/constants";
 import { auth, db } from "@/lib/firebase/firebase";
 import { clearGuestStorage, getUserId } from "@/lib/localstorage";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -20,7 +21,7 @@ export default function Home() {
     const user = auth.currentUser;
     if (user) {
       try {
-        const sessionRef = doc(db, "sessions", user.uid);
+        const sessionRef = doc(db, GUEST_SESSIONS_COLLECTION, user.uid);
         await deleteDoc(sessionRef);
         await user.delete();
         clearGuestStorage();

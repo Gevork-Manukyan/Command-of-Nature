@@ -1,0 +1,1 @@
+export const GUEST_SESSIONS_COLLECTION = "guest_sessions"
