@@ -25,7 +25,8 @@ export default function CurrentGamesDisplay() {
     }, [])
     
     return (
-        <section>
+        <section className="w-4/5 mx-[40px] mt-5 py-6 px-9 border-solid border-black border-2 rounded-md">
+            <h2 className="mb-3">Game Lobbies</h2>
             <ul>
                 {currentGames.map(gameItem => (
                     <li key={gameItem.id}>{gameItem.id}</li>
