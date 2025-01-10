@@ -1,6 +1,7 @@
 export type User = {
     id: string;
     playerName: string;
+    currentGame: string; 
     createdAt: string; // new Date().toISOString()
 }
 

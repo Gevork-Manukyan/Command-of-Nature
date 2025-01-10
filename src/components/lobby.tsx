@@ -22,7 +22,7 @@ export default function Lobby() {
     event.preventDefault();
     const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
     const buttonClicked = submitter.name
-
+    
     const user = auth.currentUser;
     const userId = user?.uid
     if (userId && buttonClicked === "create_game") {

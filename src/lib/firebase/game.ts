@@ -10,6 +10,7 @@ export const createGuestSession = async (userId: User['id'], guestName = "") => 
 
     const newUserSession: Omit<User, "id"> = {
       playerName: guestName.trim() !== "" ? guestName : `Guest_${Math.floor(Math.random() * 1000)}`,
+      currentGame: "",
       createdAt: new Date().toISOString(),
     }
 
@@ -21,16 +22,22 @@ export const createGuestSession = async (userId: User['id'], guestName = "") => 
 
 export const createGameSession = async (userId: User["id"]) => {
   try {
-    const sessionRef = collection(db, GAME_SESSIONS_COLLECTION)
+    const gameSession = collection(db, GAME_SESSIONS_COLLECTION)
 
     // Add a new document with automatically generated ID
-    const newGameSession: Omit<Game, "id"> = {
+    const newGame: Omit<Game, "id"> = {
       players: [userId],
       roomCode: "",
       createdAt: new Date().toISOString(),
     };
+    const docRef = await addDoc(gameSession, newGame);
 
-    const docRef = await addDoc(sessionRef, newGameSession);
+    // Add game session to user
+    const userSession = doc(db, GUEST_SESSIONS_COLLECTION, userId)
+    const updatedUser: Partial<User> = {
+      currentGame: docRef.id
+    }
+    await updateDoc(userSession, updatedUser)
 
     console.log('Game session created with ID:', docRef.id);
   } catch (error) {
@@ -40,11 +47,18 @@ export const createGameSession = async (userId: User["id"]) => {
 
 export const joinGameSession = async (gameId: Game['id'], userId: User["id"]) => {
   try {
-    const gameSessionRef = doc(db, GAME_SESSIONS_COLLECTION, gameId)
-
-    await updateDoc(gameSessionRef, {
+    // Update game session to include the new player
+    const gameSession = doc(db, GAME_SESSIONS_COLLECTION, gameId)
+    await updateDoc(gameSession, {
       players: arrayUnion(userId)
     })
+
+    // Associate the game to the player
+    const userSession = doc(db, GUEST_SESSIONS_COLLECTION, userId)
+    const updatedUser: Partial<User> = {
+      currentGame: gameId
+    }
+    await updateDoc(userSession, updatedUser)
 
     console.log(`Player ${userId} added to game session ${gameId}`);
   } catch (error) {
