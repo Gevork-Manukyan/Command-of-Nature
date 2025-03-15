@@ -1,7 +1,5 @@
 "use client";
 
-import { loginAsGuest } from "@/lib/firebase/auth";
-import { createGuestSession } from "@/lib/firebase/game";
 import { setGuestLocalStorage } from "@/lib/localstorage";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Label from "./form/Label";
@@ -28,11 +26,10 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const user = await loginAsGuest();
+    const user = { uid: "guest" };
 
     if (user) {
       console.log("Guest user logged in: ", user);
-      createGuestSession(user.uid);
       setGuestLocalStorage({
         userId: user.uid,
         guestName: formData.guest_name,
