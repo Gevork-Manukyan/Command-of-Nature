@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useRouter } from 'next/navigation';
-import { Game, GameSession } from '@/types/game';
+import { GameSession } from '@/types/game';
 import { GameStorage } from '@/lib/localstorage';
 
 export function Lobby() {
     const router = useRouter();
     const { socket, isConnected } = useSocket();
-    const [games, setGames] = useState<Game[]>([]);
     const [numPlayers, setNumPlayers] = useState<number>(2);
     const [error, setError] = useState<string>('');
     const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
@@ -73,18 +72,11 @@ export function Lobby() {
             setError(error.message || 'Failed to join game');
         });
 
-        // Listen for games list updates
-        socket.on('games-list-update', (updatedGames: Game[]) => {
-            console.log('Received updated games list:', updatedGames);
-            setGames(updatedGames);
-        });
-
         return () => {
             socket.off('create-game--success');
             socket.off('create-game--error');
             socket.off('join-game--success');
             socket.off('join-game--error');
-            socket.off('games-list-update');
         };
     }, [socket, numPlayers, router]);
 
@@ -98,17 +90,6 @@ export function Lobby() {
         const gameId = `game-${Date.now()}`; // Generate a unique game ID
         console.log('Creating game with ID:', gameId);
         socket.emit('create-game', { gameId, numPlayers });
-    };
-
-    const handleJoinGame = (gameId: string) => {
-        // Prevent joining a game if already in one
-        if (currentSession) {
-            setError('You are already in a game. Please leave your current game first.');
-            return;
-        }
-
-        console.log('Attempting to join game:', gameId);
-        socket.emit('join-game', { gameId });
     };
 
     // If they're already in a game, show a message and a button to return to their game
@@ -167,32 +148,7 @@ export function Lobby() {
 
             <div>
                 <h2 className="text-2xl font-bold mb-4">Available Games</h2>
-                {games.length === 0 ? (
-                    <p className="text-gray-500">No games available to join</p>
-                ) : (
-                    <div className="grid gap-4">
-                        {games.map((game) => (
-                            <div
-                                key={game.gameId}
-                                className="border rounded p-4 flex justify-between items-center"
-                            >
-                                <div>
-                                    <h3 className="font-medium">Game {game.gameId}</h3>
-                                    <p className="text-sm text-gray-600">
-                                        Players: {game.currentPlayers} / {game.numPlayers}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => handleJoinGame(game.gameId)}
-                                    disabled={!isConnected || game.currentPlayers >= game.numPlayers}
-                                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
-                                >
-                                    Join Game
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <p className="text-gray-500">Loading available games...</p>
             </div>
         </div>
     );
