@@ -1,31 +1,51 @@
 'use client'
 
-const GUEST_KEY = 'guestSession'
+import { GameSession, GuestSession } from "@/types/game";
 
-type GuestSession = {
-    userId: string,
-    guestName: string,
-}
+export const STORAGE_KEYS = {
+    GAME_SESSION: 'current_game_session',
+    GUEST: 'guestSession'
+} as const;
 
-export function setGuestLocalStorage(guestSession: GuestSession) {
-    localStorage.setItem('guestSession', JSON.stringify(guestSession))
-}
+// Guest Storage Management
+export const GuestStorage = {
+    save: (guestSession: GuestSession) => {
+        localStorage.setItem(STORAGE_KEYS.GUEST, JSON.stringify(guestSession));
+    },
 
-export function getGuestLocalStorage(): GuestSession | null {
-    const result = localStorage.getItem(GUEST_KEY)
-    return result ? JSON.parse(result) : null;
-}
+    get: (): GuestSession | null => {
+        const result = localStorage.getItem(STORAGE_KEYS.GUEST);
+        return result ? JSON.parse(result) : null;
+    },
 
-export function getUserId() {
-    const data = getGuestLocalStorage()
-    return data ? data.userId : null;
-}
+    getUserId: (): string | null => {
+        const data = GuestStorage.get();
+        return data ? data.userId : null;
+    },
 
-export function getGuestName() {
-    const data = getGuestLocalStorage()
-    return data ? data.guestName : null;
-}
+    getGuestName: (): string | null => {
+        const data = GuestStorage.get();
+        return data ? data.guestName : null;
+    },
 
-export function clearGuestStorage() {
-    localStorage.removeItem(GUEST_KEY)
-}
+    clear: () => {
+        localStorage.removeItem(STORAGE_KEYS.GUEST);
+    }
+};
+
+// Game Storage Management
+export const GameStorage = {
+    saveGameSession: (session: GameSession) => {
+        localStorage.setItem(STORAGE_KEYS.GAME_SESSION, JSON.stringify(session));
+    },
+    
+    getGameSession: (): GameSession | null => {
+        const saved = localStorage.getItem(STORAGE_KEYS.GAME_SESSION);
+        if (!saved) return null;
+        return JSON.parse(saved) as GameSession;
+    },
+    
+    clearGameSession: () => {
+        localStorage.removeItem(STORAGE_KEYS.GAME_SESSION);
+    }
+};

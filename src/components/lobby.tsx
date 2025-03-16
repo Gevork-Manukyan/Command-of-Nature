@@ -1,67 +1,199 @@
-'use client'
+"use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
-import Label from "./form/Label";
-import TextInput from "./form/TextInput";
+import { useState, useEffect } from 'react';
+import { useSocket } from '@/hooks/useSocket';
+import { useRouter } from 'next/navigation';
+import { Game, GameSession } from '@/types/game';
+import { GameStorage } from '@/lib/localstorage';
 
-export default function Lobby() {
-  const [formData, setFormData] = useState({
-    game_room_code: "",
-  });
+export function Lobby() {
+    const router = useRouter();
+    const { socket, isConnected } = useSocket();
+    const [games, setGames] = useState<Game[]>([]);
+    const [numPlayers, setNumPlayers] = useState<number>(2);
+    const [error, setError] = useState<string>('');
+    const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setFormData((prev) => ({
-      ...prev,
-      [event.target.name]: event.target.value,
-    }));
-  }
+    // Load existing session on mount
+    useEffect(() => {
+        const session = GameStorage.getGameSession();
+        if (session) {
+            setCurrentSession(session);
+            // If they have an active session, redirect them to the game
+            router.push(`/game/${session.gameId}`);
+        }
+    }, [router]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
-    const buttonClicked = submitter.name
-    
-    // const user = auth.currentUser;
-    // const userId = user?.uid
-    // if (userId && buttonClicked === "create_game") {
-    //     createGameSession(userId)
-    // } else if (userId && buttonClicked === "join_game") {
-    //     joinGameSession(formData.game_room_code, userId)
-    // }
-  }
+    useEffect(() => {
+        // Listen for successful game creation
+        socket.on('create-game--success', () => {
+            setError('');
+            console.log('Game created successfully!');
+            
+            // Save the game session
+            const session: GameSession = {
+                gameId: `game-${Date.now()}`,
+                isHost: true,
+                numPlayers
+            };
+            GameStorage.saveGameSession(session);
+            setCurrentSession(session);
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col border-2 border-black rounded-md p-10"
-    >
-      <Label htmlFor="game_room_code">Game Room Code</Label>
-      <TextInput
-        name="game_room_code"
-        value={formData.game_room_code}
-        onChange={handleChange}
-      />
-      <div className="flex gap-2">
-        <Button name="create_game" type="submit">
-          Create Game
-        </Button>
-        <Button name="join_game" type="submit">
-          Join Game
-        </Button>
-      </div>
-    </form>
-  );
-}
+            // Redirect to the game page
+            router.push(`/game/${session.gameId}`);
+        });
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+        // Listen for successful game join
+        socket.on('join-game--success', (gameData: { gameId: string, numPlayers: number }) => {
+            setError('');
+            console.log('Joined game successfully!');
+            
+            // Save the game session
+            const session: GameSession = {
+                gameId: gameData.gameId,
+                isHost: false,
+                numPlayers: gameData.numPlayers
+            };
+            GameStorage.saveGameSession(session);
+            setCurrentSession(session);
 
-function Button({ children, ...props }: ButtonProps) {
-  return (
-    <button
-      {...props}
-      className="mt-4 px-3 py-2 bg-green-400 border-2 border-black rounded-md"
-    >
-      {children}
-    </button>
-  );
+            // Redirect to the game page
+            router.push(`/game/${gameData.gameId}`);
+        });
+
+        // Listen for game creation errors
+        socket.on('create-game--error', (error) => {
+            console.error('Game creation error:', error);
+            setError(error.message || 'Failed to create game');
+        });
+
+        // Listen for game join errors
+        socket.on('join-game--error', (error) => {
+            console.error('Game join error:', error);
+            setError(error.message || 'Failed to join game');
+        });
+
+        // Listen for games list updates
+        socket.on('games-list-update', (updatedGames: Game[]) => {
+            console.log('Received updated games list:', updatedGames);
+            setGames(updatedGames);
+        });
+
+        return () => {
+            socket.off('create-game--success');
+            socket.off('create-game--error');
+            socket.off('join-game--success');
+            socket.off('join-game--error');
+            socket.off('games-list-update');
+        };
+    }, [socket, numPlayers, router]);
+
+    const handleCreateGame = () => {
+        // Prevent creating a game if already in one
+        if (currentSession) {
+            setError('You are already in a game. Please leave your current game first.');
+            return;
+        }
+
+        const gameId = `game-${Date.now()}`; // Generate a unique game ID
+        console.log('Creating game with ID:', gameId);
+        socket.emit('create-game', { gameId, numPlayers });
+    };
+
+    const handleJoinGame = (gameId: string) => {
+        // Prevent joining a game if already in one
+        if (currentSession) {
+            setError('You are already in a game. Please leave your current game first.');
+            return;
+        }
+
+        console.log('Attempting to join game:', gameId);
+        socket.emit('join-game', { gameId });
+    };
+
+    // If they're already in a game, show a message and a button to return to their game
+    if (currentSession) {
+        return (
+            <div className="p-6 max-w-4xl mx-auto text-center">
+                <h1 className="text-3xl font-bold mb-4">You&apos;re Already in a Game</h1>
+                <p className="mb-4">You are currently in game: {currentSession.gameId}</p>
+                <button
+                    onClick={() => router.push(`/game/${currentSession.gameId}`)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                    Return to Game
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-6 max-w-4xl mx-auto">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold mb-4">Game Lobby</h1>
+                <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="numPlayers" className="font-medium">
+                            Number of Players:
+                        </label>
+                        <select
+                            id="numPlayers"
+                            value={numPlayers}
+                            onChange={(e) => setNumPlayers(Number(e.target.value))}
+                            className="border rounded px-2 py-1"
+                        >
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                        </select>
+                    </div>
+                    <button
+                        onClick={handleCreateGame}
+                        disabled={!isConnected}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    >
+                        Create New Game
+                    </button>
+                </div>
+                {error && (
+                    <p className="text-red-500 mt-2">{error}</p>
+                )}
+                {!isConnected && (
+                    <p className="text-yellow-500 mt-2">
+                        Not connected to server. Please wait... (Check console for connection details)
+                    </p>
+                )}
+            </div>
+
+            <div>
+                <h2 className="text-2xl font-bold mb-4">Available Games</h2>
+                {games.length === 0 ? (
+                    <p className="text-gray-500">No games available to join</p>
+                ) : (
+                    <div className="grid gap-4">
+                        {games.map((game) => (
+                            <div
+                                key={game.gameId}
+                                className="border rounded p-4 flex justify-between items-center"
+                            >
+                                <div>
+                                    <h3 className="font-medium">Game {game.gameId}</h3>
+                                    <p className="text-sm text-gray-600">
+                                        Players: {game.currentPlayers} / {game.numPlayers}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => handleJoinGame(game.gameId)}
+                                    disabled={!isConnected || game.currentPlayers >= game.numPlayers}
+                                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:bg-gray-400"
+                                >
+                                    Join Game
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }

@@ -1,8 +1,11 @@
 import { handleDisconnect, socket } from "@/lib/socket";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 export function useSocket() {
+    const [isConnected, setIsConnected] = useState(socket.connected);
+
     const connect = useCallback(() => {
+        console.log("Attempting to connect to socket server...");
         if (!socket.connected) {
             socket.connect();
         }
@@ -15,14 +18,22 @@ export function useSocket() {
         // Connection event handlers
         socket.on("connect", () => {
             console.log("Connected to server");
+            setIsConnected(true);
         });
 
         socket.on("disconnect", () => {
             console.log("Disconnected from server");
+            setIsConnected(false);
         });
 
         socket.on("error", (error: Error) => {
             console.error("Socket error:", error);
+            setIsConnected(false);
+        });
+
+        socket.on("connect_error", (error) => {
+            console.error("Connection error:", error);
+            setIsConnected(false);
         });
 
         // Game-specific event handlers
@@ -36,13 +47,14 @@ export function useSocket() {
             socket.off("connect");
             socket.off("disconnect");
             socket.off("error");
+            socket.off("connect_error");
             socket.off("update");
         };
     }, [connect]);
 
     return {
         socket,
-        isConnected: socket.connected,
+        isConnected,
         connect,
         disconnect: handleDisconnect
     };
