@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useSocket } from '@/hooks/useSocket';
 import { GameSession } from '@/types/game';
 import { GameStorage } from '@/lib/localstorage';
 
 export default function GamePage() {
     const params = useParams();
+    const router = useRouter();
     const gameId = params.gameId as string;
     const { socket, isConnected } = useSocket();
     const [session, setSession] = useState<GameSession | null>(null);
@@ -33,8 +34,8 @@ export default function GamePage() {
         socket.emit('leave-game', { gameId });
         // Clear the session
         GameStorage.clearGameSession();
-        // Redirect to lobby
-        window.location.href = '/lobby';
+        // Redirect to lobby using Next.js router
+        router.push('/lobby');
     };
 
     if (error) {
@@ -43,7 +44,7 @@ export default function GamePage() {
                 <h1 className="text-3xl font-bold mb-4">Error</h1>
                 <p className="text-red-500 mb-4">{error}</p>
                 <button
-                    onClick={() => window.location.href = '/lobby'}
+                    onClick={() => router.push('/lobby')}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                     Return to Lobby
