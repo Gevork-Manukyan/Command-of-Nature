@@ -15,27 +15,44 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
   const [formData, setFormData] = useState({
     guest_name: "",
   });
+  const [error, setError] = useState<string | null>(null);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setFormData((prev) => ({
       ...prev,
       [event.target.name]: event.target.value,
     }));
+    setError(null);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError(null);
 
-    const user = { uid: "guest" };
-
-    if (user) {
-      console.log("Guest user logged in: ", user);
-      GuestStorage.save({
-        userId: user.uid,
-        guestName: formData.guest_name,
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ guestName: formData.guest_name }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      GuestStorage.save({
+        userId: data.id,
+        guestName: data.guestName,
+      });
+      
       onSubmit();
-      router.push("/lobby")
+      router.push("/lobby");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
     }
   }
 
@@ -50,6 +67,9 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
         value={formData.guest_name}
         onChange={handleChange}
       />
+      {error && (
+        <p className="text-red-500 text-sm mt-2">{error}</p>
+      )}
       <button
         className="mt-4 px-3 py-2 bg-green-400 border-2 border-black rounded-md"
         type="submit"

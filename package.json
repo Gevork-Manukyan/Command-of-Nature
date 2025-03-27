@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "mongodb": "^6.3.0",
     "next": "14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
