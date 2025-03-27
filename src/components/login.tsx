@@ -1,6 +1,6 @@
 "use client";
 
-import { setGuestLocalStorage } from "@/lib/localstorage";
+import { GuestStorage } from "@/lib/localstorage";
 import { ChangeEvent, FormEvent, useState } from "react";
 import Label from "./form/Label";
 import TextInput from "./form/TextInput";
@@ -30,7 +30,7 @@ export default function Login({ onSubmit = () => {} }: LoginProps) {
 
     if (user) {
       console.log("Guest user logged in: ", user);
-      setGuestLocalStorage({
+      GuestStorage.save({
         userId: user.uid,
         guestName: formData.guest_name,
       });
