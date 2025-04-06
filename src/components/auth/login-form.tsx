@@ -73,11 +73,9 @@ export function LoginForm() {
         </form>
       </CardContent>
 
-      <CardFooter className="flex justify-between">
-        <Button variant="outline" asChild>
-          <a href="/register">Register</a>
-        </Button>
+      <CardFooter className="flex flex-col gap-2 justify-between">
         <Button onClick={handleSubmit}>Login</Button>
+        <a href="/register" className="text-sm text-muted-foreground">Don't have an account?</a>
       </CardFooter>
     </Card>
   )

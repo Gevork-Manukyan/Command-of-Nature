@@ -84,11 +84,9 @@ export function RegisterForm() {
         </form>
       </CardContent>
 
-      <CardFooter className="flex justify-between">
-        <Button variant="outline" asChild>
-          <a href="/login">Login</a>
-        </Button>
+      <CardFooter className="flex flex-col gap-2 justify-between">
         <Button onClick={handleSubmit}>Register</Button>
+        <a href="/login" className="text-sm text-muted-foreground">Already have an account?</a>
       </CardFooter>
     </Card>
   )
