@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { config } from '@/config';
+import { config } from '@/lib/config';
 
 export function generateToken(userId: string): string {
   return jwt.sign({ userId }, config.auth.jwtSecret, { expiresIn: config.auth.tokenExpiry });

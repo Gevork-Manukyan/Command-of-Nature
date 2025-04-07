@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { generateToken } from '@/lib/auth';
-import { config } from '@/config';
+import { config } from '@/lib/config';
 
 export async function POST(request: Request) {
   try {
