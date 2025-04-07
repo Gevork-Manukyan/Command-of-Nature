@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { setTokenCookie } from "@/lib/auth"
 
 export function LoginForm() {
   const router = useRouter()
@@ -30,6 +31,9 @@ export function LoginForm() {
         const data = await response.json()
         throw new Error(data.error || "Login failed")
       }
+
+      const data = await response.json()
+      setTokenCookie(data.token)
 
       // Redirect to lobby or home page after successful login
       router.push("/lobby")
