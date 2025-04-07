@@ -1,6 +1,7 @@
 export const config = {
   mongodb: {
     db: process.env.MONGODB_DB || 'command-of-nature',
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
   },
   auth: {
     jwtSecret: process.env.JWT_SECRET || 'your-secret-key',

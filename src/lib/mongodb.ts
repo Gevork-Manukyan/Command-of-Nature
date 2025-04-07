@@ -1,10 +1,12 @@
 import { MongoClient } from 'mongodb';
+import { config } from './config';
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Please add your Mongo URI to .env.local');
+const uri = config.mongodb.uri;
+
+if (!uri) {
+  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
-const uri = process.env.MONGODB_URI;
 const options = {};
 
 let client;
@@ -28,4 +30,6 @@ if (process.env.NODE_ENV === 'development') {
   clientPromise = client.connect();
 }
 
+// Export a module-scoped MongoClient promise. By doing this in a
+// module, we ensure that the client is not recreated on every request.
 export default clientPromise; 
