@@ -7,23 +7,27 @@ const publicPaths = ['/login', '/register', '/api/auth/register', '/api/auth/log
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
-  // Allow public paths
-  if (publicPaths.includes(pathname)) {
-    return NextResponse.next()
-  }
+  const isPublicPath = publicPaths.includes(pathname)
 
   // Check for auth token in cookies
   const token = request.cookies.get('auth-token')?.value
 
+  // Allow public paths
+  if (token && isPublicPath) {
+    const lobbyUrl = new URL('/lobby', request.url)
+    return NextResponse.redirect(lobbyUrl)
+  } else if (isPublicPath) {
+    return NextResponse.next()
+  }
+
   // If no token and not a public path, redirect to login
-  if (!token && !publicPaths.includes(pathname)) {
+  if (!token && !isPublicPath) {
     const loginUrl = new URL('/login', request.url)
     return NextResponse.redirect(loginUrl)
   }
 
   // Verify token for protected routes
-  if (token && !publicPaths.includes(pathname)) {
+  if (token && !isPublicPath) {
     const decoded = await verifyToken(token)
     
     if (!decoded) {
