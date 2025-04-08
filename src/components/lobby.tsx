@@ -12,6 +12,7 @@ export function Lobby() {
     const [numPlayers, setNumPlayers] = useState<number>(2);
     const [error, setError] = useState<string>('');
     const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
+    const [showModal, setShowModal] = useState(false);
 
     // Load existing session on mount
     useEffect(() => {
@@ -25,7 +26,7 @@ export function Lobby() {
         // Listen for successful game creation
         socket.on('create-game--success', () => {
             setError('');
-            console.log('Game created successfully!');
+            setShowModal(false);
             
             // Save the game session
             const session: GameSession = {
@@ -45,7 +46,6 @@ export function Lobby() {
         // Listen for successful game join
         socket.on('join-game--success', (gameData: { gameId: string, numPlayers: number }) => {
             setError('');
-            console.log('Joined game successfully!');
             
             // Save the game session
             const session: GameSession = {
@@ -85,7 +85,7 @@ export function Lobby() {
     const handleCreateGame = async () => {
         const session: GameSession = {
             gameId: Math.random().toString(36).substring(7),
-            numPlayers: 2,
+            numPlayers,
             isHost: true,
             status: 'waiting',
             createdAt: new Date()
@@ -97,12 +97,12 @@ export function Lobby() {
     // If they're already in a game, show a message and a button to return to their game
     if (currentSession) {
         return (
-            <div className="p-6 max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4">You&apos;re Already in a Game</h1>
-                <p className="mb-4">You are currently in game: {currentSession.gameId}</p>
+            <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
+                <h1 className="text-4xl font-bold mb-4 text-gray-800">You&apos;re Already in a Game</h1>
+                <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentSession.gameId}</span></p>
                 <button
                     onClick={() => router.push(`/game/${currentSession.gameId}`)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
                 >
                     Return to Game
                 </button>
@@ -112,46 +112,81 @@ export function Lobby() {
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-4">Game Lobby</h1>
-                <div className="flex items-center gap-4 mb-2">
-                    <div className="flex items-center gap-2">
-                        <label htmlFor="numPlayers" className="font-medium">
-                            Number of Players:
-                        </label>
-                        <select
-                            id="numPlayers"
-                            value={numPlayers}
-                            onChange={(e) => setNumPlayers(Number(e.target.value))}
-                            className="border rounded px-2 py-1"
-                        >
-                            <option value={2}>2</option>
-                            <option value={3}>3</option>
-                            <option value={4}>4</option>
-                        </select>
-                    </div>
+            <div className="bg-white rounded-xl shadow-lg p-8">
+                <div className="flex justify-between items-center mb-8">
+                    <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
                     <button
-                        onClick={handleCreateGame}
+                        onClick={() => setShowModal(true)}
                         disabled={!isConnected}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                         Create New Game
                     </button>
                 </div>
+
                 {error && (
-                    <p className="text-red-500 mt-2">{error}</p>
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
+                        {error}
+                    </div>
                 )}
                 {!isConnected && (
-                    <p className="text-yellow-500 mt-2">
-                        Not connected to server. Please wait... (Check console for connection details)
-                    </p>
+                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-lg mb-4">
+                        Not connected to server. Please wait...
+                    </div>
                 )}
             </div>
 
-            <div>
-                <h2 className="text-2xl font-bold mb-4">Available Games</h2>
-                <p className="text-gray-500">Loading available games...</p>
-            </div>
+            {/* Create Game Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Create New Game</h2>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+                                <label htmlFor="numPlayers" className="font-medium text-gray-700">
+                                    Number of Players:
+                                </label>
+                                <select
+                                    id="numPlayers"
+                                    value={numPlayers}
+                                    onChange={(e) => setNumPlayers(Number(e.target.value))}
+                                    className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                </select>
+                            </div>
+
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleCreateGame}
+                                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200"
+                                >
+                                    Create Game
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
