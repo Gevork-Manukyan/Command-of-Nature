@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/server/prisma';
 import { hash } from 'bcrypt';
 import { generateToken, setAuthCookie } from '@/lib/server/auth';
+import { User } from '@/lib/server/models/User';
+import dbConnect from '@/lib/server/db';
 
 export async function POST(request: Request) {
   try {
+    await dbConnect();
     const { username, password } = await request.json();
+    console.log('Registering user:', username);
     
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { username }
-    });
+    const existingUser = await User.findOne({ username });
+    console.log('Existing user:', existingUser);
 
     if (existingUser) {
       return NextResponse.json(
@@ -23,21 +25,21 @@ export async function POST(request: Request) {
     const hashedPassword = await hash(password, 10);
     
     // Create the user
-    const user = await prisma.user.create({
-      data: {
-        username,
-        password: hashedPassword,
-      },
+    const user = await User.create({
+      username,
+      password: hashedPassword,
     });
+    console.log('Created user:', user);
 
     // Generate token
     const token = generateToken({
-      userId: user.id,
+      userId: user._id.toString(),
       username: user.username
     });
-
+    console.log('Generated token:', token);
+    
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = user.toObject();
 
     // Create response
     const response = NextResponse.json(userWithoutPassword, { status: 201 });

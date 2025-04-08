@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
-    "@prisma/client": "^6.5.0",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "@types/jsonwebtoken": "^9.0.9",
@@ -19,7 +18,7 @@
     "clsx": "^2.1.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.487.0",
-    "mongodb": "^6.3.0",
+    "mongoose": "^8.13.2",
     "next": "14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,7 +30,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@types/mongodb": "^4.0.7",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.57",
     "@types/react-dom": "^18.2.19",
@@ -39,7 +38,6 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "postcss": "^8.5.3",
-    "prisma": "^6.5.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.3.3"
   }
