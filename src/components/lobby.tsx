@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useRouter } from 'next/navigation';
-import { GameSession } from '@/types/game';
+import { GameSession } from '@/lib/types';
 import { getFromLocalStorage, setToLocalStorage } from '@/lib/client/localstorage';
 
 export function Lobby() {
@@ -31,7 +31,9 @@ export function Lobby() {
             const session: GameSession = {
                 gameId: `game-${Date.now()}`,
                 isHost: true,
-                numPlayers
+                numPlayers,
+                status: 'waiting',
+                createdAt: new Date()
             };
             setToLocalStorage('gameSession', session);
             setCurrentSession(session);
@@ -49,7 +51,9 @@ export function Lobby() {
             const session: GameSession = {
                 gameId: gameData.gameId,
                 isHost: false,
-                numPlayers: gameData.numPlayers
+                numPlayers: gameData.numPlayers,
+                status: 'waiting',
+                createdAt: new Date()
             };
             setToLocalStorage('gameSession', session);
             setCurrentSession(session);
@@ -83,6 +87,8 @@ export function Lobby() {
             gameId: Math.random().toString(36).substring(7),
             numPlayers: 2,
             isHost: true,
+            status: 'waiting',
+            createdAt: new Date()
         };
         setToLocalStorage('gameSession', session);
         setCurrentSession(session);

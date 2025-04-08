@@ -61,7 +61,7 @@ export default function CurrentGamesDisplay() {
               <span>Players ({gameItem.players.length}):</span>
               <ul className="list-disc ml-4">
                 {gameItem.players.map((player) => (
-                  <li key={player}>{player}</li>
+                  <li key={player.id}>{player.username}</li>
                 ))}
               </ul>
             </li>

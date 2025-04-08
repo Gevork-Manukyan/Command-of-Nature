@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSocket } from '@/hooks/useSocket';
-import { GameSession } from '@/types/game';
+import { GameSession } from '@/lib/types';
 import { getFromLocalStorage, removeFromLocalStorage } from '@/lib/client/localstorage';
 
 export default function GamePage() {
