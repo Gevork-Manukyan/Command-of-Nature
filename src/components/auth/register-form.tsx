@@ -7,28 +7,27 @@ import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { Eye, EyeOff } from "lucide-react"
+import { apiClient } from "@/lib/api-client"
 
 export function RegisterForm() {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-  })
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   const validateForm = () => {
-    if (!formData.username || !formData.password || !formData.confirmPassword) {
+    if (!username || !password || !confirmPassword) {
       setError("All fields are required")
       return false
     }
-    if (formData.password.length < 6) {
+    if (password.length < 6) {
       setError("Password must be at least 6 characters")
       return false
     }
-    if (formData.password !== formData.confirmPassword) {
+    if (password !== confirmPassword) {
       setError("Passwords do not match")
       return false
     }
@@ -44,20 +43,13 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
+      const { data, error } = await apiClient.register({
+        username,
+        password,
       })
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Registration failed")
+      if (error) {
+        throw new Error(error)
       }
 
       // Redirect to lobby after successful registration
@@ -72,9 +64,9 @@ export function RegisterForm() {
   return (
     <Card className="w-[350px]">
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
+        <CardTitle>Register</CardTitle>
         <CardDescription>
-          Enter your details below to create your account
+          Create a new account to start playing
         </CardDescription>
       </CardHeader>
 
@@ -85,10 +77,9 @@ export function RegisterForm() {
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                disabled={isLoading}
+                placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
 
               <Label htmlFor="password">Password</Label>
@@ -97,9 +88,8 @@ export function RegisterForm() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  disabled={isLoading}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -115,9 +105,8 @@ export function RegisterForm() {
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                disabled={isLoading}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
 
               {error && <p className="text-sm text-red-500">{error}</p>}
@@ -127,11 +116,7 @@ export function RegisterForm() {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 justify-between">
-        <Button 
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className="w-full"
-        >
+        <Button onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? "Creating account..." : "Register"}
         </Button>
         <a href="/login" className="text-sm text-muted-foreground hover:underline">

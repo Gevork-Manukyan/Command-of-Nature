@@ -1,44 +1,39 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn-ui/card"
 import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
-import { setTokenCookie } from "@/lib/auth"
+import { apiClient } from "@/lib/api-client"
+import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm() {
   const router = useRouter()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [isLoading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
+    setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Login failed")
+      const { data, error } = await apiClient.login({ username, password })
+      
+      if (error) {
+        throw new Error(error)
       }
 
-      const data = await response.json()
-      setTokenCookie(data.token)
-
-      // Redirect to lobby or home page after successful login
       router.push("/lobby")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -61,15 +56,27 @@ export function LoginForm() {
                     placeholder="Enter your username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    disabled={isLoading}
                 />
 
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                    id="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Input 
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
 
               {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
@@ -78,7 +85,9 @@ export function LoginForm() {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 justify-between">
-        <Button onClick={handleSubmit}>Login</Button>
+        <Button onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
+        </Button>
         <a href="/register" className="text-sm text-muted-foreground">Don't have an account?</a>
       </CardFooter>
     </Card>

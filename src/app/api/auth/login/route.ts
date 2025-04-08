@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 import { compare } from 'bcrypt';
+import { generateToken, setAuthCookie } from '../../../../lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -30,10 +31,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Generate token
+    const token = generateToken({
+      userId: user.id,
+      username: user.username
+    });
+
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
-    
-    return NextResponse.json(userWithoutPassword);
+
+    // Create response
+    const response = NextResponse.json(userWithoutPassword);
+
+    // Set the auth cookie
+    setAuthCookie(token);
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

@@ -1,33 +1,40 @@
 import jwt from 'jsonwebtoken';
-import { config } from '@/lib/config';
+import { cookies } from 'next/headers';
+import { config } from './config';
 
-export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, config.auth.jwtSecret, { expiresIn: config.auth.tokenExpiry });
+const JWT_SECRET = config.auth.jwtSecret;
+
+export interface TokenPayload {
+  userId: string;
+  username: string;
 }
 
-export function verifyToken(token: string): { userId: string } | null {
+export function generateToken(payload: TokenPayload): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+}
+
+export function verifyToken(token: string): TokenPayload | null {
   try {
-    return jwt.verify(token, config.auth.jwtSecret) as { userId: string };
+    return jwt.verify(token, JWT_SECRET) as TokenPayload;
   } catch (error) {
     return null;
   }
 }
 
-export function setTokenCookie(token: string) {
-  document.cookie = `auth_token=${token}; path=/; max-age=86400; SameSite=Strict`;
+export function setAuthCookie(token: string) {
+  cookies().set('auth-token', token, {
+    httpOnly: true,
+    secure: config.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 1, // 1 day
+  });
 }
 
-export function getTokenFromCookie(): string | null {
-  const cookies = document.cookie.split(';');
-  for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
-    if (name === 'auth_token') {
-      return value;
-    }
-  }
-  return null;
+export function removeAuthCookie() {
+  cookies().delete('auth-token');
 }
 
-export function removeTokenCookie() {
-  document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+export function getTokenFromCookie(): string | undefined {
+  return cookies().get('auth-token')?.value;
 } 

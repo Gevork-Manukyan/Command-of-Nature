@@ -1,39 +1,64 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { verifyToken } from './lib/auth'
+import { verifyToken } from '@/lib/auth'
+
+// List of public paths that don't require authentication
+const publicPaths = ['/login', '/register']
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth_token')?.value
-
-  // Public paths that don't require authentication
-  const publicPaths = ['/login', '/register']
-  const isPublicPath = publicPaths.includes(request.nextUrl.pathname)
-
-  if (isPublicPath) {
-    if (token) {
-      // If user is logged in and tries to access login/register, redirect to lobby
-      return NextResponse.redirect(new URL('/lobby', request.url))
-    }
+  const { pathname } = request.nextUrl
+  
+  // Allow public paths
+  if (publicPaths.includes(pathname)) {
     return NextResponse.next()
   }
 
-  // Protected paths
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Check for auth token in cookies
+  const token = request.cookies.get('auth-token')?.value
+
+  // If no token and not a public path, redirect to login
+  if (!token && !publicPaths.includes(pathname)) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
   }
 
-  // Verify token
-  const decoded = verifyToken(token)
-  if (!decoded) {
-    // Invalid token, redirect to login
-    const response = NextResponse.redirect(new URL('/login', request.url))
-    response.cookies.delete('auth_token')
-    return response
+  // Verify token for protected routes
+  if (token && !publicPaths.includes(pathname)) {
+    const decoded = verifyToken(token)
+    
+    if (!decoded) {
+      // Invalid token, redirect to login and clear the cookie
+      const response = NextResponse.redirect(new URL('/login', request.url))
+      response.cookies.delete('auth-token')
+      return response
+    }
+
+    // Add token to request headers for API routes
+    if (pathname.startsWith('/api/')) {
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set('Authorization', `Bearer ${token}`)
+      
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      })
+    }
   }
 
   return NextResponse.next()
 }
 
+// Configure which paths the middleware should run on
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+  ],
 }
