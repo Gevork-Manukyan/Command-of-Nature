@@ -1,34 +1,22 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { config } from '@/lib/config';
+import { prisma } from '@/lib/server/prisma';
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db(config.mongodb.db);
+    // Test database connection
+    await prisma.$connect();
     
-    // Test the connection by listing all collections
-    const collections = await db.listCollections().toArray();
+    // Test a simple query
+    await prisma.user.findFirst();
     
-    return NextResponse.json({
-      status: 'healthy',
-      mongodb: {
-        connected: true,
-        collections: collections.map(col => col.name),
-        database: config.mongodb.db
-      }
-    });
+    return NextResponse.json({ status: 'healthy' });
   } catch (error) {
-    console.error('MongoDB Connection Error:', error);
+    console.error('Health check failed:', error);
     return NextResponse.json(
-      { 
-        status: 'unhealthy',
-        mongodb: {
-          connected: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
-      },
+      { status: 'unhealthy', error: 'Database connection failed' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 } 

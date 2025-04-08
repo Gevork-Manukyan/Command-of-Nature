@@ -7,7 +7,7 @@ import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { Eye, EyeOff } from "lucide-react"
-import { apiClient } from "@/lib/api-client"
+import { apiClient } from "@/lib/client/api-client"
 
 export function RegisterForm() {
   const router = useRouter()

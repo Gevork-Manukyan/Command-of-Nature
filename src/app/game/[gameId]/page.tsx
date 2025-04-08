@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSocket } from '@/hooks/useSocket';
 import { GameSession } from '@/types/game';
-import { GameStorage } from '@/lib/localstorage';
+import { getFromLocalStorage, removeFromLocalStorage } from '@/lib/client/localstorage';
 
 export default function GamePage() {
     const params = useParams();
@@ -16,24 +16,30 @@ export default function GamePage() {
 
     useEffect(() => {
         // Load the game session
-        const loadedSession = GameStorage.getGameSession();
+        const loadedSession = getFromLocalStorage<GameSession>(`game_${gameId}`);
         if (loadedSession) {
             // Verify this is the correct game
-            if (loadedSession.gameId !== gameId) {
-                setError('Game session mismatch. Please return to the lobby.');
-                return;
+            if (loadedSession.gameId === gameId) {
+                setSession(loadedSession);
+            } else {
+                // Clear invalid session
+                removeFromLocalStorage(`game_${gameId}`);
             }
-            setSession(loadedSession);
-        } else {
-            setError('No active game session found. Please return to the lobby.');
         }
     }, [gameId]);
+
+    // Cleanup socket connection only
+    useEffect(() => {
+        return () => {
+            socket.disconnect();
+        };
+    }, [socket]);
 
     const handleLeaveGame = () => {
         // Notify server that player is leaving
         socket.emit('leave-game', { gameId });
         // Clear the session
-        GameStorage.clearGameSession();
+        removeFromLocalStorage(`game_${gameId}`);
         // Redirect to lobby using Next.js router
         router.push('/lobby');
     };

@@ -1,4 +1,4 @@
-import { handleDisconnect, socket } from "@/lib/socket";
+import { handleDisconnect, socket } from "@/lib/server/socket";
 import { useEffect, useCallback, useState } from "react";
 
 export function useSocket() {

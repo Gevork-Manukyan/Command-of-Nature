@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import { useRouter } from 'next/navigation';
 import { GameSession } from '@/types/game';
-import { GameStorage } from '@/lib/localstorage';
+import { getFromLocalStorage, setToLocalStorage } from '@/lib/client/localstorage';
 
 export function Lobby() {
     const router = useRouter();
@@ -15,13 +15,11 @@ export function Lobby() {
 
     // Load existing session on mount
     useEffect(() => {
-        const session = GameStorage.getGameSession();
+        const session = getFromLocalStorage<GameSession>('gameSession');
         if (session) {
             setCurrentSession(session);
-            // If they have an active session, redirect them to the game
-            router.push(`/game/${session.gameId}`);
         }
-    }, [router]);
+    }, []);
 
     useEffect(() => {
         // Listen for successful game creation
@@ -35,7 +33,7 @@ export function Lobby() {
                 isHost: true,
                 numPlayers
             };
-            GameStorage.saveGameSession(session);
+            setToLocalStorage('gameSession', session);
             setCurrentSession(session);
 
             // Redirect to the game page
@@ -53,7 +51,7 @@ export function Lobby() {
                 isHost: false,
                 numPlayers: gameData.numPlayers
             };
-            GameStorage.saveGameSession(session);
+            setToLocalStorage('gameSession', session);
             setCurrentSession(session);
 
             // Redirect to the game page
@@ -80,16 +78,14 @@ export function Lobby() {
         };
     }, [socket, numPlayers, router]);
 
-    const handleCreateGame = () => {
-        // Prevent creating a game if already in one
-        if (currentSession) {
-            setError('You are already in a game. Please leave your current game first.');
-            return;
-        }
-
-        const gameId = `game-${Date.now()}`; // Generate a unique game ID
-        console.log('Creating game with ID:', gameId);
-        socket.emit('create-game', { gameId, numPlayers });
+    const handleCreateGame = async () => {
+        const session: GameSession = {
+            gameId: Math.random().toString(36).substring(7),
+            numPlayers: 2,
+            isHost: true,
+        };
+        setToLocalStorage('gameSession', session);
+        setCurrentSession(session);
     };
 
     // If they're already in a game, show a message and a button to return to their game

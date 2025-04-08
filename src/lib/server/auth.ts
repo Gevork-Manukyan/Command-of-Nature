@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { config } from './config';
 
-const JWT_SECRET = config.auth.jwtSecret;
+const JWT_SECRET = config.jwt.secret;
 
 export interface TokenPayload {
   userId: string;
@@ -24,7 +24,7 @@ export function verifyToken(token: string): TokenPayload | null {
 export function setAuthCookie(token: string) {
   cookies().set('auth-token', token, {
     httpOnly: true,
-    secure: config.NODE_ENV === 'production',
+    secure: config.nodeEnv === 'production',
     sameSite: 'strict',
     path: '/',
     maxAge: 60 * 60 * 24 * 1, // 1 day

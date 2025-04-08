@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
-import { apiClient } from "@/lib/api-client"
+import { apiClient } from "@/lib/client/api-client"
 import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm() {
