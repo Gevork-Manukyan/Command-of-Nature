@@ -17,13 +17,16 @@ export type Game = {
     createdAt: string;  // ISO string format
 }
 
-export type GameSession = {
+export interface GameSession {
     gameId: string;
-    isHost: boolean;    // Indicates if the user is the host
-    numPlayers: number; // Maximum number of players
-    status: 'waiting' | 'playing' | 'finished';
+    gameName: string;          // New field for game name
+    numPlayers: number;
+    isHost: boolean;
+    status: 'waiting' | 'in-progress' | 'completed';
     createdAt: Date;
-}
+    isPrivate: boolean;        // New field for privacy setting
+    password?: string;         // Optional field for private games
+  }
 
 export type GuestSession = {
     userId: string;
