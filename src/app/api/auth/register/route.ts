@@ -1,47 +1,30 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
+import { prisma } from '../../../../lib/prisma';
+import { hash } from 'bcrypt';
 
 export async function POST(request: Request) {
   try {
-    const { guestName } = await request.json();
+    const { username, password } = await request.json();
     
-    if (!guestName) {
-      return NextResponse.json(
-        { error: 'Guest name is required' },
-        { status: 400 }
-      );
-    }
-
-    const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
-    const users = db.collection('users');
-
-    // Check if user already exists
-    const existingUser = await users.findOne({ guestName });
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 409 }
-      );
-    }
-
-    // Create new user
-    const result = await users.insertOne({
-      guestName,
-      createdAt: new Date(),
-      currentGame: null,
+    // Hash the password
+    const hashedPassword = await hash(password, 10);
+    
+    // Create the user
+    const user = await prisma.user.create({
+      data: {
+        username,
+        password: hashedPassword,
+      },
     });
 
-    return NextResponse.json({
-      id: result.insertedId.toString(),
-      guestName,
-      createdAt: new Date(),
-      currentGame: null,
-    });
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user;
+    
+    return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Error creating user' },
       { status: 500 }
     );
   }

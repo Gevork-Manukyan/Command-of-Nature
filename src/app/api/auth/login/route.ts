@@ -1,25 +1,18 @@
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { generateToken } from '@/lib/auth';
-import { config } from '@/lib/config';
+import { prisma } from '../../../../lib/prisma';
+import { compare } from 'bcrypt';
 
 export async function POST(request: Request) {
   try {
-    const { username } = await request.json();
+    const { username, password } = await request.json();
     
-    if (!username) {
-      return NextResponse.json(
-        { error: 'Username is required' },
-        { status: 400 }
-      );
-    }
+    // Find the user
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username
+      }
+    });
 
-    const client = await clientPromise;
-    const db = client.db(config.mongodb.db);
-    const users = db.collection('users');
-
-    // Find user
-    const user = await users.findOne({ guestName: username });
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -27,20 +20,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate token
-    const token = generateToken(user._id.toString());
+    // Compare passwords
+    const isValid = await compare(password, user.password);
+    
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Invalid password' },
+        { status: 401 }
+      );
+    }
 
-    return NextResponse.json({
-      token,
-      user: {
-        id: user._id.toString(),
-        guestName: user.guestName,
-      }
-    });
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = user;
+    
+    return NextResponse.json(userWithoutPassword);
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Error during login' },
       { status: 500 }
     );
   }
