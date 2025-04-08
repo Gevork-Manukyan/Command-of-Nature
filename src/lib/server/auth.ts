@@ -1,22 +1,32 @@
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
 import { config } from './config';
 
-const JWT_SECRET = config.jwt.secret;
+if (!config.jwt.secret) {
+  throw new Error('JWT_SECRET is not defined in environment variables');
+}
 
-export interface TokenPayload {
+const JWT_SECRET = new TextEncoder().encode(config.jwt.secret);
+
+export interface TokenPayload extends JWTPayload {
   userId: string;
   username: string;
 }
 
-export function generateToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+export async function generateToken(payload: TokenPayload): Promise<string> {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1d')
+    .sign(JWT_SECRET);
 }
 
-export function verifyToken(token: string): TokenPayload | null {
+export async function verifyToken(token: string): Promise<TokenPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as TokenPayload;
   } catch (error) {
+    console.error('Token verification failed:', error);
     return null;
   }
 }

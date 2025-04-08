@@ -1,40 +1,41 @@
 import { NextResponse } from 'next/server';
-import { compare } from 'bcrypt';
-import { generateToken, setAuthCookie } from '@/lib/server/auth';
-import { User } from '@/lib/server/models/User';
+import { cookies } from 'next/headers';
 import dbConnect from '@/lib/server/db';
+import { User } from '@/lib/server/models/User';
+import { generateToken, setAuthCookie } from '@/lib/server/auth';
+import { compare } from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    await dbConnect();
     const { username, password } = await request.json();
-    
-    // Find user by username
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { error: 'Username and password are required' },
+        { status: 400 }
+      );
+    }
+
+    await dbConnect();
     const user = await User.findOne({ username });
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
       );
     }
-    
-    // Compare passwords
+
     const isPasswordValid = await compare(password, user.password);
-    
+
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: 'Invalid username or password' },
         { status: 401 }
       );
     }
-    
-    // Update user's online status
-    user.isOnline = true;
-    await user.save();
-    
-    // Generate token
-    const token = generateToken({
+
+    const token = await generateToken({
       userId: user._id.toString(),
       username: user.username
     });
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Error during login' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

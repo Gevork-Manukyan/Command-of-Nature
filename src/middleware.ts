@@ -3,9 +3,9 @@ import type { NextRequest } from 'next/server'
 import { verifyToken } from '@/lib/server/auth'
 
 // List of public paths that don't require authentication
-const publicPaths = ['/login', '/register', '/api/auth/register', '/api/auth/login']
+const publicPaths = ['/login', '/register', '/api/auth/register', '/api/auth/login', '/api/test']
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   // Allow public paths
@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
 
   // Verify token for protected routes
   if (token && !publicPaths.includes(pathname)) {
-    const decoded = verifyToken(token)
+    const decoded = await verifyToken(token)
     
     if (!decoded) {
       // Invalid token, redirect to login and clear the cookie

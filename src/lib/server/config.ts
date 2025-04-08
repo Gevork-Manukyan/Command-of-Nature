@@ -1,7 +1,7 @@
 export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-secret-key',
+    secret: process.env.JWT_SECRET,
     expiresIn: '1d'
   },
   mongodb: {

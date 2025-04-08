@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 import { generateToken, setAuthCookie } from '@/lib/server/auth';
 import { User } from '@/lib/server/models/User';
 import dbConnect from '@/lib/server/db';
@@ -8,11 +8,9 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const { username, password } = await request.json();
-    console.log('Registering user:', username);
     
     // Check if user already exists
     const existingUser = await User.findOne({ username });
-    console.log('Existing user:', existingUser);
 
     if (existingUser) {
       return NextResponse.json(
@@ -29,14 +27,12 @@ export async function POST(request: Request) {
       username,
       password: hashedPassword,
     });
-    console.log('Created user:', user);
 
     // Generate token
-    const token = generateToken({
+    const token = await generateToken({
       userId: user._id.toString(),
       username: user.username
     });
-    console.log('Generated token:', token);
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user.toObject();
