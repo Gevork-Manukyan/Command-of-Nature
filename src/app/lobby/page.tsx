@@ -1,5 +1,5 @@
-import CurrentGamesDisplay from "@/components/current-games-display";
-import { Lobby } from "@/components/lobby";
+import CurrentGamesDisplay from "@/components/game-display/current-games-display";
+import { Lobby } from "@/components/lobby/lobby";
 
 export default function LobbyPage() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import CurrentGamesDisplay from "@/components/current-games-display";
+import CurrentGamesDisplay from "@/components/game-display/current-games-display";
 
 export default function Home() {
   return (
