@@ -31,7 +31,8 @@ export default function CurrentGamesDisplay() {
       }
     };
 
-    fetchGames();
+    // fetchGames();
+    setIsLoading(false);
   }, []);
 
   if (isLoading) {

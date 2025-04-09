@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { GameSession } from '@/lib/types';
+import { config } from '@/lib/server/config';
 
 class SocketService {
   private static instance: SocketService;
@@ -15,19 +16,30 @@ class SocketService {
     return SocketService.instance;
   }
 
-  public connect(url: string): void {
+  public connect(): void {
+    const url = config.socket.url;
+
     if (this.socket) {
       this.disconnect();
     }
 
-    this.socket = io(url);
-
-    // Re-register all existing listeners
-    this.listeners.forEach((callbacks, event) => {
-      callbacks.forEach(callback => {
-        this.socket?.on(event, callback);
+    try {
+      this.socket = io(url, {
+        reconnectionAttempts: 3,
+        reconnectionDelay: 1000,
+        timeout: 20000
       });
-    });
+
+      // Re-register all existing listeners
+      this.listeners.forEach((callbacks, event) => {
+        callbacks.forEach(callback => {
+          this.socket?.on(event, callback);
+        });
+      });      
+    } catch (error) {
+      console.error('Failed to initialize socket connection:', error);
+      this.emit('connection-error', { message: 'Failed to initialize socket connection' });
+    }
   }
 
   public disconnect(): void {
@@ -72,7 +84,7 @@ class SocketService {
     isPrivate: boolean;
     password?: string;
   }): void {
-    this.emit('create-game', settings);
+    this.emit('create-game', { userId: 1, numPlayers: settings.numPlayers });
   }
 
   public joinGame(gameId: string, password?: string): void {

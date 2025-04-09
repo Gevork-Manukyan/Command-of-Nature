@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSocket } from '@/hooks/useSocket';
 import { useRouter } from 'next/navigation';
 import { GameSession } from '@/lib/types';
 import { getFromLocalStorage, setToLocalStorage } from '@/lib/client/localstorage';
 import { CreateGameModal } from './create-game-modal';
+import { socketService } from '@/services/socket.service';
 
 interface GameSettings {
   numPlayers: number;
@@ -16,10 +16,10 @@ interface GameSettings {
 
 export function Lobby() {
     const router = useRouter();
-    const { socket, isConnected } = useSocket();
     const [error, setError] = useState<string>('');
     const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
     const [showModal, setShowModal] = useState(false);
+    const [connectionError, setConnectionError] = useState<string>('');
 
     // Load existing session on mount
     useEffect(() => {
@@ -29,9 +29,12 @@ export function Lobby() {
         }
     }, []);
 
-    useEffect(() => {
-        // Listen for successful game creation
-        socket.on('create-game--success', (gameData: { gameId: string, numPlayers: number, gameName: string, isPrivate: boolean }) => {
+    function setupSocketListeners() {
+        // Connect to the socket server
+        socketService.connect();
+    
+        // Set up event handlers using the socket service
+        socketService.onGameCreated((gameData) => {
             setError('');
             setShowModal(false);
             
@@ -47,13 +50,12 @@ export function Lobby() {
             };
             setToLocalStorage('gameSession', session);
             setCurrentSession(session);
-
+    
             // Redirect to the game page
             router.push(`/game/${session.gameId}`);
         });
-
-        // Listen for successful game join
-        socket.on('join-game--success', (gameData: { gameId: string, numPlayers: number, gameName: string, isPrivate: boolean }) => {
+    
+        socketService.onGameJoined((gameData) => {
             setError('');
             
             // Save the game session
@@ -68,44 +70,29 @@ export function Lobby() {
             };
             setToLocalStorage('gameSession', session);
             setCurrentSession(session);
-
+    
             // Redirect to the game page
             router.push(`/game/${gameData.gameId}`);
         });
-
-        // Listen for game creation errors
-        socket.on('create-game--error', (error) => {
-            console.error('Game creation error:', error);
-            setError(error.message || 'Failed to create game');
+    
+        socketService.onGameError((error) => {
+            console.error('Game error:', error);
+            setError(error.message || 'An error occurred');
         });
 
-        // Listen for game join errors
-        socket.on('join-game--error', (error) => {
-            console.error('Game join error:', error);
-            setError(error.message || 'Failed to join game');
+        // Listen for connection errors
+        socketService.on('connection-error', (error) => {
+            console.error('Connection error:', error);
+            setConnectionError(error.message || 'Failed to connect to game server');
         });
-
-        return () => {
-            socket.off('create-game--success');
-            socket.off('create-game--error');
-            socket.off('join-game--success');
-            socket.off('join-game--error');
-        };
-    }, [socket, router]);
+        console.log("Set up socket listeners");
+    }
 
     const handleCreateGame = async (settings: GameSettings) => {
-        const session: GameSession = {
-            gameId: Math.random().toString(36).substring(7),
-            gameName: settings.gameName,
-            numPlayers: settings.numPlayers,
-            isHost: true,
-            status: 'waiting',
-            createdAt: new Date(),
-            isPrivate: settings.isPrivate,
-            password: settings.password
-        };
-        setToLocalStorage('gameSession', session);
-        setCurrentSession(session);
+        setConnectionError('');
+        setupSocketListeners();
+        console.log("Creating game");
+        socketService.createGame(settings);
     };
 
     // If they're already in a game, show a message and a button to return to their game
@@ -131,8 +118,7 @@ export function Lobby() {
                     <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
                     <button
                         onClick={() => setShowModal(true)}
-                        disabled={!isConnected}
-                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
                     >
                         Create New Game
                     </button>
@@ -143,9 +129,9 @@ export function Lobby() {
                         {error}
                     </div>
                 )}
-                {!isConnected && (
-                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-600 px-4 py-3 rounded-lg mb-4">
-                        Not connected to server. Please wait...
+                {connectionError && (
+                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
+                        {connectionError}
                     </div>
                 )}
             </div>
@@ -157,4 +143,4 @@ export function Lobby() {
             />
         </div>
     );
-} 
+}
