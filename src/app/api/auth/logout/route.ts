@@ -3,13 +3,11 @@ import { removeAuthCookie } from '@/lib/server/auth';
 
 export async function POST() {
   try {
-    // Create response
-    const response = NextResponse.json({ message: 'Logged out successfully' });
-
     // Remove the auth cookie
     removeAuthCookie();
-
-    return response;
+    
+    // Create response
+    return NextResponse.json({ message: 'Logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(

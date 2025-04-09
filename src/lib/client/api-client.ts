@@ -75,6 +75,12 @@ class ApiClient {
     });
   }
 
+  async logout() {
+    return this.request('/api/auth/logout', {
+      method: 'POST',
+    });
+  }
+
   // User methods
   async getUser(userId: string) {
     return this.request<{

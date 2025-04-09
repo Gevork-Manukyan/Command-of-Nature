@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GameSession } from '@/lib/types';
-import { getFromLocalStorage, setToLocalStorage, USER } from '@/lib/client/localstorage';
+import { getFromLocalStorage, setToLocalStorage, USER, removeFromLocalStorage } from '@/lib/client/localstorage';
 import { CreateGameModal } from './create-game-modal';
 import { socketService } from '@/services/socket.service';
+import { apiClient } from "@/lib/client/api-client";
 
 interface GameSettings {
   numPlayers: number;
@@ -114,10 +115,34 @@ export function Lobby() {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            const { error } = await apiClient.logout();
+            if (error) {
+                throw new Error(error);
+            }
+            removeFromLocalStorage(USER);
+            router.push('/login');
+        } catch (error) {
+            // Still clear localStorage and redirect even if API call fails
+            console.error('Logout error:', error);
+            removeFromLocalStorage(USER);
+            router.push('/login');
+        }
+    };
+
     // If they're already in a game, show a message and a button to return to their game
     if (currentSession) {
         return (
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
+                <div className="absolute top-4 right-4">
+                    <button
+                        onClick={handleLogout}
+                        className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
+                    >
+                        Logout
+                    </button>
+                </div>
                 <h1 className="text-4xl font-bold mb-4 text-gray-800">You&apos;re Already in a Game</h1>
                 <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentSession.gameId}</span></p>
                 <button
@@ -135,13 +160,21 @@ export function Lobby() {
             <div className="bg-white rounded-xl shadow-lg p-8">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
-                    <button
-                        onClick={() => setShowModal(true)}
-                        disabled={isCreatingGame}
-                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                        {isCreatingGame ? 'Creating Game...' : 'Create New Game'}
-                    </button>
+                    <div className="flex gap-4">
+                        <button
+                            onClick={handleLogout}
+                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
+                        >
+                            Logout
+                        </button>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            disabled={isCreatingGame}
+                            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                            {isCreatingGame ? 'Creating Game...' : 'Create New Game'}
+                        </button>
+                    </div>
                 </div>
 
                 {error && (
