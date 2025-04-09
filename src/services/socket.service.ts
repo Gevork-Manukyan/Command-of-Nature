@@ -103,20 +103,23 @@ class SocketService {
   }
 
   // Game-specific methods
-  public async createGame(settings: {
+  public async createGame(userId: string, settings: {
     numPlayers: number;
     gameName: string;
     isPrivate: boolean;
     password?: string;
   }): Promise<void> {
     await this.emit('create-game', {
-      userId: 1,
-      numPlayers: settings.numPlayers
+      userId,
+      numPlayers: settings.numPlayers,
+      gameName: settings.gameName,
+      isPrivate: settings.isPrivate,
+      password: settings.password
     });
   }
 
-  public joinGame(gameId: string, password?: string): void {
-    this.emit('join-game', { gameId, password });
+  public joinGame(userId: string, gameId: string, password?: string): void {
+    this.emit('join-game', { userId, gameId, password });
   }
 
   public leaveGame(gameId: string): void {
