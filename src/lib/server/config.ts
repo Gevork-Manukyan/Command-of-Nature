@@ -9,6 +9,6 @@ export const config = {
     db: process.env.MONGODB_DB || 'command-of-nature'
   },
   socket: {
-    url: process.env.SOCKET_URL || 'http://localhost:3002'
+    url: process.env.NEXT_PUBLIC_SOCKET_URL
   }
 }; 

@@ -6,6 +6,7 @@ interface CreateGameModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateGame: (settings: GameSettings) => void;
+  isCreatingGame: boolean;
 }
 
 interface GameSettings {
@@ -15,7 +16,7 @@ interface GameSettings {
   password?: string;
 }
 
-export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameModalProps) => {
+export const CreateGameModal = ({ isOpen, onClose, onCreateGame, isCreatingGame }: CreateGameModalProps) => {
   const [numPlayers, setNumPlayers] = useState<number>(2);
   const [gameName, setGameName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
@@ -40,6 +41,7 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
+            disabled={isCreatingGame}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -60,6 +62,7 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
               onChange={(e) => setGameName(e.target.value)}
               placeholder="Enter game name"
               className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={isCreatingGame}
             />
           </div>
 
@@ -76,6 +79,7 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
                     ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
                     : 'border-gray-300 text-gray-600 hover:border-indigo-400'
                 }`}
+                disabled={isCreatingGame}
               >
                 2
               </button>
@@ -86,6 +90,7 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
                     ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
                     : 'border-gray-300 text-gray-600 hover:border-indigo-400'
                 }`}
+                disabled={isCreatingGame}
               >
                 4
               </button>
@@ -98,20 +103,32 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
               Game Privacy:
             </label>
             <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isPrivate"
-                checked={isPrivate}
-                onChange={(e) => setIsPrivate(e.target.checked)}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label htmlFor="isPrivate" className="text-gray-600">
-                Make this game private
-              </label>
+              <button
+                onClick={() => setIsPrivate(false)}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  !isPrivate
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                disabled={isCreatingGame}
+              >
+                Public
+              </button>
+              <button
+                onClick={() => setIsPrivate(true)}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  isPrivate
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                disabled={isCreatingGame}
+              >
+                Private
+              </button>
             </div>
           </div>
 
-          {/* Password Input (only shown if private) */}
+          {/* Password Input (only shown for private games) */}
           {isPrivate && (
             <div className="flex flex-col gap-2">
               <label htmlFor="password" className="font-medium text-gray-700">
@@ -122,27 +139,21 @@ export const CreateGameModal = ({ isOpen, onClose, onCreateGame }: CreateGameMod
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter game password"
+                placeholder="Enter password"
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={isCreatingGame}
               />
             </div>
           )}
 
-          <div className="flex justify-end gap-4">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={!gameName || (isPrivate && !password)}
-              className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              Create Game
-            </button>
-          </div>
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={isCreatingGame}
+          >
+            {isCreatingGame ? 'Creating Game...' : 'Create Game'}
+          </button>
         </div>
       </div>
     </div>

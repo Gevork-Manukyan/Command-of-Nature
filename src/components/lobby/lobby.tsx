@@ -20,6 +20,7 @@ export function Lobby() {
     const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [connectionError, setConnectionError] = useState<string>('');
+    const [isCreatingGame, setIsCreatingGame] = useState(false);
 
     // Load existing session on mount
     useEffect(() => {
@@ -30,13 +31,11 @@ export function Lobby() {
     }, []);
 
     function setupSocketListeners() {
-        // Connect to the socket server
-        socketService.connect();
-    
         // Set up event handlers using the socket service
         socketService.onGameCreated((gameData) => {
             setError('');
             setShowModal(false);
+            setIsCreatingGame(false);
             
             // Save the game session
             const session: GameSession = {
@@ -57,6 +56,7 @@ export function Lobby() {
     
         socketService.onGameJoined((gameData) => {
             setError('');
+            setIsCreatingGame(false);
             
             // Save the game session
             const session: GameSession = {
@@ -78,21 +78,36 @@ export function Lobby() {
         socketService.onGameError((error) => {
             console.error('Game error:', error);
             setError(error.message || 'An error occurred');
+            setIsCreatingGame(false);
         });
 
         // Listen for connection errors
         socketService.on('connection-error', (error) => {
             console.error('Connection error:', error);
             setConnectionError(error.message || 'Failed to connect to game server');
+            setIsCreatingGame(false);
         });
-        console.log("Set up socket listeners");
     }
 
     const handleCreateGame = async (settings: GameSettings) => {
-        setConnectionError('');
-        setupSocketListeners();
-        console.log("Creating game");
-        socketService.createGame(settings);
+        try {
+            setConnectionError(''); // Clear any previous connection errors
+            setError(''); // Clear any previous game errors
+            setIsCreatingGame(true);
+
+            // Connect to the socket server
+            await socketService.connect();
+            
+            // Set up listeners first
+            setupSocketListeners();
+            
+            // Then create the game
+            await socketService.createGame(settings);
+        } catch (error) {
+            console.error('Failed to create game:', error);
+            setError('Failed to create game. Please try again.');
+            setIsCreatingGame(false);
+        }
     };
 
     // If they're already in a game, show a message and a button to return to their game
@@ -118,9 +133,10 @@ export function Lobby() {
                     <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
+                        disabled={isCreatingGame}
+                        className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                        Create New Game
+                        {isCreatingGame ? 'Creating Game...' : 'Create New Game'}
                     </button>
                 </div>
 
@@ -140,6 +156,7 @@ export function Lobby() {
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
                 onCreateGame={handleCreateGame}
+                isCreatingGame={isCreatingGame}
             />
         </div>
     );

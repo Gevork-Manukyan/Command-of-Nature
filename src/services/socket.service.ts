@@ -6,6 +6,8 @@ class SocketService {
   private static instance: SocketService;
   private socket: Socket | null = null;
   private listeners: Map<string, ((...args: any[]) => void)[]> = new Map();
+  private isConnected: boolean = false;
+  private connectionPromise: Promise<void> | null = null;
 
   private constructor() {}
 
@@ -16,36 +18,59 @@ class SocketService {
     return SocketService.instance;
   }
 
-  public connect(): void {
+  public connect(): Promise<void> {
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+
     const url = config.socket.url;
 
     if (this.socket) {
       this.disconnect();
     }
 
-    try {
-      this.socket = io(url, {
-        reconnectionAttempts: 3,
-        reconnectionDelay: 1000,
-        timeout: 20000
-      });
-
-      // Re-register all existing listeners
-      this.listeners.forEach((callbacks, event) => {
-        callbacks.forEach(callback => {
-          this.socket?.on(event, callback);
+    this.connectionPromise = new Promise((resolve, reject) => {
+      try {
+        this.socket = io(url, {
+          reconnectionAttempts: 3,
+          reconnectionDelay: 1000,
+          timeout: 20000
         });
-      });      
-    } catch (error) {
-      console.error('Failed to initialize socket connection:', error);
-      this.emit('connection-error', { message: 'Failed to initialize socket connection' });
-    }
+
+        this.socket.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+          this.isConnected = false;
+          this.emit('connection-error', { message: 'Failed to connect to game server' });
+          reject(error);
+        });
+
+        this.socket.on('connect', () => {
+          this.isConnected = true;
+          resolve();
+        });
+
+        // Re-register all existing listeners
+        this.listeners.forEach((callbacks, event) => {
+          callbacks.forEach(callback => {
+            this.socket?.on(event, callback);
+          });
+        });
+      } catch (error) {
+        console.error('Failed to initialize socket connection:', error);
+        this.emit('connection-error', { message: 'Failed to initialize socket connection' });
+        reject(error);
+      }
+    });
+
+    return this.connectionPromise;
   }
 
   public disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
+      this.isConnected = false;
+      this.connectionPromise = null;
     }
   }
 
@@ -73,18 +98,21 @@ class SocketService {
     }
   }
 
-  public emit(event: string, ...args: any[]): void {
+  public async emit(event: string, ...args: any[]): Promise<void> {
     this.socket?.emit(event, ...args);
   }
 
   // Game-specific methods
-  public createGame(settings: {
+  public async createGame(settings: {
     numPlayers: number;
     gameName: string;
     isPrivate: boolean;
     password?: string;
-  }): void {
-    this.emit('create-game', { userId: 1, numPlayers: settings.numPlayers });
+  }): Promise<void> {
+    await this.emit('create-game', {
+      userId: 1,
+      numPlayers: settings.numPlayers
+    });
   }
 
   public joinGame(gameId: string, password?: string): void {
