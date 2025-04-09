@@ -8,6 +8,7 @@ import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { apiClient } from "@/lib/client/api-client"
 import { Eye, EyeOff } from "lucide-react"
+import { setToLocalStorage, USER } from "@/lib/client/localstorage"
 
 export function LoginForm() {
   const router = useRouter()
@@ -28,6 +29,8 @@ export function LoginForm() {
       if (error) {
         throw new Error(error)
       }
+
+      setToLocalStorage(USER, data?._id)
 
       router.push("/lobby")
     } catch (err) {

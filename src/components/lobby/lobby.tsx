@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { GameSession } from '@/lib/types';
-import { getFromLocalStorage, setToLocalStorage } from '@/lib/client/localstorage';
+import { getFromLocalStorage, setToLocalStorage, USER } from '@/lib/client/localstorage';
 import { CreateGameModal } from './create-game-modal';
 import { socketService } from '@/services/socket.service';
 
@@ -101,8 +101,12 @@ export function Lobby() {
             // Set up listeners first
             setupSocketListeners();
             
-            // Then create the game
-            await socketService.createGame(settings);
+            const userId = getFromLocalStorage(USER) as string;
+            if (!userId) {
+                throw new Error('User ID not found');
+            }
+
+            await socketService.createGame(userId, settings);
         } catch (error) {
             console.error('Failed to create game:', error);
             setError('Failed to create game. Please try again.');

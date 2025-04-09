@@ -16,3 +16,5 @@ export function removeFromLocalStorage(key: string): void {
   
   localStorage.removeItem(key);
 } 
+
+export const USER = "user";

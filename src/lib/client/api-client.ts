@@ -63,7 +63,7 @@ class ApiClient {
 
   async login(data: { username: string; password: string }) {
     return this.request<{
-      id: string;
+      _id: string;
       username: string;
       isOnline: boolean;
       gamesPlayed: number;
@@ -78,7 +78,7 @@ class ApiClient {
   // User methods
   async getUser(userId: string) {
     return this.request<{
-      id: string;
+      _id: string;
       username: string;
       isOnline: boolean;
       activeGameIds: string[];
