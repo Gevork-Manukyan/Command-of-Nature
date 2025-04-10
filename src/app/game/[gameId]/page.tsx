@@ -35,6 +35,13 @@ export default function GamePage() {
         };
     }, [socket]);
 
+    const handleToLobby = () => {
+        // Clear the session
+        removeFromLocalStorage(`game_${gameId}`);
+        // Redirect to lobby using Next.js router
+        router.push('/lobby');
+    };
+
     const handleLeaveGame = () => {
         // Notify server that player is leaving
         socket.emit('leave-game', { gameId });
@@ -72,12 +79,20 @@ export default function GamePage() {
         <div className="p-6 max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Game Room: {gameId}</h1>
-                <button
-                    onClick={handleLeaveGame}
-                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                >
-                    Leave Game
-                </button>
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleToLobby}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                        To Lobby
+                    </button>
+                    <button
+                        onClick={handleLeaveGame}
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                        Leave Game
+                    </button>
+                </div>
             </div>
             
             <div className="mb-4">
