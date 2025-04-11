@@ -118,20 +118,20 @@ class SocketService {
     });
   }
 
-  public joinGame(userId: string, gameId: string, password?: string): void {
-    this.emit('join-game', { userId, gameId, password });
+  public async joinGame(userId: string, gameId: string, password?: string): Promise<void> {
+    await this.emit('join-game', { userId, gameId, password });
   }
 
-  public leaveGame(gameId: string): void {
-    this.emit('leave-game', { gameId });
+  public async leaveGame(gameId: string): Promise<void> {
+    await this.emit('leave-game', { gameId });
   }
 
-  public startGame(gameId: string): void {
-    this.emit('start-game', { gameId });
+  public async startGame(gameId: string): Promise<void> {
+    await this.emit('start-game', { gameId });
   }
 
-  public getCurrentGames(): void {
-    this.emit('get-current-games');
+  public async getCurrentGames(): Promise<void> {
+    await this.emit('get-current-games');
   }
 
   // Event handlers

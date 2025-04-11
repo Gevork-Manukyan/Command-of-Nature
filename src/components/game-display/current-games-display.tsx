@@ -8,10 +8,14 @@ import { EmptyState } from "./empty-state";
 import { apiClient } from "@/lib/client/api-client";
 import { GameListing } from "@command-of-nature/shared-types";
 
-export default function CurrentGamesDisplay() {
+interface CurrentGamesDisplayProps {
+  error: string;
+  handleJoinGame: (gameId: string, password?: string) => Promise<void>;
+}
+
+export default function CurrentGamesDisplay({ error, handleJoinGame }: CurrentGamesDisplayProps) {
   const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -25,7 +29,7 @@ export default function CurrentGamesDisplay() {
 
         setCurrentGames(response.data || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error('Failed to fetch games:', err);
       } finally {
         setIsLoading(false);
       }
@@ -47,9 +51,13 @@ export default function CurrentGamesDisplay() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {currentGames.map((game) => (
-        <GameCard key={game.id} game={game} />
+        <GameCard
+          key={game.id}
+          game={game}
+          onJoin={handleJoinGame}
+        />
       ))}
     </div>
   );
