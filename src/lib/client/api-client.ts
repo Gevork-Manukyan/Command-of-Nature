@@ -1,3 +1,5 @@
+import { Game } from "../types";
+
 type ApiResponse<T> = {
   data?: T;
   error?: string;
@@ -121,8 +123,13 @@ class ApiClient {
     return this.request(`/api/users/${userId}/games`);
   }
 
-  async getAllNewGames<T = any>() {
-    return this.request<T>('/api/game/all-new-games');
+  async getAllNewGames(): Promise<ApiResponse<Game[]>> {
+    const response = await fetch('http://localhost:3002/api/games?isStarted=false');
+    return {
+      data: await response.json(),
+      error: response.status !== 200 ? 'Failed to fetch games' : undefined,
+      status: response.status,
+    };
   }
 }
 

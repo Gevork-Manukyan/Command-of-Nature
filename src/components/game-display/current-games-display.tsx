@@ -17,7 +17,7 @@ export default function CurrentGamesDisplay() {
     const fetchGames = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.getAllNewGames<Game[]>();
+        const response = await apiClient.getAllNewGames();
         
         if (response.error) {
           throw new Error(response.error);

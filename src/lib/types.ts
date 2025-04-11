@@ -10,11 +10,10 @@ export type User = {
 
 export type Game = {
     id: string;
-    roomCode: string;
-    numPlayers: number;  // Maximum number of players
-    players: User[];    // Current players in the game
-    status: 'waiting' | 'playing' | 'finished';
-    createdAt: string;  // ISO string format
+    gameName: string;
+    isPrivate: boolean;
+    numPlayersTotal: number;
+    numCurrentPlayers: number;
 }
 
 export interface GameSession {

@@ -9,6 +9,7 @@ export async function GET() {
             if (!response.ok) {
             throw new Error('Failed to fetch games from websocket server');
         }
+        console.log("response", response);
 
         const games = await response.json();
         return NextResponse.json(games);

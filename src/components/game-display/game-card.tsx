@@ -10,26 +10,17 @@ export const GameCard = ({ game }: GameCardProps) => (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="font-mono bg-gray-100 px-3 py-1 rounded text-gray-700">
-            Game ID: {game.id}
+            #{game.id.slice(-6)}
           </span>
-          <span className="font-mono bg-indigo-100 px-3 py-1 rounded text-indigo-700">
-            Room Code: {game.roomCode}
+          <span className="text-sm text-gray-500">
+            {game.isPrivate ? "🔒 Private" : "🔓 Public"}
           </span>
         </div>
         <span className="text-sm text-gray-500">
-          {game.players.length} players
+          {game.numCurrentPlayers}/{game.numPlayersTotal} players
         </span>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {game.players.map((player) => (
-          <span
-            key={player.id}
-            className="bg-gray-50 px-3 py-1 rounded-full text-sm text-gray-700"
-          >
-            {player.username}
-          </span>
-        ))}
-      </div>
+      <h3 className="text-lg font-semibold text-gray-900">{game.gameName}</h3>
     </div>
   </div>
 ); 
