@@ -120,6 +120,10 @@ class ApiClient {
   async getActiveGames(userId: string) {
     return this.request(`/api/users/${userId}/games`);
   }
+
+  async getAllNewGames<T = any>() {
+    return this.request<T>('/api/game/all-new-games');
+  }
 }
 
 export const apiClient = new ApiClient(); 

@@ -23,7 +23,7 @@ class SocketService {
       return this.connectionPromise;
     }
 
-    const url = config.socket.url;
+    const url = config.socket.url + "/gameplay";
 
     if (this.socket) {
       this.disconnect();

@@ -6,6 +6,7 @@ import { GameCard } from "./game-card";
 import { LoadingSpinner } from "./loading-spinner";
 import { ErrorMessage } from "./error-message";
 import { EmptyState } from "./empty-state";
+import { apiClient } from "@/lib/client/api-client";
 
 export default function CurrentGamesDisplay() {
   const [currentGames, setCurrentGames] = useState<Game[]>([]);
@@ -16,14 +17,13 @@ export default function CurrentGamesDisplay() {
     const fetchGames = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/games');
+        const response = await apiClient.getAllNewGames<Game[]>();
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch games');
+        if (response.error) {
+          throw new Error(response.error);
         }
-        
-        const data = await response.json();
-        setCurrentGames(data);
+
+        setCurrentGames(response.data || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -31,8 +31,7 @@ export default function CurrentGamesDisplay() {
       }
     };
 
-    // fetchGames();
-    setIsLoading(false);
+    fetchGames();
   }, []);
 
   if (isLoading) {
