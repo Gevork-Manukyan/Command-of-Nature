@@ -3,27 +3,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSocket } from '@/hooks/useSocket';
-import { GameSession } from '@/lib/types';
-import { getFromLocalStorage, removeFromLocalStorage } from '@/lib/client/localstorage';
+import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
+import { GameListing } from '@command-of-nature/shared-types';
 
 export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
     const { socket, isConnected } = useSocket();
-    const [session, setSession] = useState<GameSession | null>(null);
+    const [session, setSession] = useState<GameListing | null>(null);
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
         // Load the game session
-        const loadedSession = getFromLocalStorage<GameSession>(`game_${gameId}`);
+        const loadedSession = getFromLocalStorage<GameListing>(GAME_SESSION);
         if (loadedSession) {
             // Verify this is the correct game
-            if (loadedSession.gameId === gameId) {
+            if (loadedSession.id === gameId) {
                 setSession(loadedSession);
             } else {
                 // Clear invalid session
-                removeFromLocalStorage(`game_${gameId}`);
+                removeFromLocalStorage(GAME_SESSION);
             }
         }
     }, [gameId]);
@@ -37,7 +37,7 @@ export default function GamePage() {
 
     const handleToLobby = () => {
         // Clear the session
-        removeFromLocalStorage(`game_${gameId}`);
+        removeFromLocalStorage(GAME_SESSION);
         // Redirect to lobby using Next.js router
         router.push('/lobby');
     };
@@ -46,7 +46,7 @@ export default function GamePage() {
         // Notify server that player is leaving
         socket.emit('leave-game', { gameId });
         // Clear the session
-        removeFromLocalStorage(`game_${gameId}`);
+        removeFromLocalStorage(GAME_SESSION);
         // Redirect to lobby using Next.js router
         router.push('/lobby');
     };
@@ -96,8 +96,7 @@ export default function GamePage() {
             </div>
             
             <div className="mb-4">
-                <p>Role: {session?.isHost ? 'Host' : 'Player'}</p>
-                <p>Players needed: {session?.numPlayers}</p>
+                <p>Players needed: {session?.numPlayersTotal}</p>
             </div>
 
             {/* Add your game UI components here */}

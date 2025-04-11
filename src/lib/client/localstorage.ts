@@ -18,3 +18,4 @@ export function removeFromLocalStorage(key: string): void {
 } 
 
 export const USER = "user";
+export const GAME_SESSION = "gameSession";

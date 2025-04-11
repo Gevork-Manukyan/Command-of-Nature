@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Game } from "@/lib/types";
 import { GameCard } from "./game-card";
 import { LoadingSpinner } from "./loading-spinner";
 import { ErrorMessage } from "./error-message";
 import { EmptyState } from "./empty-state";
 import { apiClient } from "@/lib/client/api-client";
+import { GameListing } from "@command-of-nature/shared-types";
 
 export default function CurrentGamesDisplay() {
-  const [currentGames, setCurrentGames] = useState<Game[]>([]);
+  const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

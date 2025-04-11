@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { GameSession } from '@/lib/types';
+import { GameListing } from '@command-of-nature/shared-types';
 import { config } from '@/lib/server/config';
 
 class SocketService {
@@ -135,11 +135,11 @@ class SocketService {
   }
 
   // Event handlers
-  public onGameCreated(callback: (gameData: GameSession) => void): void {
+  public onGameCreated(callback: (gameData: GameListing) => void): void {
     this.on('create-game--success', callback);
   }
 
-  public onGameJoined(callback: (gameData: GameSession) => void): void {
+  public onGameJoined(callback: (gameData: GameListing) => void): void {
     this.on('join-game--success', callback);
   }
 
@@ -148,19 +148,19 @@ class SocketService {
     this.on('join-game--error', callback);
   }
 
-  public onCurrentGames(callback: (games: GameSession[]) => void): void {
+  public onCurrentGames(callback: (games: GameListing[]) => void): void {
     this.on('current-games', callback);
   }
 
-  public onGameStarted(callback: (gameData: GameSession) => void): void {
+  public onGameStarted(callback: (gameData: GameListing) => void): void {
     this.on('game-started', callback);
   }
 
-  public onPlayerJoined(callback: (gameData: GameSession) => void): void {
+  public onPlayerJoined(callback: (gameData: GameListing) => void): void {
     this.on('player-joined', callback);
   }
 
-  public onPlayerLeft(callback: (gameData: GameSession) => void): void {
+  public onPlayerLeft(callback: (gameData: GameListing) => void): void {
     this.on('player-left', callback);
   }
 }

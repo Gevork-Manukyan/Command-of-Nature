@@ -1,4 +1,4 @@
-import { Game } from "../types";
+import { GameListing } from "@command-of-nature/shared-types";
 
 type ApiResponse<T> = {
   data?: T;
@@ -123,7 +123,7 @@ class ApiClient {
     return this.request(`/api/users/${userId}/games`);
   }
 
-  async getAllNewGames(): Promise<ApiResponse<Game[]>> {
+  async getAllNewGames(): Promise<ApiResponse<GameListing[]>> {
     const response = await fetch('http://localhost:3002/api/games?isStarted=false');
     return {
       data: await response.json(),

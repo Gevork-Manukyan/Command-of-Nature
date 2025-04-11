@@ -1,7 +1,7 @@
-import { Game } from "@/lib/types";
+import { GameListing } from "@command-of-nature/shared-types";  
 
 interface GameCardProps {
-  game: Game;
+  game: GameListing;
 }
 
 export const GameCard = ({ game }: GameCardProps) => (
@@ -10,7 +10,7 @@ export const GameCard = ({ game }: GameCardProps) => (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="font-mono bg-gray-100 px-3 py-1 rounded text-gray-700">
-            #{game.id.slice(-6)}
+            #{game.id}
           </span>
           <span className="text-sm text-gray-500">
             {game.isPrivate ? "🔒 Private" : "🔓 Public"}

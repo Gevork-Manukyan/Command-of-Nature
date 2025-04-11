@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GameSession } from '@/lib/types';
-import { getFromLocalStorage, setToLocalStorage, USER, removeFromLocalStorage } from '@/lib/client/localstorage';
+import { getFromLocalStorage, setToLocalStorage, USER, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 import { CreateGameModal } from './create-game-modal';
 import { socketService } from '@/services/socket.service';
 import { apiClient } from "@/lib/client/api-client";
+import { GameListing } from '@command-of-nature/shared-types';
 
 interface GameSettings {
   numPlayers: number;
@@ -18,14 +18,14 @@ interface GameSettings {
 export function Lobby() {
     const router = useRouter();
     const [error, setError] = useState<string>('');
-    const [currentSession, setCurrentSession] = useState<GameSession | null>(null);
+    const [currentSession, setCurrentSession] = useState<GameListing | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [connectionError, setConnectionError] = useState<string>('');
     const [isCreatingGame, setIsCreatingGame] = useState(false);
 
     // Load existing session on mount
     useEffect(() => {
-        const session = getFromLocalStorage<GameSession>('gameSession');
+        const session = getFromLocalStorage<GameListing>(GAME_SESSION);
         if (session) {
             setCurrentSession(session);
         }
@@ -39,20 +39,18 @@ export function Lobby() {
             setIsCreatingGame(false);
             
             // Save the game session
-            const session: GameSession = {
-                gameId: gameData.gameId,
+            const gameSession: GameListing = {
+                id: gameData.id,
                 gameName: gameData.gameName,
-                numPlayers: gameData.numPlayers,
-                isHost: true,
-                status: 'waiting',
-                createdAt: new Date(),
-                isPrivate: gameData.isPrivate
+                isPrivate: gameData.isPrivate,
+                numPlayersTotal: gameData.numPlayersTotal,
+                numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setToLocalStorage('gameSession', session);
-            setCurrentSession(session);
+            setToLocalStorage(GAME_SESSION, gameSession);
+            setCurrentSession(gameSession);
     
             // Redirect to the game page
-            router.push(`/game/${session.gameId}`);
+            router.push(`/game/${gameSession.id}`);
         });
     
         socketService.onGameJoined((gameData) => {
@@ -60,25 +58,31 @@ export function Lobby() {
             setIsCreatingGame(false);
             
             // Save the game session
-            const session: GameSession = {
-                gameId: gameData.gameId,
+            const gameSession: GameListing = {
+                id: gameData.id,
                 gameName: gameData.gameName,
-                numPlayers: gameData.numPlayers,
-                isHost: false,
-                status: 'waiting',
-                createdAt: new Date(),
-                isPrivate: gameData.isPrivate
+                isPrivate: gameData.isPrivate,
+                numPlayersTotal: gameData.numPlayersTotal,
+                numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setToLocalStorage('gameSession', session);
-            setCurrentSession(session);
+            setToLocalStorage(GAME_SESSION, gameSession);
+            setCurrentSession(gameSession);
     
             // Redirect to the game page
-            router.push(`/game/${gameData.gameId}`);
+            router.push(`/game/${gameSession.id}`);
         });
     
         socketService.onGameError((error) => {
             console.error('Game error:', error);
-            setError(error.message || 'An error occurred');
+            // Map server error messages to user-friendly messages
+            const errorMessages: Record<string, string> = {
+                'A player with this socket ID already exists in the game': 'You are already connected to this game',
+                'You are already in this game': 'You are already in this game',
+                'Cannot add more players': 'This game is full',
+                'Game not found': 'This game no longer exists',
+                'Invalid password': 'Incorrect password for this game'
+            };
+            setError(errorMessages[error.message] || error.message || 'An error occurred');
             setIsCreatingGame(false);
         });
 
@@ -115,6 +119,16 @@ export function Lobby() {
         }
     };
 
+    // const handleJoinGame = async (gameId: string) => {
+    //     try {
+    //         await socketService.joinGame(userId, gameId);
+    //     } catch (error) {
+    //         console.error('Failed to join game:', error);
+    //         setError('Failed to join game. Please try again.');
+    //         setIsCreatingGame(false);
+    //     }
+    // };
+
     const handleLogout = async () => {
         try {
             const { error } = await apiClient.logout();
@@ -144,9 +158,9 @@ export function Lobby() {
                     </button>
                 </div>
                 <h1 className="text-4xl font-bold mb-4 text-gray-800">You&apos;re Already in a Game</h1>
-                <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentSession.gameId}</span></p>
+                <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentSession.id}</span></p>
                 <button
-                    onClick={() => router.push(`/game/${currentSession.gameId}`)}
+                    onClick={() => router.push(`/game/${currentSession.id}`)}
                     className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
                 >
                     Return to Game
