@@ -1,7 +1,7 @@
 import { GameListing } from "@command-of-nature/shared-types";
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
+import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION, USER } from '@/lib/client/localstorage';
 import { socketService } from '@/services/socket.service';
 import useSocket from "./useSocket";
 
@@ -12,11 +12,23 @@ export function useGameInstance() {
     const shortGameId = gameId.toString().slice(-6);
     const [session, setSession] = useState<GameListing | null>(null);
     const [error, setError] = useState<string>('');
+    const [isRejoining, setIsRejoining] = useState(true);
     const { connectToSocket } = useSocket();
 
     useEffect(() => {
         const connect = async () => {
-            await connectToSocket();
+            try {
+                await connectToSocket();
+                const userId = getFromLocalStorage<string>(USER);
+                if (userId) {
+                    setIsRejoining(true);
+                    await socketService.rejoinGame(userId, gameId);
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to rejoin game');
+            } finally {
+                setIsRejoining(false);
+            }
         }
 
         connect();
@@ -65,5 +77,6 @@ export function useGameInstance() {
         router,
         handleToLobby,
         handleLeaveGame,
+        isRejoining,
     };
 }

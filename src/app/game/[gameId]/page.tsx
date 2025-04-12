@@ -1,23 +1,18 @@
 "use client";
 
 import { useGameInstance } from "@/hooks/useGameInstance";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { ErrorScreen } from "@/components/ErrorScreen";
 
 export default function GamePage() {
-    const { router, error, session, shortGameId, handleToLobby, handleLeaveGame } = useGameInstance();
+    const { router, error, session, shortGameId, handleToLobby, handleLeaveGame, isRejoining } = useGameInstance();
+
+    if (isRejoining) {
+        return <LoadingScreen message="Rejoining game..." />;
+    }
 
     if (error) {
-        return (
-            <div className="p-6 max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4">Error</h1>
-                <p className="text-red-500 mb-4">{error}</p>
-                <button
-                    onClick={() => router.push('/lobby')}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Return to Lobby
-                </button>
-            </div>
-        );
+        return <ErrorScreen message={error} />;
     }
 
     return (
