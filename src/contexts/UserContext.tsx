@@ -5,7 +5,6 @@ import { getFromLocalStorage, removeFromLocalStorage, USER } from '@/lib/client/
 
 interface UserContextType {
     userId: string | null;
-    setUserId: (id: string | null) => void;
     logout: () => void;
 }
 
@@ -28,7 +27,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <UserContext.Provider value={{ userId, setUserId, logout }}>
+        <UserContext.Provider value={{ userId, logout }}>
             {children}
         </UserContext.Provider>
     );

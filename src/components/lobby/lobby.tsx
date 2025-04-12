@@ -15,15 +15,13 @@ export function Lobby() {
         currentGames, 
         isLoading,
         error,
-        connectionError,
         currentSession,
         showModal,
         setShowModal,
-        isCreatingGame,
         handleCreateGame,
-        handleLogout,
         handleJoinGame,
-      } = useLobby();
+        isCreatingGame,
+    } = useLobby();
 
     // If they're already in a game, show a message and a button to return to their game
     if (currentSession) {
@@ -31,7 +29,7 @@ export function Lobby() {
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
                 <div className="absolute top-4 right-4">
                     <button
-                        onClick={handleLogout}
+                        onClick={() => router.push('/login')}
                         className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
                     >
                         Logout
@@ -56,17 +54,16 @@ export function Lobby() {
                     <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
                     <div className="flex gap-4">
                         <button
-                            onClick={handleLogout}
+                            onClick={() => router.push('/login')}
                             className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
                         >
                             Logout
                         </button>
                         <button
                             onClick={() => setShowModal(true)}
-                            disabled={isCreatingGame}
-                            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
                         >
-                            {isCreatingGame ? 'Creating Game...' : 'Create New Game'}
+                            Create New Game
                         </button>
                     </div>
                 </div>
@@ -74,11 +71,6 @@ export function Lobby() {
                 {error && (
                     <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
                         {error}
-                    </div>
-                )}
-                {connectionError && (
-                    <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
-                        {connectionError}
                     </div>
                 )}
             </div>

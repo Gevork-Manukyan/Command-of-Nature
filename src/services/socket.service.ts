@@ -126,26 +126,76 @@ class SocketService {
     gameName: string;
     isPrivate: boolean;
     password?: string;
-  }): Promise<void> {
-    await this.emit('create-game', {
-      userId,
-      numPlayers: settings.numPlayers,
-      gameName: settings.gameName,
-      isPrivate: settings.isPrivate,
-      password: settings.password
+  }): Promise<GameListing> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+
+      this.socket.emit('create-game', { userId, ...settings }, (response: { error?: string; game?: GameListing }) => {
+        if (response.error) {
+          reject(new Error(response.error));
+        } else if (response.game) {
+          resolve(response.game);
+        } else {
+          reject(new Error('Invalid response from server'));
+        }
+      });
     });
   }
 
-  public async joinGame(userId: string, gameId: string, password?: string): Promise<void> {
-    await this.emit('join-game', { userId, gameId, password });
+  public async joinGame(userId: string, gameId: string, password?: string): Promise<GameListing> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+
+      this.socket.emit('join-game', { userId, gameId, password }, (response: { error?: string; game?: GameListing }) => {
+        if (response.error) {
+          reject(new Error(response.error));
+        } else if (response.game) {
+          resolve(response.game);
+        } else {
+          reject(new Error('Invalid response from server'));
+        }
+      });
+    });
   }
 
   public async rejoinGame(userId: string, gameId: string): Promise<void> {
-    await this.emit('rejoin-game', { userId, gameId });
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+
+      this.socket.emit('rejoin-game', { userId, gameId }, (response: { error?: string }) => {
+        if (response.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   public async leaveGame(gameId: string): Promise<void> {
-    await this.emit('leave-game', { gameId });
+    return new Promise((resolve, reject) => {
+      if (!this.socket) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+
+      this.socket.emit('leave-game', { gameId }, (response: { error?: string }) => {
+        if (response.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
   public async startGame(gameId: string): Promise<void> {
@@ -184,6 +234,11 @@ class SocketService {
 
   public onPlayerLeft(callback: (gameData: GameListing) => void): void {
     this.on('player-left', callback);
+  }
+
+  public removeAllListeners(): void {
+    this.listeners.clear();
+    this.socket?.removeAllListeners();
   }
 }
 
