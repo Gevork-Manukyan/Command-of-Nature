@@ -1,48 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { CreateGameModal } from './create-game-modal';
 import { GameCard } from './game-display/game-card';
 import { LoadingSpinner } from './game-display/loading-spinner';
 import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
-import { apiClient } from "@/lib/client/api-client";
-import { GameListing } from '@command-of-nature/shared-types';
 import useLobby from "@/hooks/useLobby";
 
-interface LobbyProps {
-    error: string;
-    connectionError: string;
-    currentSession: GameListing | null;
-    showModal: boolean;
-    setShowModal: (show: boolean) => void;
-    isCreatingGame: boolean;
-    handleCreateGame: (settings: GameSettings) => Promise<void>;
-    handleLogout: () => Promise<void>;
-    handleJoinGame: (gameId: string, password?: string) => Promise<void>;
-}
 
-interface GameSettings {
-    numPlayers: number;
-    gameName: string;
-    isPrivate: boolean;
-    password?: string;
-}
-
-export function Lobby({
-    error,
-    connectionError,
-    currentSession,
-    showModal,
-    setShowModal,
-    isCreatingGame,
-    handleCreateGame,
-    handleLogout,
-    handleJoinGame,
-}: LobbyProps) {
+export function Lobby() {
     const router = useRouter();
-    const { currentGames, isLoading } = useLobby();
+    const {
+        currentGames, 
+        isLoading,
+        error,
+        connectionError,
+        currentSession,
+        showModal,
+        setShowModal,
+        isCreatingGame,
+        handleCreateGame,
+        handleLogout,
+        handleJoinGame,
+      } = useLobby();
 
     // If they're already in a game, show a message and a button to return to their game
     if (currentSession) {
