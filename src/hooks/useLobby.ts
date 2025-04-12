@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getFromLocalStorage, setToLocalStorage, USER, GAME_SESSION, removeFromLocalStorage } from '@/lib/client/localstorage';
 import { socketService } from '@/services/socket.service';
 import useSocket from "./useSocket";
+import { useUser } from "@/contexts/UserContext";
 
 interface GameSettings {
     numPlayers: number;
@@ -23,6 +24,7 @@ export default function useLobby() {
     const [connectionError, setConnectionError] = useState<string>('');
     const [isCreatingGame, setIsCreatingGame] = useState(false);
     const { connectToSocket } = useSocket();
+    const { userId, logout } = useUser();
 
     // ------------------------------------------------------------
     // Game Listing
@@ -140,7 +142,6 @@ export default function useLobby() {
   
         await setupListeners();
         
-        const userId = getFromLocalStorage(USER) as string;
         if (!userId) {
           throw new Error('User ID not found');
         }
@@ -165,7 +166,6 @@ export default function useLobby() {
   
         await setupListeners();
   
-        const userId = getFromLocalStorage(USER) as string;
         if (!userId) {
           throw new Error('User ID not found');
         }
@@ -185,11 +185,11 @@ export default function useLobby() {
         if (error) {
           throw new Error(error);
         }
-        removeFromLocalStorage(USER);
+        logout();
         router.push('/login');
       } catch (error) {
         console.error('Logout error:', error);
-        removeFromLocalStorage(USER);
+        logout();
         router.push('/login');
       }
     };
