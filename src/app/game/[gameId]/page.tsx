@@ -10,13 +10,13 @@ export default function GamePage() {
     const router = useRouter();
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
-    const { currentSession, error, isRejoining, leaveGame } = useGameSession();
+    const { currentSession, error, isRejoining, isLoading, leaveGame } = useGameSession();
 
     const handleToLobby = () => {
         router.push('/lobby');
     };
 
-    if (isRejoining) {
+    if (isLoading || isRejoining) {
         return <LoadingScreen message="Connecting to game..." />;
     }
 
