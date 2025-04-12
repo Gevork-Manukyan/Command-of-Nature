@@ -48,7 +48,6 @@ export function useGameSession() {
         };
 
         const handleGameJoined = (gameData: any) => {
-            console.log('Game joined:', gameData);
             setError('');
             const gameSession: GameListing = {
                 id: gameData.id,

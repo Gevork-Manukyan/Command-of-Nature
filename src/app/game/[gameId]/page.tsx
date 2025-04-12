@@ -17,7 +17,7 @@ export default function GamePage() {
     };
 
     if (isRejoining) {
-        return <LoadingScreen message="Reconnecting to game..." />;
+        return <LoadingScreen message="Connecting to game..." />;
     }
 
     if (error) {
