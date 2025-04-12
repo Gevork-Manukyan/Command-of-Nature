@@ -19,6 +19,8 @@ class SocketService {
   }
 
   public connect(): Promise<void> {
+    console.log('connecting to socket');
+
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -39,14 +41,19 @@ class SocketService {
 
         this.socket.on('connect_error', (error) => {
           console.error('Socket connection error:', error);
-          this.isConnected = false;
+          this.setConnected(false);
           this.emit('connection-error', { message: 'Failed to connect to game server' });
           reject(error);
         });
 
         this.socket.on('connect', () => {
-          this.isConnected = true;
+          console.log('connected to socket');
+          this.setConnected(true);
           resolve();
+        });
+
+        this.socket.on('disconnect', () => {
+          this.setConnected(false);
         });
 
         // Re-register all existing listeners
@@ -65,11 +72,19 @@ class SocketService {
     return this.connectionPromise;
   }
 
+  private setConnected(connected: boolean) {
+    this.isConnected = connected;
+  }
+
+  public getConnected(): boolean {
+    return this.isConnected;
+  }
+  
   public disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      this.isConnected = false;
+      this.setConnected(false);
       this.connectionPromise = null;
     }
   }
@@ -99,6 +114,9 @@ class SocketService {
   }
 
   public async emit(event: string, ...args: any[]): Promise<void> {
+    if (!this.isConnected) {
+      throw new Error('Socket is not connected');
+    }
     this.socket?.emit(event, ...args);
   }
 

@@ -30,6 +30,14 @@ export function useGameInstance() {
      * Disconnect the socket when the component unmounts
      */
     useEffect(() => {
+        const connectToSocket = async () => {
+            await socketService.connect();
+        };
+        
+        if (!socketService.getConnected()) {
+            connectToSocket();
+        }
+
         return () => {
             console.log('disconnecting socket');
             socketService.disconnect();
