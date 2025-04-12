@@ -1,55 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useSocket } from '@/hooks/useSocket';
-import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
-import { GameListing } from '@command-of-nature/shared-types';
-import { socketService } from '@/services/socket.service';
+import { useGameInstance } from "@/hooks/useGameInstance";
 
 export default function GamePage() {
-    const params = useParams();
-    const router = useRouter();
-    const gameId = params.gameId as string;
-    const shortGameId = gameId.toString().slice(-6);
-    const { socket, isConnected } = useSocket();
-    const [session, setSession] = useState<GameListing | null>(null);
-    const [error, setError] = useState<string>('');
-
-    useEffect(() => {
-        // Load the game session
-        const loadedSession = getFromLocalStorage<GameListing>(GAME_SESSION);
-        if (loadedSession) {
-            // Verify this is the correct game
-            if (loadedSession.id === gameId) {
-                setSession(loadedSession);
-            } else {
-                // Clear invalid session
-                removeFromLocalStorage(GAME_SESSION);
-            }
-        }
-    }, [gameId]);
-
-    // Cleanup socket connection only
-    useEffect(() => {
-        return () => {
-            socket.disconnect();
-        };
-    }, [socket]);
-
-    const handleToLobby = () => {
-        // Redirect to lobby using Next.js router
-        router.push('/lobby');
-    };
-
-    const handleLeaveGame = () => {
-        // Notify server that player is leaving
-        socketService.leaveGame(gameId);
-        // Clear the session
-        removeFromLocalStorage(GAME_SESSION);
-        // Redirect to lobby using Next.js router
-        router.push('/lobby');
-    };
+    const { router, error, session, shortGameId, handleToLobby, handleLeaveGame, isConnected } = useGameInstance();
 
     if (error) {
         return (
