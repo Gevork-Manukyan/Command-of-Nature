@@ -7,6 +7,7 @@ import { LoadingSpinner } from './game-display/loading-spinner';
 import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
+import { LoadingScreen } from '../LoadingScreen';
 
 export function Lobby() {
     const router = useRouter();
@@ -34,8 +35,12 @@ export function Lobby() {
         }
     }
 
+    if (isJoining) {
+        return <LoadingScreen message="Joining game..." />;
+    }
+
     // If they're already in a game, show a message and a button to return to their game
-    if (!isJoining && currentSession) {
+    if (currentSession) {
         return (
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
                 <div className="absolute top-4 right-4">
