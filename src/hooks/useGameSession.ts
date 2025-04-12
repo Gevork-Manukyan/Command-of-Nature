@@ -5,6 +5,13 @@ import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage, GAME_SE
 import { socketService } from '@/services/socket.service';
 import { useUser } from '@/contexts/UserContext';
 
+interface GameSettings {
+    gameName: string;
+    numPlayers: number;
+    isPrivate: boolean;
+    password?: string;
+}
+
 export function useGameSession() {
     const router = useRouter();
     const { userId } = useUser();
@@ -112,7 +119,7 @@ export function useGameSession() {
         connectAndRejoin();
     }, [userId, currentSession]);
 
-    const createGame = async (settings: { gameName: string; numPlayers: number; isPrivate: boolean; password?: string }) => {
+    const createGame = async (settings: GameSettings) => {
         if (!userId) throw new Error('User ID not found');
 
         try {

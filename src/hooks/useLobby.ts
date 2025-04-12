@@ -3,13 +3,6 @@ import { GameListing } from "@command-of-nature/shared-types";
 import { apiClient } from "@/lib/client/api-client";
 import { useGameSession } from "./useGameSession";
 
-interface GameSettings {
-    gameName: string;
-    numPlayers: number;
-    isPrivate: boolean;
-    password?: string;
-}
-
 export default function useLobby() {
     const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
     const [isLoading, setIsLoading] = useState(true);
