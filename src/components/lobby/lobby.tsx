@@ -10,7 +10,7 @@ import useLobby from "@/hooks/useLobby";
 
 export function Lobby() {
     const router = useRouter();
-    const { currentSession, currentGames, showModal, setShowModal, isFetchingGames, error } = useLobby();
+    const { currentSession, currentGames, showModal, setShowModal, isFetchingGames, isJoining, setIsJoining, error } = useLobby();
 
     const renderActiveGames = () => {
         if (isFetchingGames) {
@@ -26,6 +26,7 @@ export function Lobby() {
                     <GameCard
                         key={game.id}
                         game={game}
+                        setIsJoining={setIsJoining}
                     />
                 ))}
             </div>
@@ -34,7 +35,7 @@ export function Lobby() {
     }
 
     // If they're already in a game, show a message and a button to return to their game
-    if (currentSession) {
+    if (!isJoining && currentSession) {
         return (
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
                 <div className="absolute top-4 right-4">
@@ -88,6 +89,7 @@ export function Lobby() {
             <CreateGameModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
+                setIsJoining={setIsJoining}
             />
 
             {renderActiveGames()}

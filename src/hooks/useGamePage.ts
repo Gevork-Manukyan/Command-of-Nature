@@ -8,9 +8,9 @@ export function useGamePage() {
     const router = useRouter();
     const { userId } = useUserContext();
     const { currentSession, setCurrentSession } = useGameSessionContext();
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>('');
-    const [isConnecting, setIsConnecting] = useState(false);
+    const [isLeaving, setIsLeaving] = useState(false);
+    const [isLoadingGame, setIsLoadingGame] = useState(false);
 
     // Handle socket connection and game rejoining
     useEffect(() => {
@@ -18,7 +18,7 @@ export function useGamePage() {
 
         const connectAndRejoin = async () => {
             try {
-                setIsConnecting(true);
+                setIsLoadingGame(true);
                 setError('');
 
                 if (!socketService.getConnected()) {
@@ -26,11 +26,11 @@ export function useGamePage() {
                 }
 
                 await socketService.rejoinGame(userId, currentSession.id);
-                setIsConnecting(false);
+                setIsLoadingGame(false);
             } catch (err) {
                 console.error('Failed to rejoin game:', err);
                 setError(err instanceof Error ? err.message : 'Failed to rejoin game');
-                setIsConnecting(false);
+                setIsLoadingGame(false);
             }
         };
 
@@ -38,7 +38,7 @@ export function useGamePage() {
     }, [userId, currentSession]);
 
     const leaveGame = async () => {
-        setIsLoading(true);
+        setIsLeaving(true);
         router.push('/lobby');
         if (!currentSession) return;
 
@@ -48,15 +48,14 @@ export function useGamePage() {
         } catch (err) {
             console.error('Failed to leave game:', err);
             setError(err instanceof Error ? err.message : 'Failed to leave game');
-        } finally {
-            setIsLoading(false);
-        }
+            setIsLeaving(false);
+        } 
     };
 
     return {
-        isLoading,
+        isLeaving,
         error,
-        isConnecting,
+        isLoadingGame,
         leaveGame,
     };
 } 

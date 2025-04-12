@@ -11,6 +11,7 @@ export default function useLobby() {
     const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [isFetchingGames, setIsFetchingGames] = useState(false);
+    const [isJoining, setIsJoining] = useState(false);
     const { currentSession, setCurrentSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');
 
@@ -30,8 +31,14 @@ export default function useLobby() {
                 setIsFetchingGames(false);
             }
         };
-
         fetchGames();
+
+        const connectToWebsocket = async () => {
+            if (!socketService.getConnected()) {
+                await socketService.connect();
+            }
+        }
+        connectToWebsocket();
     }, []);
 
 
@@ -46,8 +53,8 @@ export default function useLobby() {
                 numPlayersTotal: gameData.numPlayersTotal,
                 numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setCurrentSession(gameSession);
             router.push(`/game/${gameSession.id}`);
+            setCurrentSession(gameSession);
         };
 
         const handleGameJoined = (gameData: any) => {
@@ -59,8 +66,8 @@ export default function useLobby() {
                 numPlayersTotal: gameData.numPlayersTotal,
                 numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setCurrentSession(gameSession);
             router.push(`/game/${gameSession.id}`);
+            setCurrentSession(gameSession);
         };
 
         // Register event listeners
@@ -72,6 +79,8 @@ export default function useLobby() {
         currentSession,
         error,
         isFetchingGames,
+        isJoining,
+        setIsJoining,
         currentGames,
         showModal,
         setShowModal,

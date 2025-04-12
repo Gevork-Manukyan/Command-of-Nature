@@ -12,14 +12,18 @@ export default function GamePage() {
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
-    const { error, isConnecting, leaveGame } = useGamePage();
+    const { error, isLoadingGame, isLeaving, leaveGame } = useGamePage();
     
     const handleToLobby = () => {
         router.push('/lobby');
     };
 
-    if (isConnecting || isLoadingGameSession) {
+    if (isLoadingGame || isLoadingGameSession) {
         return <LoadingScreen message="Connecting to game..." />;
+    }
+
+    if (isLeaving) {
+        return <LoadingScreen message="Leaving game..." />;
     }
 
     if (error) {

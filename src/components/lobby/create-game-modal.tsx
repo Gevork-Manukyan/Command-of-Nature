@@ -7,50 +7,37 @@ import { useState } from 'react';
 interface CreateGameModalProps {
   isOpen: boolean;
   onClose: () => void;
+  setIsJoining: (isJoining: boolean) => void;
 }
 
-interface GameSettings {
-  numPlayers: number;
-  gameName: string;
-  isPrivate: boolean;
-  password?: string;
-}
-
-export const CreateGameModal = ({ isOpen, onClose }: CreateGameModalProps) => {
+export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameModalProps) => {
+  const { userId } = useUserContext();
   const [numPlayers, setNumPlayers] = useState<number>(2);
   const [gameName, setGameName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
   const [isCreatingGame, setIsCreatingGame] = useState(false);
-  const { userId } = useUserContext();
 
   if (!isOpen) return null;
 
-  const createGame = async (settings: GameSettings) => {
+  const handleSubmit = async () => {
     if (!userId) throw new Error('User ID not found');
 
     try {
         setIsCreatingGame(true);
-
-        if (!socketService.getConnected()) {
-            await socketService.connect();
-        }
-
-        await socketService.createGame(userId, settings);
+        setIsJoining(true);
+        await socketService.createGame(userId, {
+            numPlayers,
+            gameName,
+            isPrivate,
+            password: isPrivate ? password : undefined
+        });
     } catch (err) {
         console.error('Failed to create game:', err);
+        setIsJoining(false);
     } finally {
         setIsCreatingGame(false);
     }
-};
-
-  const handleSubmit = () => {
-    createGame({
-      numPlayers,
-      gameName,
-      isPrivate,
-      password: isPrivate ? password : undefined
-    });
   };
 
   return (

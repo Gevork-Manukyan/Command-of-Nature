@@ -1,44 +1,14 @@
-import { socketService } from "@/services/socket.service";
-import { useUserContext } from "@/contexts/UserContext";
+import { useGameCard } from "@/hooks/useGameCard";
 import { GameListing } from "@command-of-nature/shared-types";  
-import { useState } from "react";
 
 interface GameCardProps {
   game: GameListing;
+  setIsJoining: (isJoining: boolean) => void;
 }
 
-export const GameCard = ({ game }: GameCardProps) => {
-  const { userId } = useUserContext();
-  const [password, setPassword] = useState("");
-  const [showPasswordInput, setShowPasswordInput] = useState(false);
+export const GameCard = ({ game, setIsJoining }: GameCardProps) => {
   const shortGameId = game.id.toString().slice(-6);
-  const [isJoining, setIsJoining] = useState(false);
-
-  const joinGame = async (gameId: string, password?: string) => {
-    if (!userId) throw new Error('User ID not found');
-
-    try {
-        setIsJoining(true);
-
-        if (!socketService.getConnected()) {
-            await socketService.connect();
-        }
-
-        await socketService.joinGame(userId, gameId, password);
-    } catch (err) {
-        console.error('Failed to join game:', err);
-    } finally {
-        setIsJoining(false);
-    }
-  };
-
-  const handleJoinClick = () => {
-    if (game.isPrivate && !showPasswordInput) {
-      setShowPasswordInput(true);
-      return;
-    }
-    joinGame(game.id, game.isPrivate ? password : undefined);
-  };
+  const { handleJoinClick, showPasswordInput, password, setPassword } = useGameCard(game, setIsJoining);
 
   return (
     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
