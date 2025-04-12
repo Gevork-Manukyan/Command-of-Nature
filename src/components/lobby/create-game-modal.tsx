@@ -18,6 +18,12 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
   const [password, setPassword] = useState('');
   const [isCreatingGame, setIsCreatingGame] = useState(false);
 
+  const isFormValid = () => {
+    if (!gameName.trim()) return false;
+    if (isPrivate && !password.trim()) return false;
+    return true;
+  };
+
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
@@ -157,7 +163,7 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
           <button
             onClick={handleSubmit}
             className="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={isCreatingGame}
+            disabled={isCreatingGame || !isFormValid()}
           >
             {isCreatingGame ? 'Creating Game...' : 'Create Game'}
           </button>
