@@ -14,8 +14,7 @@ export default function useLobby() {
     const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [isCreatingGame, setIsCreatingGame] = useState(false);
-    const { createGame, joinGame, error, currentSession } = useGameSession();
+    const { createGame, joinGame, error, currentSession, isCreatingGame } = useGameSession();
 
     useEffect(() => {
         const fetchGames = async () => {
@@ -35,19 +34,6 @@ export default function useLobby() {
         fetchGames();
     }, []);
 
-    const handleCreateGame = async (settings: GameSettings) => {
-        setIsCreatingGame(true);
-        try {
-            await createGame(settings);
-        } finally {
-            setIsCreatingGame(false);
-        }
-    };
-
-    const handleJoinGame = async (gameId: string, password?: string) => {
-        await joinGame(gameId, password);
-    };
-
     return {
         currentGames,
         isLoading,
@@ -56,7 +42,7 @@ export default function useLobby() {
         showModal,
         setShowModal,
         isCreatingGame,
-        handleCreateGame,
-        handleJoinGame,
+        createGame,
+        joinGame,
     };
 }

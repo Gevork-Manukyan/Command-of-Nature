@@ -12,6 +12,7 @@ export function useGameSession() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>('');
     const [isRejoining, setIsRejoining] = useState(false);
+    const [isCreatingGame, setIsCreatingGame] = useState(false);
 
     // Load game session from localStorage on mount
     useEffect(() => {
@@ -116,7 +117,7 @@ export function useGameSession() {
 
         try {
             setError('');
-            setIsLoading(true);
+            setIsCreatingGame(true);
 
             if (!socketService.getConnected()) {
                 await socketService.connect();
@@ -127,7 +128,7 @@ export function useGameSession() {
             console.error('Failed to create game:', err);
             setError(err instanceof Error ? err.message : 'Failed to create game');
         } finally {
-            setIsLoading(false);
+            setIsCreatingGame(false);
         }
     };
 
@@ -170,6 +171,7 @@ export function useGameSession() {
         isLoading,
         error,
         isRejoining,
+        isCreatingGame,
         createGame,
         joinGame,
         leaveGame,

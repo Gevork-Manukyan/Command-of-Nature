@@ -18,9 +18,9 @@ export function Lobby() {
         currentSession,
         showModal,
         setShowModal,
-        handleCreateGame,
-        handleJoinGame,
         isCreatingGame,
+        createGame,
+        joinGame,
     } = useLobby();
 
     // If they're already in a game, show a message and a button to return to their game
@@ -78,7 +78,7 @@ export function Lobby() {
             <CreateGameModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                onCreateGame={handleCreateGame}
+                onCreateGame={createGame}
                 isCreatingGame={isCreatingGame}
             />
 
@@ -94,7 +94,7 @@ export function Lobby() {
                         <GameCard
                             key={game.id}
                             game={game}
-                            onJoin={handleJoinGame}
+                            onJoin={joinGame}
                         />
                     ))}
                 </div>
