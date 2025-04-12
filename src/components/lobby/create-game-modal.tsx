@@ -1,12 +1,12 @@
 "use client";
 
+import { useUserContext } from '@/contexts/UserContext';
+import { socketService } from '@/services/socket.service';
 import { useState } from 'react';
 
 interface CreateGameModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateGame: (settings: GameSettings) => void;
-  isCreatingGame: boolean;
 }
 
 interface GameSettings {
@@ -16,16 +16,36 @@ interface GameSettings {
   password?: string;
 }
 
-export const CreateGameModal = ({ isOpen, onClose, onCreateGame, isCreatingGame }: CreateGameModalProps) => {
+export const CreateGameModal = ({ isOpen, onClose }: CreateGameModalProps) => {
   const [numPlayers, setNumPlayers] = useState<number>(2);
   const [gameName, setGameName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
+  const [isCreatingGame, setIsCreatingGame] = useState(false);
+  const { userId } = useUserContext();
 
   if (!isOpen) return null;
 
+  const createGame = async (settings: GameSettings) => {
+    if (!userId) throw new Error('User ID not found');
+
+    try {
+        setIsCreatingGame(true);
+
+        if (!socketService.getConnected()) {
+            await socketService.connect();
+        }
+
+        await socketService.createGame(userId, settings);
+    } catch (err) {
+        console.error('Failed to create game:', err);
+    } finally {
+        setIsCreatingGame(false);
+    }
+};
+
   const handleSubmit = () => {
-    onCreateGame({
+    createGame({
       numPlayers,
       gameName,
       isPrivate,

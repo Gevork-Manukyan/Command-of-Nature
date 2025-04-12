@@ -1,6 +1,6 @@
 "use client";
 
-import { useGameSession } from '@/hooks/useGameSession';
+import { useGamePage } from '@/hooks/useGamePage';
 import { useParams, useRouter } from 'next/navigation';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
@@ -12,7 +12,7 @@ export default function GamePage() {
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
-    const { error, isConnecting, leaveGame } = useGameSession();
+    const { error, isConnecting, leaveGame } = useGamePage();
     
     const handleToLobby = () => {
         router.push('/lobby');

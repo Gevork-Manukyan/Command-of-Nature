@@ -1,22 +1,43 @@
+import { socketService } from "@/services/socket.service";
+import { useUserContext } from "@/contexts/UserContext";
 import { GameListing } from "@command-of-nature/shared-types";  
 import { useState } from "react";
 
 interface GameCardProps {
   game: GameListing;
-  onJoin: (gameId: string, password?: string) => void;
 }
 
-export const GameCard = ({ game, onJoin }: GameCardProps) => {
+export const GameCard = ({ game }: GameCardProps) => {
+  const { userId } = useUserContext();
   const [password, setPassword] = useState("");
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const shortGameId = game.id.toString().slice(-6);
+  const [isJoining, setIsJoining] = useState(false);
+
+  const joinGame = async (gameId: string, password?: string) => {
+    if (!userId) throw new Error('User ID not found');
+
+    try {
+        setIsJoining(true);
+
+        if (!socketService.getConnected()) {
+            await socketService.connect();
+        }
+
+        await socketService.joinGame(userId, gameId, password);
+    } catch (err) {
+        console.error('Failed to join game:', err);
+    } finally {
+        setIsJoining(false);
+    }
+  };
 
   const handleJoinClick = () => {
     if (game.isPrivate && !showPasswordInput) {
       setShowPasswordInput(true);
       return;
     }
-    onJoin(game.id, game.isPrivate ? password : undefined);
+    joinGame(game.id, game.isPrivate ? password : undefined);
   };
 
   return (

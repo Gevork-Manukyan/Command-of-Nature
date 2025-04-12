@@ -7,14 +7,10 @@ import { LoadingSpinner } from './game-display/loading-spinner';
 import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
-import { useGameSession } from '@/hooks/useGameSession';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function Lobby() {
     const router = useRouter();
-    const { currentGames, showModal, setShowModal, isFetchingGames } = useLobby();
-    const { createGame, joinGame, error, isCreatingGame } = useGameSession();
-    const { currentSession } = useGameSessionContext();
+    const { currentSession, currentGames, showModal, setShowModal, isFetchingGames, error } = useLobby();
 
     const renderActiveGames = () => {
         if (isFetchingGames) {
@@ -30,7 +26,6 @@ export function Lobby() {
                     <GameCard
                         key={game.id}
                         game={game}
-                        onJoin={joinGame}
                     />
                 ))}
             </div>
@@ -93,8 +88,6 @@ export function Lobby() {
             <CreateGameModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                onCreateGame={createGame}
-                isCreatingGame={isCreatingGame}
             />
 
             {renderActiveGames()}
