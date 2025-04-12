@@ -141,6 +141,10 @@ class SocketService {
     await this.emit('rejoin-game', { userId, gameId });
   }
 
+  public async exitGame(gameId: string): Promise<void> {
+    await this.emit('exit-game', { gameId });
+  }
+
   public async leaveGame(gameId: string): Promise<void> {
     await this.emit('leave-game', { gameId });
   }

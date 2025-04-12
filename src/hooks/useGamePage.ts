@@ -37,6 +37,13 @@ export function useGamePage() {
         connectAndRejoin();
     }, [userId, currentSession]);
 
+    const goToLobby = async () => {
+        setIsLeaving(true);
+        router.push('/lobby');
+        if (!currentSession) return;
+        await socketService.exitGame(currentSession.id);
+    }
+
     const leaveGame = async () => {
         setIsLeaving(true);
         router.push('/lobby');
@@ -56,6 +63,7 @@ export function useGamePage() {
         isLeaving,
         error,
         isLoadingGame,
+        goToLobby,
         leaveGame,
     };
 } 

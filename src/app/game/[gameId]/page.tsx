@@ -12,11 +12,7 @@ export default function GamePage() {
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
-    const { error, isLoadingGame, isLeaving, leaveGame } = useGamePage();
-    
-    const handleToLobby = () => {
-        router.push('/lobby');
-    };
+    const { error, isLoadingGame, isLeaving, goToLobby, leaveGame } = useGamePage();
 
     if (isLoadingGame || isLoadingGameSession) {
         return <LoadingScreen message="Connecting to game..." />;
@@ -40,7 +36,7 @@ export default function GamePage() {
             <p className="text-xl mb-4">Game ID: {shortGameId}</p>
             <div className="flex gap-4">
                 <button
-                    onClick={handleToLobby}
+                    onClick={goToLobby}
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                     Back to Lobby
