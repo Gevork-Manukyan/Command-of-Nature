@@ -80,18 +80,10 @@ export function useGameSession() {
         };
 
         // Register event listeners
-        socketService.on('game-created', handleGameCreated);
-        socketService.on('game-joined', handleGameJoined);
-        socketService.on('game-error', handleGameError);
+        socketService.onGameCreated(handleGameCreated);
+        socketService.onGameJoined(handleGameJoined);
+        socketService.onGameError(handleGameError);
         socketService.on('connection-error', handleConnectionError);
-
-        return () => {
-            // Cleanup listeners
-            socketService.off('game-created', handleGameCreated);
-            socketService.off('game-joined', handleGameJoined);
-            socketService.off('game-error', handleGameError);
-            socketService.off('connection-error', handleConnectionError);
-        };
     }, [router]);
 
     // Handle socket connection and game rejoining

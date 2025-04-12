@@ -7,21 +7,36 @@ import { LoadingSpinner } from './game-display/loading-spinner';
 import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
+import { useGameSession } from '@/hooks/useGameSession';
 
 
 export function Lobby() {
     const router = useRouter();
-    const {
-        currentGames, 
-        isLoading,
-        error,
-        currentSession,
-        showModal,
-        setShowModal,
-        isCreatingGame,
-        createGame,
-        joinGame,
-    } = useLobby();
+    const { currentGames, showModal, setShowModal, isFetchingGames } = useLobby();
+    const { createGame, joinGame, error, currentSession, isCreatingGame } = useGameSession();
+
+
+    const renderActiveGames = () => {
+        if (isFetchingGames) {
+            return <LoadingSpinner />
+        } else if (error) {
+            return <ErrorMessage message={error} />
+        } else if (!isFetchingGames && currentGames.length === 0) {
+            return <EmptyState />
+        } else {
+            return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                {currentGames.map((game) => (
+                    <GameCard
+                        key={game.id}
+                        game={game}
+                        onJoin={joinGame}
+                    />
+                ))}
+            </div>
+            )
+        }
+    }
 
     // If they're already in a game, show a message and a button to return to their game
     if (currentSession) {
@@ -82,23 +97,7 @@ export function Lobby() {
                 isCreatingGame={isCreatingGame}
             />
 
-            {isLoading ? (
-                <LoadingSpinner />
-            ) : error ? (
-                <ErrorMessage message={error} />
-            ) : currentGames.length === 0 ? (
-                <EmptyState />
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                    {currentGames.map((game) => (
-                        <GameCard
-                            key={game.id}
-                            game={game}
-                            onJoin={joinGame}
-                        />
-                    ))}
-                </div>
-            )}
+            {renderActiveGames()}
         </div>
     );
 }

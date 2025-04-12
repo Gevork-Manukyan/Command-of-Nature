@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { GameListing } from "@command-of-nature/shared-types";
 import { apiClient } from "@/lib/client/api-client";
-import { useGameSession } from "./useGameSession";
+
 
 export default function useLobby() {
     const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const { createGame, joinGame, error, currentSession, isCreatingGame } = useGameSession();
+    const [isFetchingGames, setIsFetchingGames] = useState(false);
 
     useEffect(() => {
         const fetchGames = async () => {
             try {
+                setIsFetchingGames(true);
                 const response = await apiClient.getAllNewGames();
                 if (response.error) {
                     throw new Error(response.error);
@@ -20,7 +20,7 @@ export default function useLobby() {
             } catch (err) {
                 console.error('Failed to fetch games:', err);
             } finally {
-                setIsLoading(false);
+                setIsFetchingGames(false);
             }
         };
 
@@ -28,14 +28,9 @@ export default function useLobby() {
     }, []);
 
     return {
+        isFetchingGames,
         currentGames,
-        isLoading,
-        error,
-        currentSession,
         showModal,
         setShowModal,
-        isCreatingGame,
-        createGame,
-        joinGame,
     };
 }
