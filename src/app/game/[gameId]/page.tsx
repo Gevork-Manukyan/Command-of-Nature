@@ -3,7 +3,7 @@
 import { useGameInstance } from "@/hooks/useGameInstance";
 
 export default function GamePage() {
-    const { router, error, session, shortGameId, handleToLobby, handleLeaveGame, isConnected } = useGameInstance();
+    const { router, error, session, shortGameId, handleToLobby, handleLeaveGame } = useGameInstance();
 
     if (error) {
         return (
@@ -16,15 +16,6 @@ export default function GamePage() {
                 >
                     Return to Lobby
                 </button>
-            </div>
-        );
-    }
-
-    if (!isConnected) {
-        return (
-            <div className="p-6 max-w-4xl mx-auto text-center">
-                <h1 className="text-3xl font-bold mb-4">Connecting...</h1>
-                <p className="text-yellow-500">Attempting to connect to game server...</p>
             </div>
         );
     }
