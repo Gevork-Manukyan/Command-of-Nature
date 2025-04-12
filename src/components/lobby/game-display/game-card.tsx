@@ -9,6 +9,7 @@ interface GameCardProps {
 export const GameCard = ({ game, onJoin }: GameCardProps) => {
   const [password, setPassword] = useState("");
   const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const shortGameId = game.id.toString().slice(-6);
 
   const handleJoinClick = () => {
     if (game.isPrivate && !showPasswordInput) {
@@ -24,7 +25,7 @@ export const GameCard = ({ game, onJoin }: GameCardProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="font-mono bg-gray-100 px-3 py-1 rounded text-gray-700">
-              #{game.id.slice(-6)}
+              #{shortGameId}
             </span>
             <span className="text-sm text-gray-500">
               {game.isPrivate ? "🔒 Private" : "🔓 Public"}

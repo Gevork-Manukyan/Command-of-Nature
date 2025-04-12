@@ -48,7 +48,6 @@ export function useGameState() {
     });
 
     socketService.onGameJoined((gameData) => {
-      console.log('game joined', gameData);
       setError('');
       setIsCreatingGame(false);
       
@@ -59,6 +58,7 @@ export function useGameState() {
         numPlayersTotal: gameData.numPlayersTotal,
         numCurrentPlayers: gameData.numCurrentPlayers,
       };
+      
       setToLocalStorage(GAME_SESSION, gameSession);
       setCurrentSession(gameSession);
       router.push(`/game/${gameSession.id}`);

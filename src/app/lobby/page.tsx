@@ -1,6 +1,5 @@
 "use client";
 
-import CurrentGamesDisplay from "@/components/game-display/current-games-display";
 import { Lobby } from "@/components/lobby/lobby";
 import { useGameState } from '@/hooks/useGameState';
 
@@ -29,9 +28,6 @@ export default function LobbyPage() {
           isCreatingGame={isCreatingGame}
           handleCreateGame={handleCreateGame}
           handleLogout={handleLogout}
-        />
-        <CurrentGamesDisplay 
-          error={error}
           handleJoinGame={handleJoinGame}
         />
       </div>

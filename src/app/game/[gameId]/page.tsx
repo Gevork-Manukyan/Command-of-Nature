@@ -5,11 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSocket } from '@/hooks/useSocket';
 import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 import { GameListing } from '@command-of-nature/shared-types';
+import { socketService } from '@/services/socket.service';
 
 export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
+    const shortGameId = gameId.toString().slice(-6);
     const { socket, isConnected } = useSocket();
     const [session, setSession] = useState<GameListing | null>(null);
     const [error, setError] = useState<string>('');
@@ -36,15 +38,13 @@ export default function GamePage() {
     }, [socket]);
 
     const handleToLobby = () => {
-        // Clear the session
-        removeFromLocalStorage(GAME_SESSION);
         // Redirect to lobby using Next.js router
         router.push('/lobby');
     };
 
     const handleLeaveGame = () => {
         // Notify server that player is leaving
-        socket.emit('leave-game', { gameId });
+        socketService.leaveGame(gameId);
         // Clear the session
         removeFromLocalStorage(GAME_SESSION);
         // Redirect to lobby using Next.js router
@@ -78,7 +78,7 @@ export default function GamePage() {
     return (
         <div className="p-6 max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Game Room: {gameId.slice(-6)}</h1>
+                <h1 className="text-3xl font-bold">Game Room: {shortGameId}</h1>
                 <div className="flex gap-4">
                     <button
                         onClick={handleToLobby}
