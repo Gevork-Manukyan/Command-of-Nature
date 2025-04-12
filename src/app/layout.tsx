@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { UserProvider } from '@/contexts/UserContext';
+import { GameSessionProvider } from '@/contexts/GameSessionContext';
 
 export const metadata: Metadata = {
   title: "Command of Nature",
@@ -20,9 +21,11 @@ export default function RootLayout({
         className={``}
       >
         <UserProvider>
-          <Header />
-          {children}
-          <Footer />
+          <GameSessionProvider>
+            <Header />
+            {children}
+            <Footer />
+          </GameSessionProvider>
         </UserProvider>
       </body>
     </html>

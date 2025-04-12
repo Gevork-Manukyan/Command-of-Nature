@@ -8,13 +8,13 @@ import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
 import { useGameSession } from '@/hooks/useGameSession';
-
+import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function Lobby() {
     const router = useRouter();
     const { currentGames, showModal, setShowModal, isFetchingGames } = useLobby();
-    const { createGame, joinGame, error, currentSession, isCreatingGame } = useGameSession();
-
+    const { createGame, joinGame, error, isCreatingGame } = useGameSession();
+    const { currentSession } = useGameSessionContext();
 
     const renderActiveGames = () => {
         if (isFetchingGames) {

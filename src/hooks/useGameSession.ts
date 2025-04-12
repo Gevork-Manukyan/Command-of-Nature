@@ -1,9 +1,9 @@
 import { GameListing } from "@command-of-nature/shared-types";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 import { socketService } from '@/services/socket.service';
 import { useUser } from '@/contexts/UserContext';
+import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 interface GameSettings {
     gameName: string;
@@ -15,25 +15,15 @@ interface GameSettings {
 export function useGameSession() {
     const router = useRouter();
     const { userId } = useUser();
-    const [currentSession, setCurrentSession] = useState<GameListing | null>(null);
+    const { currentSession, setCurrentSession } = useGameSessionContext();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>('');
-    const [isRejoining, setIsRejoining] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
     const [isCreatingGame, setIsCreatingGame] = useState(false);
-
-    // Load game session from localStorage on mount
-    useEffect(() => {
-        const session = getFromLocalStorage<GameListing>(GAME_SESSION);
-        if (session) {
-            setCurrentSession(session);
-        }
-        setIsLoading(false);
-    }, []);
 
     // Setup socket event listeners
     useEffect(() => {
         const handleGameCreated = (gameData: any) => {
-            console.log('Game created:', gameData);
             setError('');
             const gameSession: GameListing = {
                 id: gameData.id,
@@ -42,7 +32,6 @@ export function useGameSession() {
                 numPlayersTotal: gameData.numPlayersTotal,
                 numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setToLocalStorage(GAME_SESSION, gameSession);
             setCurrentSession(gameSession);
             router.push(`/game/${gameSession.id}`);
         };
@@ -56,7 +45,6 @@ export function useGameSession() {
                 numPlayersTotal: gameData.numPlayersTotal,
                 numCurrentPlayers: gameData.numCurrentPlayers,
             };
-            setToLocalStorage(GAME_SESSION, gameSession);
             setCurrentSession(gameSession);
             router.push(`/game/${gameSession.id}`);
         };
@@ -91,7 +79,7 @@ export function useGameSession() {
 
         const connectAndRejoin = async () => {
             try {
-                setIsRejoining(true);
+                setIsConnecting(true);
                 setError('');
 
                 if (!socketService.getConnected()) {
@@ -99,11 +87,11 @@ export function useGameSession() {
                 }
 
                 await socketService.rejoinGame(userId, currentSession.id);
-                setIsRejoining(false);
+                setIsConnecting(false);
             } catch (err) {
                 console.error('Failed to rejoin game:', err);
                 setError(err instanceof Error ? err.message : 'Failed to rejoin game');
-                setIsRejoining(false);
+                setIsConnecting(false);
             }
         };
 
@@ -151,24 +139,25 @@ export function useGameSession() {
     };
 
     const leaveGame = async () => {
+        setIsLoading(true);
+        router.push('/lobby');
         if (!currentSession) return;
 
         try {
             await socketService.leaveGame(currentSession.id);
-            removeFromLocalStorage(GAME_SESSION);
             setCurrentSession(null);
-            router.push('/lobby');
         } catch (err) {
             console.error('Failed to leave game:', err);
             setError(err instanceof Error ? err.message : 'Failed to leave game');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return {
-        currentSession,
         isLoading,
         error,
-        isRejoining,
+        isConnecting,
         isCreatingGame,
         createGame,
         joinGame,

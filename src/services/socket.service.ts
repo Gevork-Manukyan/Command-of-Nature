@@ -19,8 +19,6 @@ class SocketService {
   }
 
   public connect(): Promise<void> {
-    console.log('connecting to socket');
-
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -47,7 +45,6 @@ class SocketService {
         });
 
         this.socket.on('connect', () => {
-          console.log('connected to socket');
           this.setConnected(true);
           resolve();
         });

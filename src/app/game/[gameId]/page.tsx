@@ -4,19 +4,21 @@ import { useGameSession } from '@/hooks/useGameSession';
 import { useParams, useRouter } from 'next/navigation';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
+import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
-    const { currentSession, error, isRejoining, isLoading, leaveGame } = useGameSession();
-
+    const { currentSession, isLoadingGameSession } = useGameSessionContext();
+    const { error, isConnecting, leaveGame } = useGameSession();
+    
     const handleToLobby = () => {
         router.push('/lobby');
     };
 
-    if (isLoading || isRejoining) {
+    if (isConnecting || isLoadingGameSession) {
         return <LoadingScreen message="Connecting to game..." />;
     }
 
