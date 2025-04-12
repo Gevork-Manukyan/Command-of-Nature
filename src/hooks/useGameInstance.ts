@@ -3,6 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getFromLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 import { socketService } from '@/services/socket.service';
+import useSocket from "./useSocket";
 
 export function useGameInstance() {
     const params = useParams();
@@ -11,6 +12,20 @@ export function useGameInstance() {
     const shortGameId = gameId.toString().slice(-6);
     const [session, setSession] = useState<GameListing | null>(null);
     const [error, setError] = useState<string>('');
+    const { connectToSocket } = useSocket();
+
+    useEffect(() => {
+        const connect = async () => {
+            await connectToSocket();
+        }
+
+        connect();
+
+        return () => {
+            console.log('disconnecting from socket');
+            socketService.disconnect();
+        }
+    }, []);
 
     /**
      * Load the game session from local storage if it exists and is the correct game id 
@@ -25,24 +40,6 @@ export function useGameInstance() {
             }
         }
     }, [gameId]);
-
-    /**
-     * Disconnect the socket when the component unmounts
-     */
-    useEffect(() => {
-        const connectToSocket = async () => {
-            await socketService.connect();
-        };
-        
-        if (!socketService.getConnected()) {
-            connectToSocket();
-        }
-
-        return () => {
-            console.log('disconnecting socket');
-            socketService.disconnect();
-        };
-    }, []);
 
     /**
      * Navigate to the lobby

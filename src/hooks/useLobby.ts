@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { getFromLocalStorage, setToLocalStorage, USER, GAME_SESSION, removeFromLocalStorage } from '@/lib/client/localstorage';
 import { socketService } from '@/services/socket.service';
+import useSocket from "./useSocket";
 
 interface GameSettings {
     numPlayers: number;
@@ -21,6 +22,7 @@ export default function useLobby() {
     const [showModal, setShowModal] = useState(false);
     const [connectionError, setConnectionError] = useState<string>('');
     const [isCreatingGame, setIsCreatingGame] = useState(false);
+    const { connectToSocket } = useSocket();
 
     // ------------------------------------------------------------
     // Game Listing
@@ -60,9 +62,14 @@ export default function useLobby() {
     /**
      * Connect to the socket and setup listeners
      */
-    const connectToSocket = async () => {
-        await socketService.connect();
-
+    const setupListeners = async () => {
+        try {
+            await connectToSocket();
+        } catch (error) {
+            console.error('Failed to connect to socket:', error);
+            return;
+        }
+              
         socketService.onGameCreated((gameData) => {
             setError('');
             setShowModal(false);
@@ -131,7 +138,7 @@ export default function useLobby() {
         setError('');
         setIsCreatingGame(true);
   
-        await connectToSocket();
+        await setupListeners();
         
         const userId = getFromLocalStorage(USER) as string;
         if (!userId) {
@@ -156,7 +163,7 @@ export default function useLobby() {
         setConnectionError('');
         setError('');
   
-        await connectToSocket();
+        await setupListeners();
   
         const userId = getFromLocalStorage(USER) as string;
         if (!userId) {
