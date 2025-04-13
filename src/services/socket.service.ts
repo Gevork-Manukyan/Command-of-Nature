@@ -18,6 +18,25 @@ class SocketService {
     return SocketService.instance;
   }
 
+  private async validateToken(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/validate-token');
+      return response.ok && !response.redirected;
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      return false;
+    }
+  }
+
+  private async ensureValidToken(): Promise<boolean> {
+    const isValid = await this.validateToken();
+    if (!isValid) {
+      window.location.href = '/login';
+      return false;
+    }
+    return true;
+  }
+
   public connect(): Promise<void> {
     if (this.connectionPromise) {
       return this.connectionPromise;
@@ -29,8 +48,14 @@ class SocketService {
       this.disconnect();
     }
 
-    this.connectionPromise = new Promise((resolve, reject) => {
+    this.connectionPromise = new Promise(async (resolve, reject) => {
       try {
+        // Validate token before connecting
+        const isValid = await this.ensureValidToken();
+        if (!isValid) {
+          return reject(new Error('Account Session Expired'));
+        }
+
         this.socket = io(url, {
           reconnectionAttempts: 3,
           reconnectionDelay: 1000,
@@ -61,7 +86,6 @@ class SocketService {
         });
       } catch (error) {
         console.error('Failed to initialize socket connection:', error);
-        this.emit('connection-error', { message: 'Failed to initialize socket connection' });
         reject(error);
       }
     });
@@ -113,6 +137,12 @@ class SocketService {
   public async emit(event: string, ...args: any[]): Promise<void> {
     if (!this.isConnected) {
       throw new Error('Socket is not connected');
+    }
+
+    // Validate token before emitting
+    const isValid = await this.ensureValidToken();
+    if (!isValid) {
+      throw new Error('Account Session Expired');
     }
     this.socket?.emit(event, ...args);
   }
