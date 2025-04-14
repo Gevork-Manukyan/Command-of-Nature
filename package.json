@@ -1,0 +1,14 @@
+{
+  "name": "@command-of-nature/shared-types",
+  "version": "1.0.0",
+  "description": "Shared types between client and server",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 
