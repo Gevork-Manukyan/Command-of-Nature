@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { GameListing } from '@command-of-nature/shared-types';
+import { GameListing, JoinGameEvent, RejoinGameEvent, ExitGameEvent, LeaveGameEvent, StartGameEvent, CreateGameEvent } from '@command-of-nature/shared-types';
 import { config } from '@/lib/server/config';
 
 class SocketService {
@@ -154,7 +154,7 @@ class SocketService {
     isPrivate: boolean;
     password?: string;
   }): Promise<void> {
-    await this.emit('create-game', {
+    await this.emit(CreateGameEvent, {
       userId,
       numPlayers: settings.numPlayers,
       gameName: settings.gameName,
@@ -164,57 +164,47 @@ class SocketService {
   }
 
   public async joinGame(userId: string, gameId: string, password?: string): Promise<void> {
-    await this.emit('join-game', { userId, gameId, password });
+    await this.emit(JoinGameEvent, { userId, gameId, password });
   }
 
   public async rejoinGame(userId: string, gameId: string): Promise<void> {
-    await this.emit('rejoin-game', { userId, gameId });
+    await this.emit(RejoinGameEvent, { userId, gameId });
   }
 
   public async exitGame(gameId: string): Promise<void> {
-    await this.emit('exit-game', { gameId });
+    await this.emit(ExitGameEvent, { gameId });
   }
 
   public async leaveGame(gameId: string): Promise<void> {
-    await this.emit('leave-game', { gameId });
+    await this.emit(LeaveGameEvent, { gameId });
   }
 
   public async startGame(gameId: string): Promise<void> {
-    await this.emit('start-game', { gameId });
-  }
-
-  public async getCurrentGames(): Promise<void> {
-    await this.emit('get-current-games');
+    await this.emit(StartGameEvent, { gameId });
   }
 
   // Event handlers
   public onGameCreated(callback: (gameData: GameListing) => void): void {
-    this.on('create-game--success', callback);
+    this.on(`${CreateGameEvent}--success`, callback);
+    this.on(`${CreateGameEvent}--error`, callback);
   }
 
   public onGameJoined(callback: (gameData: GameListing) => void): void {
-    this.on('join-game--success', callback);
-  }
-
-  public onGameError(callback: (error: { message: string }) => void): void {
-    this.on('create-game--error', callback);
-    this.on('join-game--error', callback);
-  }
-
-  public onCurrentGames(callback: (games: GameListing[]) => void): void {
-    this.on('current-games', callback);
+    this.on(`${JoinGameEvent}--success`, callback);
+    this.on(`${JoinGameEvent}--error`, callback);
   }
 
   public onGameStarted(callback: (gameData: GameListing) => void): void {
-    this.on('game-started', callback);
+    this.on(`${StartGameEvent}--success`, callback);
+    this.on(`${StartGameEvent}--error`, callback);
   }
 
   public onPlayerJoined(callback: (gameData: GameListing) => void): void {
-    this.on('player-joined', callback);
+    this.on(`player-joined`, callback);
   }
 
   public onPlayerLeft(callback: (gameData: GameListing) => void): void {
-    this.on('player-left', callback);
+    this.on(`player-left`, callback);
   }
 }
 
