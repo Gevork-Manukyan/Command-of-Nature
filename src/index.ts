@@ -1,3 +1,7 @@
+import { z } from 'zod';
+import { Card, Decklist, Sage } from './card-types';
+
+/* ----------- GAME STATE ----------- */
 export type GameListing = {
     id: string;
     gameName: string;
@@ -5,6 +9,51 @@ export type GameListing = {
     numPlayersTotal: number;
     numCurrentPlayers: number;
 }
+
+export type Player = {
+    socketId: string;
+    isReady: boolean;
+    isSetup: boolean;
+    hasChosenWarriors: boolean;
+    isGameHost: boolean;
+    sage: Sage;
+    decklist: Decklist;
+    level: number;
+    hand: Card[];
+    deck: Card[];
+    discardPile: Card[];
+}
+
+/* ----------- GAME SETUP ----------- */
+export const OnePlayerSpaceOptionsSchema = z.union([
+    z.literal(1),
+    z.literal(2),
+    z.literal(3),
+    z.literal(4),
+    z.literal(5),
+    z.literal(6),
+]);
+
+export const AllSpaceOptionsSchema = z.union([
+z.literal(1),
+z.literal(2),
+z.literal(3),
+z.literal(4),
+z.literal(5),
+z.literal(6),
+z.literal(7),
+z.literal(8),
+z.literal(9),
+z.literal(10),
+z.literal(11),
+z.literal(12),
+]);
+  
+export const SpaceOptionsSchema = z.union([OnePlayerSpaceOptionsSchema, AllSpaceOptionsSchema]);
+
+export type OnePlayerSpaceOptions = z.infer<typeof OnePlayerSpaceOptionsSchema>;
+export type TwoPlayerSpaceOptions = z.infer<typeof AllSpaceOptionsSchema>;
+export type SpaceOption = z.infer<typeof SpaceOptionsSchema>;
 
 /* ----------- GAMEPLAY EVENTS ----------- */
 export const CreateGameEvent = "create-game";
