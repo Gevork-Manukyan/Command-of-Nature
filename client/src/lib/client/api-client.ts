@@ -124,12 +124,7 @@ class ApiClient {
   }
 
   async getAllNewGames(): Promise<ApiResponse<GameListing[]>> {
-    const response = await fetch('http://localhost:3002/api/games?isStarted=false');
-    return {
-      data: await response.json(),
-      error: response.status !== 200 ? 'Failed to fetch games' : undefined,
-      status: response.status,
-    };
+    return this.request<GameListing[]>('/api/game/all-new-games');
   }
 }
 

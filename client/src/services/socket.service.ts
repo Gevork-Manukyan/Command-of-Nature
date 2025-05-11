@@ -39,42 +39,55 @@ class SocketService {
 
   public connect(): Promise<void> {
     if (this.connectionPromise) {
+      console.log('Reusing existing connection promise');
       return this.connectionPromise;
     }
 
     const url = config.socket.url + "/gameplay";
+    console.log('Attempting to connect to socket server at:', url);
 
     if (this.socket) {
+      console.log('Disconnecting existing socket before reconnecting');
       this.disconnect();
     }
 
     this.connectionPromise = new Promise(async (resolve, reject) => {
       try {
         // Validate token before connecting
+        console.log('Validating token before connection...');
         const isValid = await this.ensureValidToken();
         if (!isValid) {
+          console.error('Token validation failed');
           return reject(new Error('Account Session Expired'));
         }
+        console.log('Token validation successful');
 
         this.socket = io(url, {
           reconnectionAttempts: 3,
           reconnectionDelay: 1000,
-          timeout: 20000
+          timeout: 20000,
+          transports: ['websocket', 'polling'] // Explicitly specify transport methods
         });
 
         this.socket.on('connect_error', (error) => {
           console.error('Socket connection error:', error);
+          console.error('Connection error details:', {
+            message: error.message,
+            context: error
+          });
           this.setConnected(false);
           this.emit('connection-error', { message: 'Failed to connect to game server' });
           reject(error);
         });
 
         this.socket.on('connect', () => {
+          console.log('Socket connected successfully');
           this.setConnected(true);
           resolve();
         });
 
-        this.socket.on('disconnect', () => {
+        this.socket.on('disconnect', (reason) => {
+          console.log('Socket disconnected:', reason);
           this.setConnected(false);
         });
 

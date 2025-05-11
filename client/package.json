@@ -26,8 +26,7 @@
     "socket.io-client": "^4.7.4",
     "tailwind-merge": "^3.1.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2",
-    "@command-of-nature/shared-types": "../shared-types"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
