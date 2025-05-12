@@ -8,6 +8,7 @@ import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
 import { LoadingScreen } from '../LoadingScreen';
+import { apiClient } from '@/lib/client/api-client';
 
 export function Lobby() {
     const router = useRouter();
@@ -35,6 +36,11 @@ export function Lobby() {
         }
     }
 
+    const handleLogout = async () => {
+        await apiClient.logout();
+        router.push('/login');
+    }
+
     if (isJoining) {
         return <LoadingScreen message="Joining game..." />;
     }
@@ -45,7 +51,7 @@ export function Lobby() {
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
                 <div className="absolute top-4 right-4">
                     <button
-                        onClick={() => router.push('/login')}
+                        onClick={handleLogout}
                         className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
                     >
                         Logout
@@ -70,7 +76,7 @@ export function Lobby() {
                     <h1 className="text-4xl font-bold text-gray-800">Available Games</h1>
                     <div className="flex gap-4">
                         <button
-                            onClick={() => router.push('/login')}
+                            onClick={handleLogout}
                             className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors duration-200"
                         >
                             Logout
