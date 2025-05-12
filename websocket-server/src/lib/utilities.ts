@@ -1,9 +1,9 @@
 import { DropletDeck, IS_PRODUCTION, LeafDeck, PebbleDeck, TwigDeck } from "../constants";
 import { CustomError, NotFoundError, ValidationError, HostOnlyActionError, InvalidSageError, InvalidDataError } from "../services";
-import { EventSchemas, SocketEventMap, Card, Sage } from "../types";
+import { EventSchemas, SocketEventMap, Card, Sage } from "@shared-types";
 import { Socket } from "socket.io";
 import { GameStateManager } from "../services/GameStateManager";
-import { AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupEvent, ExitGameEvent } from "@command-of-nature/shared-types";
+import { AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupEvent, ExitGameEvent } from "@shared-types";
 
 /* -------- PRE-GAME -------- */
 

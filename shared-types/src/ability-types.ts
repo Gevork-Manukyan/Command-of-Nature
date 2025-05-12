@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SpaceOptionsSchema } from "./index";
+import { Player, SpaceOptionsSchema } from "./index";
 
 export enum AbilityAction {
     COLLECT_GOLD = 'collect_gold',
@@ -22,7 +22,7 @@ export enum AbilityAction {
 
 export const AbilityResultSchema = z.object({
     type: z.nativeEnum(AbilityAction),
-    userId: z.string(),
+    player: z.any() as unknown as z.ZodType<Player>,
     amount: z.number().optional(),
     fieldTarget: z
         .object({

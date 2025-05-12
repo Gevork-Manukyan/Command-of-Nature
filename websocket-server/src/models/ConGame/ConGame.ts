@@ -5,7 +5,8 @@ import {
   NotEnoughGoldError, PlayersNotReadyError, 
   SageUnavailableError, ShopFullError 
 } from "../../services";
-import { Sage, ElementalCard, gameId, ItemCard, SpaceOption, TeamOrder } from "../../types";
+import { gameId, TeamOrder } from "../../types";
+import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist } from "@shared-types";
 import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
@@ -13,7 +14,6 @@ import { ALL_CARDS, processAbility } from "../../constants";
 import { IConGame, ConGameModel, ConGameService } from './';
 import { GameStateManager } from '../../services/GameStateManager';
 import { GameStateService, GameStateModel } from '../GameState';
-import { Decklist } from "../../types/card-types";
 
 const { BambooBerserker, Bruce, CackleRipclaw, CamouChameleon, CurrentConjurer, Dewy, DistantDoubleStrike, ElementalIncantation, ElementalSwap, ExchangeOfNature, FarsightFrenzy, Flint, FocusedFury, ForageThumper, Herbert, HummingHerald, IguanaGuard, LumberClaw, MagicEtherStrike, MeleeShield, MossViper, Mush, NaturalDefense, NaturesWrath, OakLumbertron, Obliterate, PineSnapper, PrimitiveStrike, ProjectileBlast, RangedBarrier, Redstone, ReinforcedImpact, RoamingRazor, Rocco, RubyGuardian, RunePuma, ShrubBeetle, SplashBasilisk, SplinterStinger, StoneDefender, SurgesphereMonk, TerrainTumbler, TwineFeline, TyphoonFist, Wade, WhirlWhipper, Willow } = ALL_CARDS;
 

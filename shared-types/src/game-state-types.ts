@@ -10,6 +10,7 @@ export type GameListing = {
 
 export type Player = {
     socketId: string;
+    userId: string;
     isReady: boolean;
     isSetup: boolean;
     hasChosenWarriors: boolean;

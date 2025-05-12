@@ -1,4 +1,4 @@
-import { Decklist } from "../types";
+import { Decklist } from "@shared-types";
 import { ALL_CARDS } from "./cards";
 const {
   AcornSquire,

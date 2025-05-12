@@ -1,9 +1,6 @@
-import { isElementalWarriorCard } from "../../lib/card-validators";
 import { ValidationError } from "../../services/CustomError/BaseError";
 import { NullSpaceError } from "../../services/CustomError/GameError";
-import { ElementalCard } from "../../types";
-import { AbilityResult } from "../../types/ability-types";
-import { SpaceOption, OnePlayerSpaceOptions, TwoPlayerSpaceOptions } from "../../types/types";
+import { ElementalCard, AbilityResult, SpaceOption, OnePlayerSpaceOptions, TwoPlayerSpaceOptions } from "@shared-types";
 import { BattlefieldSpace } from "../BattlefieldSpace/BattlefieldSpace";
 import { IBattlefield } from './db-model';
 import { IBattlefieldSpace } from '../BattlefieldSpace/db-model';
@@ -265,7 +262,9 @@ export class Battlefield {
      */
     activateDayBreak(spaceOption: SpaceOption): AbilityResult[] {
         const targetSpace: BattlefieldSpace = this.getBattlefieldSpace(spaceOption);
-        targetSpace.validateDayBreakActivation();
+        if (!targetSpace.validateDayBreakActivation()) {
+            throw new ValidationError("Invalid Day Break activation", "INVALID_INPUT");
+        }
         return targetSpace.value.ability();
     }
 

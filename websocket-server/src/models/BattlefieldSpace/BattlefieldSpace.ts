@@ -1,9 +1,7 @@
 import { isElementalWarriorCard } from "../../lib/card-validators";
 import { ValidationError } from "../../services/CustomError/BaseError";
 import { NullSpaceError } from "../../services/CustomError/GameError";
-import { ElementalCard } from "../../types";
-import { ElementalWarriorCard } from "../../types/card-types";
-import { SpaceOption } from "../../types/types";
+import { ElementalCard, SpaceOption, ElementalWarriorCard } from "@shared-types";
 import { IBattlefieldSpace } from './db-model';
 
 export type Direction = "TL" | "T" | "TR" | "L" | "R" | "BL" | "B" | "BR"
@@ -69,7 +67,7 @@ export class BattlefieldSpace {
     /**
      * Validates the space number to ensure it is within the correct range and that Card has an ability
      */
-    validateDayBreakActivation(): asserts this is BattlefieldSpace & { value: ElementalWarriorCard } {
+    validateDayBreakActivation(): this is BattlefieldSpace & { value: ElementalWarriorCard } {
         if (this.value === null) {
             throw new NullSpaceError(this.spaceNumber, `Cannot activate Day Break on an empty space: ${this.spaceNumber}`);
         }
@@ -77,6 +75,7 @@ export class BattlefieldSpace {
         if (!isElementalWarriorCard(this.value) || !this.value.isDayBreak) {
             throw new ValidationError("Cannot activate Day Break on a card that does not have the ability", "INVALID_INPUT");
         }
+        return true;
     }
 
     // Convert from Mongoose document to runtime instance

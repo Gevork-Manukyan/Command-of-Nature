@@ -3,8 +3,7 @@ import { io } from "./server";
 import { PORT } from "./lib";
 import { GameStateManager, GameEventEmitter } from "./services";
 import { ConGame, Player, Team } from "./models";
-import { ClearTeamsData, CreateGameData, JoinTeamData, LeaveGameData, SelectSageData, ToggleReadyStatusData } from "./types";
-import { AllPlayersSetupEvent, CancelSetupEvent, ChoseWarriorsEvent, PlayerFinishedSetupEvent, StartGameEvent, SwapWarriorsEvent } from "@command-of-nature/shared-types";
+import { AllPlayersSetupEvent, CancelSetupEvent, ChoseWarriorsEvent, PlayerFinishedSetupEvent, StartGameEvent, SwapWarriorsEvent, ClearTeamsData, CreateGameData, JoinTeamData, LeaveGameData, SelectSageData, ToggleReadyStatusData } from "@shared-types";
 import { ALL_CARDS } from "./constants";
 const { AcornSquire, QuillThornback } = ALL_CARDS;
 

@@ -1,4 +1,4 @@
-import { Card, ElementalCard, ElementalWarriorCard, ElementalWarriorCardSchema } from "../types";
+import { Card, ElementalCard, ElementalWarriorCard, ElementalWarriorCardSchema } from "@shared-types";
 
 export function isElementalCard(card: Card): card is ElementalCard {
     return ElementalWarriorCardSchema.safeParse(card).success;
