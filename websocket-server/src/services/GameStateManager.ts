@@ -142,19 +142,19 @@ export class GameStateManager {
         const game = this.getGame(gameId);
         const currPlayer = game.getPlayer(socketId);
         
-        if (!currPlayer.getSage()) {
+        if (!currPlayer.sage) {
             throw new ValidationError("Cannot toggle ready. The sage has not been set.", "sage");
         }
 
         currPlayer.toggleReady();
         
-        if (currPlayer.getIsReady()) {
+        if (currPlayer.isReady) {
             game.incrementPlayersReady();
         } else {
             game.decrementPlayersReady();
         }
 
-        return currPlayer.getIsReady();
+        return currPlayer.isReady;
     }
 
     async startGame(gameId: gameId): Promise<void> {

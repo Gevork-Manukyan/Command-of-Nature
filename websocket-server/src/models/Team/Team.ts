@@ -202,10 +202,10 @@ export class Team {
         }
 
         // If player has already chosen warriors
-        if (player.getHasChosenWarriors())
+        if (player.hasChosenWarriors)
             throw new ValidationError("Player has already chosen warriors", "INVALID_INPUT")
         
-        const decklist = player.getDecklist();
+        const decklist = player.decklist;
         if (decklist === null) throw new NotFoundError("Decklist", `Player ${player.socketId}'s decklist is not set`);
         const decklistWariors = decklist.warriors
         const [choice1, choice2] = choices

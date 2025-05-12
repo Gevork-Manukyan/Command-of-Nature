@@ -135,7 +135,7 @@ export class ConGame {
    */
   removePlayer(playerId: Player["socketId"]) {
     // If the host is leaving, set a new host
-    if (this.getPlayer(playerId).getIsGameHost()) {
+    if (this.getPlayer(playerId).isGameHost) {
       const newHost = this.players.find(player => player.socketId !== playerId);
       if (newHost) newHost.setIsGameHost(true);
     }
@@ -175,7 +175,7 @@ export class ConGame {
    * @param sage - The sage to set
    */
   setPlayerSage(playerId: Player["socketId"], sage: Sage) {
-    const isSageAvailable = this.players.every(player => player.getSage() !== sage)
+    const isSageAvailable = this.players.every(player => player.sage !== sage)
     if (!isSageAvailable) throw new SageUnavailableError(sage);
 
     this.getPlayer(playerId).setSage(sage)
@@ -187,7 +187,7 @@ export class ConGame {
    */
   validateAllPlayersSeclectedSage() {
     if (this.players.length !== this.numPlayersTotal) throw new ValidationError(`Missing ${this.numPlayersTotal - this.players.length} players`, "players");
-    if (this.players.some(player => !player.getSage())) throw new ValidationError("All players must select a sage", "sage");
+    if (this.players.some(player => !player.sage)) throw new ValidationError("All players must select a sage", "sage");
   }
 
   /**
@@ -444,7 +444,7 @@ export class ConGame {
 
   getTeamDecklists(team: Team) {
     const teamPlayers = this.players.filter(player => team.isPlayerOnTeam(player.userId))
-    const decklists = teamPlayers.map(player => player.getDecklist())
+    const decklists = teamPlayers.map(player => player.decklist)
 
     // Filter out null values and ensure we have valid decklists
     const validDecklists = decklists.filter((decklist): decklist is Decklist => decklist !== null);

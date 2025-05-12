@@ -116,7 +116,7 @@ function moveToFieldFromDiscard(game: ActiveConGame, player: AbilityResult['play
     if (fieldTarget.team === 'enemy') throw new InternalServerError("Cannot move enemy card to field");
 
     const targetIndex = discardTarget[0];
-    const targetCard = player.getDiscardPile()[targetIndex];
+    const targetCard = player.discardPile[targetIndex];
     if (!isElementalCard(targetCard)) throw new InvalidCardTypeError("Card is not an ElementalCard");
     
     const removedCard = player.removeCardFromDiscardPile(targetIndex) as ElementalCard;
@@ -204,7 +204,7 @@ function moveToFieldFromHand(game: ActiveConGame, player: AbilityResult['player'
 
 
     const targetIndex = handTarget[0];
-    const targetCard = player.getHand()[targetIndex];
+    const targetCard = player.hand[targetIndex];
     if (!isElementalCard(targetCard)) throw new InvalidCardTypeError("Card is not an ElementalCard");
     
     const removedCard = player.removeCardFromHand(targetIndex) as ElementalCard;

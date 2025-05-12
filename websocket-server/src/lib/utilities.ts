@@ -98,7 +98,7 @@ export function processEventMiddleware<T extends keyof SocketEventMap>(socket: S
         }
         const player = GameStateManager.getInstance().getGame(eventData.gameId).getPlayer(socket.id);
 
-        if (!player || !player.getIsGameHost()) {
+        if (!player || !player.isGameHost) {
           throw new HostOnlyActionError();
         }
         break;

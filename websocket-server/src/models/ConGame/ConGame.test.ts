@@ -200,7 +200,7 @@ describe("ConGame", () => {
         expect(mockGame.numPlayersReady).toBe(0)
         expect(mockGame.numPlayersFinishedSetup).toBe(0)
         mockGame.players.forEach(player => {
-          expect(player.getIsReady()).toBe(false)
+          expect(player.isReady).toBe(false)
         })
       })
     })

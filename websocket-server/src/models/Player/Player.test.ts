@@ -11,21 +11,21 @@ describe("constructor", () => {
         const player = new Player(testPlayerId, testSocketId)
     
         expect(player.userId).toBe(testPlayerId)
-        expect(player.getIsReady()).toBe(false)
-        expect(player.getIsGameHost()).toBe(false)
-        expect(player.getSage()).toBe(null)
-        expect(player.getDecklist()).toBe(null)
-        expect(player.getLevel()).toBe(1)
-        expect(player.getHand()).toEqual([])
-        expect(player.getDeck()).toEqual([])
-        expect(player.getDiscardPile()).toEqual([])
+        expect(player.isReady).toBe(false)
+        expect(player.isGameHost).toBe(false)
+        expect(player.sage).toBe(null)
+        expect(player.decklist).toBe(null)
+        expect(player.level).toBe(1)
+        expect(player.hand).toEqual([])
+        expect(player.deck).toEqual([])
+        expect(player.discardPile).toEqual([])
         done()
     })
     
     test("should call constructor and create host player", (done) => {
         const player = new Player(testPlayerId, testSocketId, true)
     
-        expect(player.getIsGameHost()).toBe(true)
+        expect(player.isGameHost).toBe(true)
         done()
     })
 })
@@ -35,7 +35,7 @@ describe("level getter and setters", () => {
         const player = new Player(testPlayerId, testSocketId);
         player.levelUp();
         player.levelUp();
-        expect(player.getLevel()).toBe(3);
+        expect(player.level).toBe(3);
     });
 });
 
@@ -43,7 +43,7 @@ describe("hand getter and setters", () => {
     test("should correctly set the player's hand", () => {
         const player = new Player(testPlayerId, testSocketId);
         player.addCardToHand(Cedar);
-        expect(player.getHand()).toContainEqual(Cedar);
+        expect(player.hand).toContainEqual(Cedar);
     });
 });
 
@@ -51,7 +51,7 @@ describe("deck getter and setters", () => {
     test("should correctly set the player's deck", () => {
         const player = new Player(testPlayerId, testSocketId);
         player.addCardToDeck(Cedar);
-        expect(player.getDeck()).toContainEqual(Cedar);
+        expect(player.deck).toContainEqual(Cedar);
     });
 });
 
@@ -59,7 +59,7 @@ describe("discard pile getter and setters", () => {
     test("should correctly set the player's discard pile", () => {
         const player = new Player(testPlayerId, testSocketId);
         player.addCardToDiscardPile(Cedar);
-        expect(player.getDiscardPile()).toContainEqual(Cedar);
+        expect(player.discardPile).toContainEqual(Cedar);
     });
 });
 
@@ -89,7 +89,7 @@ describe("toggleReady method", () => {
         const player = new Player(testPlayerId, testSocketId)
         player.setSage("Cedar")
         player.toggleReady()
-        expect(player.getIsReady()).toBe(true)
+        expect(player.isReady).toBe(true)
         done()
     })
 
@@ -97,9 +97,9 @@ describe("toggleReady method", () => {
         const player = new Player(testPlayerId, testSocketId)
         player.setSage("Cedar")
         player.toggleReady()
-        expect(player.getIsReady()).toBe(true)
+        expect(player.isReady).toBe(true)
         player.toggleReady()
-        expect(player.getIsReady()).toBe(false)
+        expect(player.isReady).toBe(false)
         done()
     })
 })
@@ -108,22 +108,22 @@ describe("addCardsToDeck", () => {
     test("should add a single card (using addCardToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
         player.addCardToDeck(Cedar)
-        expect(player.getDeck()).toStrictEqual([Cedar])
+        expect(player.deck).toStrictEqual([Cedar])
         done()
     })
 
     test("should add a single card (using addCardsToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
         player.addCardsToDeck([Cedar])
-        expect(player.getDeck()).toContain(Cedar)
+        expect(player.deck).toContain(Cedar)
         done()
     })
 
     test("should add a multiple cards", (done) => {
         const player = new Player(testPlayerId, testSocketId)
         player.addCardsToDeck([Cedar, Gravel])
-        expect(player.getDeck()).toContainEqual(Cedar)
-        expect(player.getDeck()).toContainEqual(Gravel)
+        expect(player.deck).toContainEqual(Cedar)
+        expect(player.deck).toContainEqual(Gravel)
         done()
     })
 })
@@ -141,8 +141,8 @@ describe("initDeck method", () => {
         player.toggleReady()
         player.initDeck()
 
-        expect(player.getDecklist()).toStrictEqual(TwigDeck)
-        expect(player.getDeck()).toStrictEqual([Timber, CloseStrike, CloseStrike, FarStrike, NaturalRestoration, TwigCharm])
+        expect(player.decklist).toStrictEqual(TwigDeck)
+        expect(player.deck).toStrictEqual([Timber, CloseStrike, CloseStrike, FarStrike, NaturalRestoration, TwigCharm])
         done()
     })
 })
@@ -153,7 +153,7 @@ describe("finishedPlayerSetup", () => {
         player.setIsReady(true);
         player.setHasChosenWarriors(true);
         player.finishPlayerSetup();
-        expect(player.getIsSetup()).toBe(true);
+        expect(player.isSetup).toBe(true);
     })
 
     test("should throw error if player is not ready", () => {
@@ -174,6 +174,6 @@ describe("cancelPlayerSetup", () => {
         const player = new Player("player-1", "socket-1");
         player.setIsSetup(true);
         player.cancelPlayerSetup();
-        expect(player.getIsSetup()).toBe(false);
+        expect(player.isSetup).toBe(false);
     })
 })

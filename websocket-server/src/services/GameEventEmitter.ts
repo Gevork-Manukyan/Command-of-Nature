@@ -70,7 +70,7 @@ export class GameEventEmitter {
   emitPickWarriors(gameId: gameId) {
     const game = this.gameStateManager.getGame(gameId);
     game.players.forEach(player => {
-      this.emitToPlayer(player.socketId, "pick-warriors", player.getDecklist());
+      this.emitToPlayer(player.socketId, "pick-warriors", player.decklist);
     })
   }
 
