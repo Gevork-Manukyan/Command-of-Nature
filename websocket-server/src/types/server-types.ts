@@ -91,7 +91,7 @@ const activateDayBreakSchema = z.object({
 });
 
 const debugSchema = z.object({
-  gameId: z.string(),
+  
 });
 
 // Define EventSchemas record

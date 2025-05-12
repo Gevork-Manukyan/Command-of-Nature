@@ -46,13 +46,8 @@ gameNamespace.on("connection", (socket) => {
   // TODO: some events should emit to all players that something happened
 
   // TODO: FOR DEBUGING
-  socket.on(DebugEvent, socketErrorHandler(socket, DebugEvent, async ({ gameId }: DebugData) => {
-    const game = gameStateManager.getGame(gameId);
-    // Make sure socket is in the room
-    if (!socket.rooms.has(gameId)) {
-      socket.join(gameId);
-    }
-    gameEventEmitter.emitToAllPlayers(gameId, DebugEvent, game);
+  socket.on(DebugEvent, socketErrorHandler(socket, DebugEvent, async () => {
+    socket.emit("debug", gameStateManager);
   }));
 
   socket.on(CreateGameEvent, socketErrorHandler(socket, CreateGameEvent, async ({ userId, numPlayers, gameName, isPrivate, password }: CreateGameData) => {      
