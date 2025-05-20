@@ -91,10 +91,13 @@ export class GameDatabaseService {
     }
 
     /**
-     * Deletes a game by ID from the database
+     * Deletes a game and its state by ID from the database
      */
-    async deleteGame(gameId: string): Promise<void> {
-        return this.conGameService.deleteGame(gameId);
+    async deleteGameAndState(gameId: string): Promise<void> {
+        await Promise.all([
+            this.conGameService.deleteGame(gameId),
+            this.gameStateService.deleteGameStateByGameId(gameId)
+        ]);
     }
 } 
 

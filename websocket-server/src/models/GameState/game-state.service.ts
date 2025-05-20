@@ -82,7 +82,7 @@ export class GameStateService {
     }
 
     async deleteGameStateByGameId(gameId: string): Promise<void> {
-        const result = await this.model.deleteOne({ gameId });
+        const result = await this.model.deleteOne({ gameId: new Types.ObjectId(gameId) });
         if (result.deletedCount === 0) {
             throw new NotFoundError('GameState', `GameState for game ${gameId} not found`);
         }
