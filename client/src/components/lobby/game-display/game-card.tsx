@@ -1,5 +1,6 @@
 import { useGameCard } from "@/hooks/useGameCard";
-import { GameListing } from "@command-of-nature/shared-types";  
+import { GameListing } from "@shared-types";
+
 
 interface GameCardProps {
   game: GameListing;

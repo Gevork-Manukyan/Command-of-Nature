@@ -1,6 +1,6 @@
 import { Document, model, Schema, Types } from 'mongoose';
 import { TeamOrder } from '../../types';
-import { ElementalCard, ItemCard } from '@shared-types';
+import { ElementalCard, ItemCard } from 'shared-types';
 import { IPlayer, PlayerSchema } from '../Player/db-model';
 import { ITeam, TeamSchema } from '../Team/db-model';
 

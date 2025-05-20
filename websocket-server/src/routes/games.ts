@@ -1,6 +1,6 @@
 import express from 'express';
 import { ConGameModel } from '../models/ConGame/db-model';
-import { GameListing } from '@shared-types';
+import { GameListing } from 'shared-types';
 
 const router = express.Router();
 

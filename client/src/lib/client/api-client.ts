@@ -1,4 +1,4 @@
-import { GameListing } from "@command-of-nature/shared-types";
+import { GameListing } from "shared-types";
 
 type ApiResponse<T> = {
   data?: T;

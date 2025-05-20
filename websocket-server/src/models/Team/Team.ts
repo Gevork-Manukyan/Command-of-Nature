@@ -1,5 +1,5 @@
 import { NotFoundError, ValidationError } from "../../services";
-import { Card, Decklist, ElementalWarriorStarterCard, SpaceOption } from "@shared-types";
+import { Card, Decklist, ElementalWarriorStarterCard, SpaceOption } from "shared-types";
 import { Battlefield } from "../Battlefield/Battlefield";
 import { ITeam } from './db-model';
 import { Player } from "../Player";

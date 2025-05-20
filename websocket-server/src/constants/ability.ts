@@ -1,7 +1,7 @@
 import { isElementalCard } from "../lib";
 import { ActiveConGame } from "../models";
 import { InternalServerError, InvalidCardTypeError } from "../services";
-import { ElementalCard, AbilityAction, AbilityResult } from "@shared-types";
+import { ElementalCard, AbilityAction, AbilityResult } from "shared-types";
 
 
 export function processAbility(game: ActiveConGame, AbilityResult: AbilityResult[]) {

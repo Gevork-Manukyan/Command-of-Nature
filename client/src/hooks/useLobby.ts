@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GameListing } from "@command-of-nature/shared-types";
+import { GameListing } from "shared-types";
 import { apiClient } from "@/lib/client/api-client";
 import { socketService } from "@/services/socket.service";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";

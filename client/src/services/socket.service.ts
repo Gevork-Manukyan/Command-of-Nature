@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { GameListing, JoinGameEvent, RejoinGameEvent, ExitGameEvent, LeaveGameEvent, StartGameEvent, CreateGameEvent } from '@command-of-nature/shared-types';
+import { GameListing, JoinGameEvent, RejoinGameEvent, ExitGameEvent, LeaveGameEvent, StartGameEvent, CreateGameEvent } from 'shared-types';
 import { config } from '@/lib/server/config';
 
 class SocketService {

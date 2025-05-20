@@ -1,5 +1,5 @@
 import { Document, Schema, Types } from 'mongoose';
-import { Card, Decklist, Sage } from '@shared-types';
+import { Card, Decklist, Sage } from 'shared-types';
 
 export interface IPlayer extends Document {
     userId: Types.ObjectId;  // Reference to User
