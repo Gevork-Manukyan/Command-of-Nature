@@ -1,5 +1,26 @@
 import { io, Socket } from 'socket.io-client';
-import { GameListing, JoinGameEvent, RejoinGameEvent, ExitGameEvent, LeaveGameEvent, StartGameEvent, CreateGameEvent } from 'shared-types';
+import { 
+    GameListing, 
+    JoinGameEvent, 
+    RejoinGameEvent, 
+    ExitGameEvent, 
+    LeaveGameEvent, 
+    StartGameEvent, 
+    CreateGameEvent,
+    SelectSageEvent,
+    JoinTeamEvent,
+    ChoseWarriorsEvent,
+    ToggleReadyStatusEvent,
+    Sage,
+    ElementalWarriorStarterCard,
+    AllSagesSelectedEvent,
+    AllTeamsJoinedEvent,
+    ClearTeamsEvent,
+    SwapWarriorsEvent,
+    PlayerFinishedSetupEvent,
+    CancelSetupEvent,
+    AllPlayersSetupEvent
+} from 'shared-types';
 import { config } from '@/lib/server/config';
 
 class SocketService {
@@ -180,10 +201,56 @@ class SocketService {
     await this.emit(LeaveGameEvent, { gameId });
   }
 
+
+  // Game setup methods
+  public async selectSage(gameId: string, sage: Sage): Promise<void> {
+    await this.emit(SelectSageEvent, { gameId, sage });
+  }
+
+  public async allSagesSelected(gameId: string): Promise<void> {
+    await this.emit(AllSagesSelectedEvent, { gameId });
+  }
+
+  public async joinTeam(gameId: string, team: number): Promise<void> {
+    await this.emit(JoinTeamEvent, { gameId, team });
+  }
+
+  public async clearTeams(gameId: string): Promise<void> {
+    await this.emit(ClearTeamsEvent, { gameId });
+  }
+
+  public async allTeamsJoined(gameId: string): Promise<void> {
+    await this.emit(AllTeamsJoinedEvent, { gameId });
+  }
+
+  public async toggleReadyStatus(gameId: string): Promise<void> {
+    await this.emit(ToggleReadyStatusEvent, { gameId });
+  }
+
   public async startGame(gameId: string): Promise<void> {
     await this.emit(StartGameEvent, { gameId });
   }
 
+  public async chooseWarriors(gameId: string, choices: [ElementalWarriorStarterCard, ElementalWarriorStarterCard]): Promise<void> {
+    await this.emit(ChoseWarriorsEvent, { gameId, choices });
+  }
+
+  public async swapWarriors(gameId: string): Promise<void> {
+    await this.emit(SwapWarriorsEvent, { gameId });
+  }
+
+  public async playerFinishedSetup(gameId: string): Promise<void> {
+    await this.emit(PlayerFinishedSetupEvent, { gameId });
+  }
+
+  public async cancelSetup(gameId: string): Promise<void> {
+    await this.emit(CancelSetupEvent, { gameId });
+  }
+
+  public async allPlayersSetup(gameId: string): Promise<void> {
+    await this.emit(AllPlayersSetupEvent, { gameId });
+  }
+  
   // Event handlers
   public onGameCreated(callback: (gameData: GameListing) => void): void {
     this.on(`${CreateGameEvent}--success`, callback);
