@@ -45,10 +45,10 @@ export class ConGameService {
         return ActiveConGame.fromMongoose(doc);
     }
 
-    async updateGameState(id: string, updates: Partial<ConGame>): Promise<ConGame> {
+    async updateGameState(id: string, game: ConGame): Promise<ConGame> {
         const doc = await this.model.findByIdAndUpdate(
             id,
-            { $set: updates },
+            { $set: game.toMongoose() },
             { new: true }
         );
         if (!doc) {
@@ -57,10 +57,10 @@ export class ConGameService {
         return ConGame.fromMongoose(doc);
     }
 
-    async updateActiveGameState(id: string, updates: Partial<ActiveConGame>): Promise<ActiveConGame> {
+    async updateActiveGameState(id: string, game: ActiveConGame): Promise<ActiveConGame> {
         const doc = await this.model.findByIdAndUpdate(
             id,
-            { $set: updates },
+            { $set: game.toMongoose() },
             { new: true }
         );
         if (!doc) {

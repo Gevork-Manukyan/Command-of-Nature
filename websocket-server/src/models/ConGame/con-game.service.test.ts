@@ -77,16 +77,16 @@ describe('ConGameService', () => {
     describe('updateGameState', () => {
         it('should update game state', async () => {
             const mockGame = new ConGame(2, testGameId, false, '');
+            mockGame.setId(testGameId);
             const mockDoc = { ...mockGame.toMongoose(), _id: testGameId };
-            const updates = { isStarted: true };
             
             (ConGameModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockDoc);
 
-            const result = await conGameService.updateGameState(testGameId, updates);
+            const result = await conGameService.updateGameState(testGameId, mockGame);
 
             expect(ConGameModel.findByIdAndUpdate).toHaveBeenCalledWith(
                 testGameId,
-                { $set: updates },
+                { $set: mockGame.toMongoose() },
                 { new: true }
             );
             expect(result).toBeInstanceOf(ConGame);
@@ -94,9 +94,10 @@ describe('ConGameService', () => {
         });
 
         it('should throw NotFoundError when game not found', async () => {
+            const mockGame = new ConGame(2, testGameId, false, '');
             (ConGameModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
 
-            await expect(conGameService.updateGameState(testGameId, {}))
+            await expect(conGameService.updateGameState(testGameId, mockGame))
                 .rejects
                 .toThrow(NotFoundError);
         });

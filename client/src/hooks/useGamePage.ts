@@ -11,6 +11,7 @@ export function useGamePage() {
     const [error, setError] = useState<string>('');
     const [isLeaving, setIsLeaving] = useState(false);
     const [isLoadingGame, setIsLoadingGame] = useState(false);
+    const [hasFinishedSetup, setHasFinishedSetup] = useState(false);
 
     // Handle socket connection and game rejoining
     useEffect(() => {
@@ -37,12 +38,29 @@ export function useGamePage() {
         connectAndRejoin();
     }, [userId, currentSession]);
 
+    // TODO: This is a temporary solution to check if the game has finished setup.
+    // Setup socket event listeners
+    useEffect(() => {
+        if (!currentSession) return;
+
+        const handleSetupComplete = () => {
+            setHasFinishedSetup(true);
+        };
+
+        // Register event listeners
+        socketService.on('setup-complete', handleSetupComplete);
+
+        return () => {
+            socketService.off('setup-complete', handleSetupComplete);
+        };
+    }, [currentSession]);
+
     const goToLobby = async () => {
         setIsLeaving(true);
         router.push('/lobby');
         if (!currentSession) return;
         await socketService.exitGame(currentSession.id);
-    }
+    };
 
     const leaveGame = async () => {
         setIsLeaving(true);
@@ -56,7 +74,7 @@ export function useGamePage() {
             console.error('Failed to leave game:', err);
             setError(err instanceof Error ? err.message : 'Failed to leave game');
             setIsLeaving(false);
-        } 
+        }
     };
 
     return {
@@ -65,5 +83,6 @@ export function useGamePage() {
         isLoadingGame,
         goToLobby,
         leaveGame,
+        hasFinishedSetup
     };
 } 

@@ -1,4 +1,5 @@
-import { ConGame, GameState, ActiveConGame, Player } from "../models";
+import { Sage } from "shared-types";
+import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo, TransitionEvent } from "../types";
 import { ValidationError } from "./CustomError/BaseError";
 import { GameConflictError } from "./CustomError/GameError";
@@ -18,6 +19,11 @@ export class GameStateManager {
             GameStateManager.instance = new GameStateManager();
         }
         return GameStateManager.instance;
+    }
+
+    private async saveGame(game: ConGame): Promise<void> {
+        const savedGame = await gameDatabaseService.saveGame(game);
+        this.setGame(game.id, savedGame);
     }
 
     /**
@@ -50,14 +56,12 @@ export class GameStateManager {
             // If it's the same user, just update their socket ID
             if (existingPlayer.userId === userId) {
                 existingPlayer.updateSocketId(socketId);
-                const savedGame = await gameDatabaseService.saveGame(game);
-                this.setGame(gameId, savedGame);
+                await this.saveGame(game);
                 return;
             }
             throw new ValidationError("A player with this socket ID already exists in the game", "socketId");
         }
         
-        // Check if player already exists with same user ID
         if (game.players.some(p => p.userId === userId)) {
             throw new ValidationError("You are already in this game", "userId");
         }
@@ -67,8 +71,7 @@ export class GameStateManager {
         
         const player = new Player(new Types.ObjectId(userId).toString(), socketId, isHost);
         game.addPlayer(player);
-        const savedGame = await gameDatabaseService.saveGame(game);
-        this.setGame(gameId, savedGame);
+        await this.saveGame(game);
     }
 
     /**
@@ -82,8 +85,7 @@ export class GameStateManager {
         for (const player of game.players) {
           if (player.userId === userId) {
             player.updateSocketId(socketId);
-            const savedGame = await gameDatabaseService.saveGame(game);
-            this.setGame(gameId, savedGame);
+            await this.saveGame(game);
             return;
           }
         }
@@ -106,8 +108,19 @@ export class GameStateManager {
             return;
         }
 
-        const savedGame = await gameDatabaseService.saveGame(game);
-        this.setGame(gameId, savedGame);
+        await this.saveGame(game);
+    }
+
+    /**
+     * Sets a player's sage
+     * @param gameId - The id of the game to set the player's sage
+     * @param socketId - The id of the socket to set the player's sage
+     * @param sage - The sage to set
+     */
+    async setPlayerSage(gameId: gameId, socketId: string, sage: Sage) {
+        const game = this.getGame(gameId);
+        game.setPlayerSage(socketId, sage);
+        await this.saveGame(game);
     }
 
     /**
@@ -117,8 +130,19 @@ export class GameStateManager {
     async allPlayersSelectedSage(gameId: gameId): Promise<void> {
         const game = this.getGame(gameId);
         game.validateAllPlayersSeclectedSage();
-        const savedGame = await gameDatabaseService.saveGame(game);
-        this.setGame(gameId, savedGame);
+        await this.saveGame(game);
+    }
+
+    /**
+     * Joins a player to a team
+     * @param gameId - The id of the game to join the player to
+     * @param socketId - The id of the socket to join the player to
+     * @param team - The team to join
+     */
+    async joinTeam(gameId: gameId, socketId: string, team: Team['teamNumber']) {
+        const game = this.getGame(gameId);
+        game.joinTeam(socketId, team);
+        await this.saveGame(game);
     }
 
     /**
@@ -128,8 +152,7 @@ export class GameStateManager {
     async allTeamsJoined(gameId: gameId): Promise<void> {
         const game = this.getGame(gameId);
         game.validateAllTeamsJoined();
-        const savedGame = await gameDatabaseService.saveGame(game);
-        this.setGame(gameId, savedGame);
+        await this.saveGame(game);
     }
 
     /**
@@ -160,8 +183,7 @@ export class GameStateManager {
     async startGame(gameId: gameId): Promise<void> {
         const game = this.getGame(gameId);
         game.initGame();
-        const savedGame = await gameDatabaseService.saveGame(game);
-        this.setGame(gameId, savedGame);
+        await this.saveGame(game);
     }
 
     /**

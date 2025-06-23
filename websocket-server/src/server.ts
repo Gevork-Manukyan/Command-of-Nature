@@ -82,9 +82,16 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${JoinGameEvent}--success`, gameListing);
   }));
 
+  socket.on(RejoinGameEvent, socketErrorHandler(socket, RejoinGameEvent, async ({ gameId, userId }: RejoinGameData) => {
+    await gameStateManager.playerRejoinedGame(gameId, userId, socket.id);
+    socket.join(gameId);
+    socket.emit(`${RejoinGameEvent}--success`);
+    gameEventEmitter.emitToAllPlayers(gameId, "player-rejoined", { userId });
+  }));
+
   socket.on(SelectSageEvent, socketErrorHandler(socket, SelectSageEvent, async ({ gameId, sage }: SelectSageData) => {
     gameStateManager.verifySelectSageEvent(gameId);
-    gameStateManager.getGame(gameId).setPlayerSage(socket.id, sage);
+    await gameStateManager.setPlayerSage(gameId, socket.id, sage);
     gameStateManager.processSelectSageEvent(gameId);
 
     gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, `sage-selected`, { sage });
@@ -101,11 +108,10 @@ gameNamespace.on("connection", (socket) => {
 
   socket.on(JoinTeamEvent, socketErrorHandler(socket, JoinTeamEvent, async ({ gameId, team }: JoinTeamData) => {
     gameStateManager.verifyJoinTeamEvent(gameId);
-    const game = gameStateManager.getGame(gameId);
-    game.joinTeam(socket.id, team);
+    await gameStateManager.joinTeam(gameId, socket.id, team);
     gameStateManager.processJoinTeamEvent(gameId);
     
-    const player = game.getPlayer(socket.id);
+    const player = gameStateManager.getGame(gameId).getPlayer(socket.id);
     gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, "team-joined", { id: player.userId, team });
     socket.emit(`${JoinTeamEvent}--success`);
   }));
@@ -146,7 +152,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${StartGameEvent}--success`);
   }));
 
-  // Test
   socket.on(ChoseWarriorsEvent, socketErrorHandler(socket, ChoseWarriorsEvent, async ({ gameId, choices }: ChoseWarriorsData) => {
     gameStateManager.verifyChooseWarriorsEvent(gameId);
     const game = gameStateManager.getGame(gameId);
@@ -193,27 +198,11 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${AllPlayersSetupEvent}--success`);
   }));
 
-  /**
-   * Save and exit the game for everyone
-   */
   socket.on(ExitGameEvent, socketErrorHandler(socket, ExitGameEvent, async ({ gameId }: ExitGameData) => {
     socket.leave(gameId);
     socket.emit(`${ExitGameEvent}--success`);
   }));
 
-  /**
-   * Rejoin the game after disconnecting or exiting
-   */
-  socket.on(RejoinGameEvent, socketErrorHandler(socket, RejoinGameEvent, async ({ gameId, userId }: RejoinGameData) => {
-    await gameStateManager.playerRejoinedGame(gameId, userId, socket.id);
-    socket.join(gameId);
-    socket.emit(`${RejoinGameEvent}--success`);
-    gameEventEmitter.emitToAllPlayers(gameId, "player-rejoined", { userId });
-  }));
-
-  /**
-   * Leave the game
-   */
   // TODO: How to handle if someone leaves the game midway through?
   socket.on(LeaveGameEvent, socketErrorHandler(socket, LeaveGameEvent, async ({ gameId }: LeaveGameData) => {
     await gameStateManager.removePlayerFromGame(gameId, socket.id);

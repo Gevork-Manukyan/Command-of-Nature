@@ -175,10 +175,11 @@ export class ConGame {
    * @param sage - The sage to set
    */
   setPlayerSage(playerId: Player["socketId"], sage: Sage) {
-    const isSageAvailable = this.players.every(player => player.sage !== sage)
+    const isSageAvailable = this.players.every(player => player.sage !== sage) 
     if (!isSageAvailable) throw new SageUnavailableError(sage);
 
-    this.getPlayer(playerId).setSage(sage)
+    const player = this.getPlayer(playerId)
+    player.setSage(sage)
   }
 
   /**
@@ -613,15 +614,22 @@ export class ConGame {
   static fromData(data: ConGameData): ConGame {
     const game = new ConGame(data.numPlayersTotal, data.gameName, data.isPrivate, data.password, data.id);
     
+    // Convert players to Player instances if they aren't already
+    const players = data.players.map(p => p instanceof Player ? p : Player.fromMongoose(p));
+    
+    // Convert teams to Team instances if they aren't already
+    const team1 = data.team1 instanceof Team ? data.team1 : Team.fromMongoose(data.team1);
+    const team2 = data.team2 instanceof Team ? data.team2 : Team.fromMongoose(data.team2);
+    
     // Copy all properties
     Object.assign(game, {
       isStarted: data.isStarted,
       hasFinishedSetup: data.hasFinishedSetup,
       numPlayersReady: data.numPlayersReady,
       numPlayersFinishedSetup: data.numPlayersFinishedSetup,
-      players: data.players,
-      team1: data.team1,
-      team2: data.team2,
+      players,
+      team1,
+      team2,
       teamOrder: data.teamOrder,
       creatureShop: data.creatureShop,
       itemShop: data.itemShop,

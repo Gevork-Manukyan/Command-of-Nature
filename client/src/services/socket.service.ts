@@ -211,7 +211,7 @@ class SocketService {
     await this.emit(AllSagesSelectedEvent, { gameId });
   }
 
-  public async joinTeam(gameId: string, team: number): Promise<void> {
+  public async joinTeam(gameId: string, team: 1 | 2): Promise<void> {
     await this.emit(JoinTeamEvent, { gameId, team });
   }
 
