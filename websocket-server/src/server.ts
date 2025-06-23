@@ -94,10 +94,12 @@ gameNamespace.on("connection", (socket) => {
     await gameStateManager.setPlayerSage(gameId, socket.id, sage);
     gameStateManager.processSelectSageEvent(gameId);
 
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, `sage-selected`, { sage });
+    const availableSages = gameStateManager.getGame(gameId).getAvailableSages();
+    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, `sage-selected`, { selectedSage: sage, availableSages });
     socket.emit(`${SelectSageEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(AllSagesSelectedEvent, socketErrorHandler(socket, AllSagesSelectedEvent, async ({ gameId }: AllSagesSelectedData) => {
     gameStateManager.verifyAllSagesSelectedEvent(gameId);
     await gameStateManager.allPlayersSelectedSage(gameId);
@@ -106,6 +108,7 @@ gameNamespace.on("connection", (socket) => {
     gameEventEmitter.emitToAllPlayers(gameId, `${AllSagesSelectedEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(JoinTeamEvent, socketErrorHandler(socket, JoinTeamEvent, async ({ gameId, team }: JoinTeamData) => {
     gameStateManager.verifyJoinTeamEvent(gameId);
     await gameStateManager.joinTeam(gameId, socket.id, team);
@@ -116,6 +119,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${JoinTeamEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(ClearTeamsEvent, socketErrorHandler(socket, ClearTeamsEvent, async ({ gameId }: ClearTeamsData) => {
     gameStateManager.verifyClearTeamsEvent(gameId);
     gameStateManager.getGame(gameId).clearTeams();
@@ -124,6 +128,7 @@ gameNamespace.on("connection", (socket) => {
     gameEventEmitter.emitToAllPlayers(gameId, `${ClearTeamsEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(AllTeamsJoinedEvent, socketErrorHandler(socket, AllTeamsJoinedEvent, async ({ gameId }: AllTeamsJoinedData) => {
     gameStateManager.verifyAllTeamsJoinedEvent(gameId);
     await gameStateManager.allTeamsJoined(gameId);
@@ -132,6 +137,7 @@ gameNamespace.on("connection", (socket) => {
     gameEventEmitter.emitToAllPlayers(gameId, `${AllTeamsJoinedEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(ToggleReadyStatusEvent, socketErrorHandler(socket, ToggleReadyStatusEvent, async ({ gameId }: ToggleReadyStatusData) => {
     gameStateManager.verifyToggleReadyStatusEvent(gameId);
     const isReady = gameStateManager.toggleReadyStatus(gameId, socket.id);
@@ -143,6 +149,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(eventName);
   }));
 
+  // TODO: implement on client side
   socket.on(StartGameEvent, socketErrorHandler(socket, StartGameEvent, async ({ gameId }: StartGameData) => {
     gameStateManager.verifyAllPlayersReadyEvent(gameId);
     await gameStateManager.startGame(gameId);
@@ -152,6 +159,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${StartGameEvent}--success`);
   }));
 
+  // TODO: implement on client side
   socket.on(ChoseWarriorsEvent, socketErrorHandler(socket, ChoseWarriorsEvent, async ({ gameId, choices }: ChoseWarriorsData) => {
     gameStateManager.verifyChooseWarriorsEvent(gameId);
     const game = gameStateManager.getGame(gameId);
@@ -161,6 +169,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${ChoseWarriorsEvent}--success`)
   }));
 
+  // TODO: implement on client side
   socket.on(SwapWarriorsEvent, socketErrorHandler(socket, SwapWarriorsEvent, async ({ gameId }: SwapWarriorsData) => {
     gameStateManager.verifySwapWarriorsEvent(gameId);
     const game = gameStateManager.getGame(gameId);
@@ -170,6 +179,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${SwapWarriorsEvent}--success`)
   }));
 
+  // TODO: implement on client side
   socket.on(PlayerFinishedSetupEvent, socketErrorHandler(socket, PlayerFinishedSetupEvent, async ({ gameId }: PlayerFinishedSetupData) => {
     gameStateManager.verifyFinishedSetupEvent(gameId);
     const game = gameStateManager.getGame(gameId);
@@ -179,6 +189,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${PlayerFinishedSetupEvent}--success`)
   }));
 
+  // TODO: implement on client side
   socket.on(CancelSetupEvent, socketErrorHandler(socket, CancelSetupEvent, async ({ gameId }: CancelSetupData) => {
     gameStateManager.verifyCancelSetupEvent(gameId);
     const game = gameStateManager.getGame(gameId)
@@ -188,6 +199,7 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${CancelSetupEvent}--success`)
   }))
 
+  // TODO: implement on client side
   socket.on(AllPlayersSetupEvent, socketErrorHandler(socket, AllPlayersSetupEvent, async ({ gameId }: AllPlayersSetupData) => {
     gameStateManager.verifyAllPlayersSetupEvent(gameId);
     const game = gameStateManager.getGame(gameId);

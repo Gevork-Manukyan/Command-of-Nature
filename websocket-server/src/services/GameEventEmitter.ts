@@ -60,6 +60,7 @@ export class GameEventEmitter {
    * @param data - The data to send
    */
   emitToAllPlayers(gameId: gameId, eventName: string, data: any = null) {
+    console.log('Emitting event to all players:', eventName);
     this.io.in(gameId).emit(eventName, data);
   }
 

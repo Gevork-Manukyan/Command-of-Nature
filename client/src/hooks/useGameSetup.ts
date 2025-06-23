@@ -25,11 +25,23 @@ export function useGameSetup() {
     const gameId = pathname.split('/').pop();
     const { userId } = useUserContext();
     const { currentSession, setCurrentSession } = useGameSessionContext();
+
+    // Error Handling State
     const [error, setError] = useState<string>('');
     const [isLeaving, setIsLeaving] = useState(false);
     const [isLoadingGame, setIsLoadingGame] = useState(false);
+
+    // Game Related State
     const [currentPhase, setCurrentPhase] = useState<SetupPhase>('sage-selection');
     const [selectedSage, setSelectedSage] = useState<Sage | null>(null);
+    const [availableSages, setAvailableSages] = useState<{
+        [key in Sage]: boolean;
+    }>({
+        "Cedar": true,
+        "Gravel": true,
+        "Porella": true,
+        "Torrent": true,
+    });
 
     // Handle socket connection and game rejoining
     useEffect(() => {
@@ -56,7 +68,7 @@ export function useGameSetup() {
         connectAndRejoin();
     }, [userId, currentSession]);
 
-    // Setup socket event listeners for game setup
+    // Setup socket event listeners for game setup - these are the handlers for the events that are emitted by the server
     useEffect(() => {
         if (!currentSession) return;
 
@@ -64,10 +76,10 @@ export function useGameSetup() {
             
         };
 
-        const handleSageSelected = (data: { userId: string, sage: Sage }) => {
-            
+        const handleSageSelected = (data: { userId: string, sage: Sage, availableSages: { [key in Sage]: boolean } }) => {
+            setAvailableSages(data.availableSages);
         };
-
+        
         const handleAllSagesSelected = () => {
             setCurrentPhase('team-formation');
         };
@@ -166,16 +178,24 @@ export function useGameSetup() {
         }
     };
 
-    const handleSageSelect = (sage: Sage) => {
-        setSelectedSage(sage);
-    };
-
-    const handleSageSelection = async (sage: Sage) => {
+    const handleSageConfirm = async (sage: Sage) => {
         if (!currentSession) return;
         try {
             await socketService.selectSage(currentSession.id, sage);
-            setCurrentPhase('team-formation');
-            setSelectedSage(null);
+            setAvailableSages(prev => {
+                // make the previously confirmed sage available again
+                const newAvailableSages = { ...prev };
+                if (selectedSage) {
+                    newAvailableSages[selectedSage] = true;
+                }
+
+                // make the new sage unavailable
+                newAvailableSages[sage] = false;
+                return newAvailableSages;
+            });
+
+            // set the selected sage to the new sage
+            setSelectedSage(sage);
         } catch (err) {
             console.error('Failed to select sage:', err);
             setError(err instanceof Error ? err.message : 'Failed to select sage');
@@ -200,8 +220,8 @@ export function useGameSetup() {
         leaveGame,
         currentPhase,
         selectedSage,
-        handleSageSelect,
-        handleSageSelection,
+        availableSages,
+        handleSageConfirm,
         handleTeamJoin,
     };
 } 

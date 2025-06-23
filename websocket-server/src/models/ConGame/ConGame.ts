@@ -6,7 +6,7 @@ import {
   SageUnavailableError, ShopFullError 
 } from "../../services";
 import { gameId, TeamOrder } from "../../types";
-import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist } from "shared-types";
+import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist, SageSchema } from "shared-types";
 import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
@@ -180,6 +180,18 @@ export class ConGame {
 
     const player = this.getPlayer(playerId)
     player.setSage(sage)
+  }
+
+  /**
+   * Gets the available sages
+   * @returns The available sages
+   */
+  getAvailableSages() {
+    const selectedSages = this.players.filter(player => player.sage !== null).map(player => player.sage);
+    return Object.values(SageSchema.enum).reduce((acc, sage) => {
+      acc[sage] = !selectedSages.includes(sage);
+      return acc;
+    }, {} as Record<Sage, boolean>);
   }
 
   /**

@@ -4,6 +4,8 @@ import { useGameSetup } from '../../../../hooks/useGameSetup';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import SageSelection from './SageSelection';
+import TeamSelection from './TeamSelection';
 
 export default function GameSetupPage() {
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
@@ -13,8 +15,8 @@ export default function GameSetupPage() {
         isLeaving, 
         currentPhase,
         selectedSage,
-        handleSageSelect,
-        handleSageSelection,
+        availableSages,
+        handleSageConfirm,
         handleTeamJoin,
     } = useGameSetup();
 
@@ -38,88 +40,16 @@ export default function GameSetupPage() {
         <section className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-lg">
             {/* Sage Selection */}
             {currentPhase === 'sage-selection' && (
-                <section>
-                    <h3 className="text-xl font-semibold mb-4">Sage Selection</h3>
-                    <div className="grid grid-cols-2 gap-8">
-                        <button
-                            onClick={() => handleSageSelect("Cedar")}
-                            className={`p-4 border rounded-lg transition-colors ${
-                                selectedSage === "Cedar" 
-                                    ? "bg-blue-100 border-blue-500" 
-                                    : "hover:bg-blue-50"
-                            }`}
-                        >
-                            <h4 className="font-medium">Cedar</h4>
-                        </button>
-                        <button
-                            onClick={() => handleSageSelect("Gravel")}
-                            className={`p-4 border rounded-lg transition-colors ${
-                                selectedSage === "Gravel" 
-                                    ? "bg-blue-100 border-blue-500" 
-                                    : "hover:bg-blue-50"
-                            }`}
-                        >
-                            <h4 className="font-medium">Gravel</h4>
-                        </button>
-                        <button
-                            onClick={() => handleSageSelect("Porella")}
-                            className={`p-4 border rounded-lg transition-colors ${
-                                selectedSage === "Porella" 
-                                    ? "bg-blue-100 border-blue-500" 
-                                    : "hover:bg-blue-50"
-                            }`}
-                        >
-                            <h4 className="font-medium">Porella</h4>
-                        </button>
-                        <button
-                            onClick={() => handleSageSelect("Torrent")}
-                            className={`p-4 border rounded-lg transition-colors ${
-                                selectedSage === "Torrent" 
-                                    ? "bg-blue-100 border-blue-500" 
-                                    : "hover:bg-blue-50"
-                            }`}
-                        >
-                            <h4 className="font-medium">Torrent</h4>
-                        </button>
-                    </div>
-                    <div className="mt-6 flex justify-center">
-                        <button
-                            onClick={() => selectedSage && handleSageSelection(selectedSage)}
-                            className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={!selectedSage}
-                        >
-                            Confirm Sage Selection
-                        </button>
-                    </div>
-                </section>
+                <SageSelection 
+                    selectedSage={selectedSage}     
+                    onSageConfirm={handleSageConfirm} 
+                    availableSages={availableSages}
+                />
             )}
             
             {/* Team Formation */}
             {currentPhase === 'team-formation' && (
-                <div className="mb-8">
-                    <h3 className="text-xl font-semibold mb-4">Teams</h3>
-                    <div className="grid grid-cols-2 gap-8">
-                        <div className="p-4 border rounded-lg">
-                            <h4 className="font-medium mb-2">Team 1</h4>
-                            
-                            <button
-                                onClick={() => handleTeamJoin(1)}
-                                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Join Team 1
-                            </button>
-                        </div>
-                        <div className="p-4 border rounded-lg">
-                            <h4 className="font-medium mb-2">Team 2</h4>
-                            <button
-                                onClick={() => handleTeamJoin(2)}
-                                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Join Team 2
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <TeamSelection handleTeamJoin={handleTeamJoin} />
             )}
 
             {/* Action Buttons */}
