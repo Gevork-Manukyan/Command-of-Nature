@@ -8,10 +8,11 @@ import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/hooks/useLobby";
 import { LoadingScreen } from '../LoadingScreen';
-import { apiClient } from '@/lib/client/api-client';
+import { useUserContext } from '@/contexts/UserContext';
 
 export function Lobby() {
     const router = useRouter();
+    const { logout } = useUserContext();
     const { currentSession, currentGames, showModal, setShowModal, isFetchingGames, isJoining, setIsJoining, error } = useLobby();
 
     const renderActiveGames = () => {
@@ -37,7 +38,7 @@ export function Lobby() {
     }
 
     const handleLogout = async () => {
-        await apiClient.logout();
+        await logout();
         router.push('/login');
     }
 

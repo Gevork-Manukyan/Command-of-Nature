@@ -7,10 +7,11 @@ import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { Eye, EyeOff } from "lucide-react"
-import { apiClient } from "@/lib/client/api-client"
+import { useUserContext } from "@/contexts/UserContext"
 
 export function RegisterForm() {
   const router = useRouter()
+  const { register } = useUserContext()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -42,23 +43,15 @@ export function RegisterForm() {
 
     setIsLoading(true)
 
-    try {
-      const { data, error } = await apiClient.register({
-        username,
-        password,
-      })
-
-      if (error) {
-        throw new Error(error)
-      }
-
-      // Redirect to lobby after successful registration
+    const result = await register(username, password)
+    
+    if (result.success) {
       router.push("/lobby")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed")
-    } finally {
-      setIsLoading(false)
+    } else {
+      setError(result.error || "Registration failed")
     }
+    
+    setIsLoading(false)
   }
 
   return (

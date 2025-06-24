@@ -1,11 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getFromLocalStorage, removeFromLocalStorage, USER } from '@/lib/client/localstorage';
+import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage, USER } from '@/lib/client/localstorage';
+import { apiClient } from '@/lib/client/api-client';
 
 interface UserContextType {
     userId: string | null;
-    logout: () => void;
+    login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    logout: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -21,13 +24,54 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const logout = () => {
+    const login = async (username: string, password: string) => {
+        try {
+            const { data, error } = await apiClient.login({ username, password });
+            
+            if (error) {
+                return { success: false, error };
+            }
+
+            if (!data || !data._id) {
+                return { success: false, error: "Login response missing user ID" };
+            }
+
+            setUserId(data._id);
+            setToLocalStorage(USER, data._id);
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err instanceof Error ? err.message : "Login failed" };
+        }
+    };
+
+    const register = async (username: string, password: string) => {
+        try {
+            const { data, error } = await apiClient.register({ username, password });
+            
+            if (error) {
+                return { success: false, error };
+            }
+
+            if (!data || !data.id) {
+                return { success: false, error: "Registration response missing user ID" };
+            }
+
+            setUserId(data.id);
+            setToLocalStorage(USER, data.id);
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err instanceof Error ? err.message : "Registration failed" };
+        }
+    };
+
+    const logout = async () => {
+        await apiClient.logout();
         setUserId(null);
         removeFromLocalStorage(USER);
     };
 
     return (
-        <UserContext.Provider value={{ userId, logout }}>
+        <UserContext.Provider value={{ userId, login, register, logout }}>
             {children}
         </UserContext.Provider>
     );

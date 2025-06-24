@@ -6,12 +6,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
-import { apiClient } from "@/lib/client/api-client"
 import { Eye, EyeOff } from "lucide-react"
-import { setToLocalStorage, USER } from "@/lib/client/localstorage"
+import { useUserContext } from "@/contexts/UserContext"
 
 export function LoginForm() {
   const router = useRouter()
+  const { login } = useUserContext()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -23,21 +23,15 @@ export function LoginForm() {
     setError("")
     setLoading(true)
 
-    try {
-      const { data, error } = await apiClient.login({ username, password })
-      
-      if (error) {
-        throw new Error(error)
-      }
-
-      setToLocalStorage(USER, data?._id)
-
+    const result = await login(username, password)
+    
+    if (result.success) {
       router.push("/lobby")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed")
-    } finally {
-      setLoading(false)
+    } else {
+      setError(result.error || "Login failed")
     }
+    
+    setLoading(false)
   }
 
   return (
