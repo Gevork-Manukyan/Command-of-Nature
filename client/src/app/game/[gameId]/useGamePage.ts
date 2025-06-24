@@ -7,9 +7,8 @@ import { useGameSessionContext } from '@/contexts/GameSessionContext';
 export function useGamePage() {
     const router = useRouter();
     const { userId } = useUserContext();
-    const { currentSession, setCurrentSession } = useGameSessionContext();
+    const { currentSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');
-    const [isLeaving, setIsLeaving] = useState(false);
     const [isLoadingGame, setIsLoadingGame] = useState(false);
     const [hasFinishedSetup, setHasFinishedSetup] = useState(false);
 
@@ -55,34 +54,9 @@ export function useGamePage() {
         };
     }, [currentSession]);
 
-    const goToLobby = async () => {
-        setIsLeaving(true);
-        router.push('/lobby');
-        if (!currentSession) return;
-        await socketService.exitGame(currentSession.id);
-    };
-
-    const leaveGame = async () => {
-        setIsLeaving(true);
-        router.push('/lobby');
-        if (!currentSession) return;
-
-        try {
-            await socketService.leaveGame(currentSession.id);
-            setCurrentSession(null);
-        } catch (err) {
-            console.error('Failed to leave game:', err);
-            setError(err instanceof Error ? err.message : 'Failed to leave game');
-            setIsLeaving(false);
-        }
-    };
-
     return {
-        isLeaving,
         error,
         isLoadingGame,
-        goToLobby,
-        leaveGame,
         hasFinishedSetup
     };
 } 

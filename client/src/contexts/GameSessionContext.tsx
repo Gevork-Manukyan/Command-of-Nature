@@ -7,7 +7,8 @@ import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage, GAME_SE
 interface GameSessionContextType {
     currentSession: GameListing | null;
     isLoadingGameSession: boolean;
-    setCurrentSession: (session: GameListing | null) => void;
+    updateCurrentSession: (session: GameListing | null) => void;
+    clearCurrentSession: () => void;
 }
 
 const GameSessionContext = createContext<GameSessionContextType | undefined>(undefined);
@@ -26,23 +27,27 @@ export function GameSessionProvider({ children }: { children: ReactNode }) {
         setIsLoadingGameSession(false);
     }, []);
 
-    // Update localStorage when session changes
-    useEffect(() => {
+    const updateCurrentSession = (session: GameListing | null) => {
         setIsLoadingGameSession(true);
-        if (currentSession) {
-            setToLocalStorage(GAME_SESSION, currentSession);
-        } else {
-            removeFromLocalStorage(GAME_SESSION);
-        }
+        setToLocalStorage(GAME_SESSION, session);
+        setCurrentSession(session);
         setIsLoadingGameSession(false);
-    }, [currentSession]);
+    };
+
+    const clearCurrentSession = () => {
+        setIsLoadingGameSession(true);
+        removeFromLocalStorage(GAME_SESSION);
+        setCurrentSession(null);
+        setIsLoadingGameSession(false);
+    };
 
     return (
         <GameSessionContext.Provider
             value={{
                 currentSession,
                 isLoadingGameSession,
-                setCurrentSession,
+                updateCurrentSession,
+                clearCurrentSession,
             }}
         >
             {children}

@@ -12,7 +12,7 @@ export default function GamePage() {
     const router = useRouter();
     const gameId = params.gameId as string;
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
-    const { error, isLoadingGame, isLeaving, hasFinishedSetup } = useGamePage();
+    const { error, isLoadingGame, hasFinishedSetup } = useGamePage();
 
     // Redirect to setup if game hasn't finished setup
     useEffect(() => {
@@ -23,10 +23,6 @@ export default function GamePage() {
 
     if (isLoadingGame || isLoadingGameSession) {
         return <LoadingScreen message="Connecting to game..." />;
-    }
-
-    if (isLeaving) {
-        return <LoadingScreen message="Leaving game..." />;
     }
 
     if (error) {

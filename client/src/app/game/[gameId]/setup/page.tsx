@@ -12,7 +12,6 @@ export default function GameSetupPage() {
     const { 
         error, 
         isLoadingGame, 
-        isLeaving, 
         currentPhase,
         selectedSage,
         availableSages,
@@ -22,10 +21,6 @@ export default function GameSetupPage() {
 
     if (isLoadingGame || isLoadingGameSession) {
         return <LoadingScreen message="Connecting to game..." />;
-    }
-
-    if (isLeaving) {
-        return <LoadingScreen message="Leaving game..." />;
     }
 
     if (error) {

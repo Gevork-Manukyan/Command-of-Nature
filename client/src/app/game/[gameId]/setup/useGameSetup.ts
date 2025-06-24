@@ -24,11 +24,10 @@ export function useGameSetup() {
     const pathname = usePathname();
     const gameId = pathname.split('/').pop();
     const { userId } = useUserContext();
-    const { currentSession, setCurrentSession } = useGameSessionContext();
+    const { currentSession } = useGameSessionContext();
 
     // Error Handling State
     const [error, setError] = useState<string>('');
-    const [isLeaving, setIsLeaving] = useState(false);
     const [isLoadingGame, setIsLoadingGame] = useState(false);
 
     // Game Related State
@@ -156,28 +155,6 @@ export function useGameSetup() {
         };
     }, [currentSession, router]);
 
-    const goToLobby = async () => {
-        setIsLeaving(true);
-        router.push('/lobby');
-        if (!currentSession) return;
-        await socketService.exitGame(currentSession.id);
-    };
-
-    const leaveGame = async () => {
-        setIsLeaving(true);
-        router.push('/lobby');
-        if (!currentSession) return;
-
-        try {
-            await socketService.leaveGame(currentSession.id);
-            setCurrentSession(null);
-        } catch (err) {
-            console.error('Failed to leave game:', err);
-            setError(err instanceof Error ? err.message : 'Failed to leave game');
-            setIsLeaving(false);
-        }
-    };
-
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentSession) return;
         try {
@@ -215,9 +192,6 @@ export function useGameSetup() {
     return {
         error,
         isLoadingGame,
-        isLeaving,
-        goToLobby,
-        leaveGame,
         currentPhase,
         selectedSage,
         availableSages,

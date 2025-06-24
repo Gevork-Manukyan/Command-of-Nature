@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { socketService } from '@/services/socket.service';
+import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function GameLayout({
     children,
@@ -11,20 +12,14 @@ export default function GameLayout({
 }) {
     const router = useRouter();
     const { currentSession } = useGameSessionContext();
+    const { isLeaving, goToLobby, leaveGame } = useGameNavigation();
     const params = useParams();
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
 
-    const goToLobby = () => {
-        router.push('/lobby');
-    };
-
-    const leaveGame = async () => {
-        if (gameId) {
-            await socketService.leaveGame(gameId);
-            router.push('/lobby');
-        }
-    };
+    if (isLeaving) {
+        return <LoadingScreen message="Leaving game..." />;
+    }
 
     return (
         <div className="flex flex-col min-h-screen">
