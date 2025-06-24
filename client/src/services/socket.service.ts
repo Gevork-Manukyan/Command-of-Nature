@@ -32,6 +32,16 @@ class SocketService {
 
   private constructor() {}
 
+  private constructUrl(baseUrl: string, path: string): string {
+    if (!baseUrl) {
+      throw new Error('Base URL cannot be empty');
+    }
+    
+    const cleanBase = baseUrl.replace(/\/$/, ''); // Remove trailing slash
+    const cleanPath = path.replace(/^\//, ''); // Remove leading slash
+    return `${cleanBase}/${cleanPath}`;
+  }
+
   public static getInstance(): SocketService {
     if (!SocketService.instance) {
       SocketService.instance = new SocketService();
@@ -63,7 +73,11 @@ class SocketService {
       return this.connectionPromise;
     }
 
-    const url = config.socket.url + "/gameplay";
+    if (!config.socket.url) {
+      throw new Error('Socket URL is not configured. Please set NEXT_PUBLIC_SOCKET_URL environment variable.');
+    }
+
+    const url = this.constructUrl(config.socket.url, '/gameplay');
 
     if (this.socket) {
       this.disconnect();

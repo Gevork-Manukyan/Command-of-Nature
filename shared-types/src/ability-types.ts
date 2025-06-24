@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Player, SpaceOptionsSchema } from "./index";
+import { Player } from "./game-state-types";
+import { SpaceOptionsSchema } from "./game-setup-types";
 
 export enum AbilityAction {
     COLLECT_GOLD = 'collect_gold',

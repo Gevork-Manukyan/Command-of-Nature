@@ -1,4 +1,4 @@
-import { Sage } from "@shared-types/card-types";
+import { Sage } from "shared-types";
 import { useState } from "react";
 
 type SageSelectionProps = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGamePage } from '@/hooks/useGamePage';
+import { useGamePage } from './useGamePage';
 import { useParams, useRouter } from 'next/navigation';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';

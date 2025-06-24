@@ -1,6 +1,6 @@
 "use client";
 
-import { useGameSetup } from '../../../../hooks/useGameSetup';
+import { useGameSetup } from './useGameSetup';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';

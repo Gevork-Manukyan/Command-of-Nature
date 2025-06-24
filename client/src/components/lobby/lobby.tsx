@@ -6,7 +6,7 @@ import { GameCard } from './game-display/game-card';
 import { LoadingSpinner } from './game-display/loading-spinner';
 import { ErrorMessage } from './game-display/error-message';
 import { EmptyState } from './game-display/empty-state';
-import useLobby from "@/hooks/useLobby";
+import useLobby from "@/components/lobby/useLobby";
 import { LoadingScreen } from '../LoadingScreen';
 import { useUserContext } from '@/contexts/UserContext';
 

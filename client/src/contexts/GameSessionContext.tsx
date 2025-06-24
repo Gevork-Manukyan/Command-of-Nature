@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { GameListing } from "@shared-types";
+import { GameListing } from "shared-types";
 import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 
 interface GameSessionContextType {
