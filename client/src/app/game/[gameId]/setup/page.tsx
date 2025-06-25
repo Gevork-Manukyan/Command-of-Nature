@@ -3,12 +3,10 @@
 import { useGameSetup } from './useGameSetup';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import SageSelection from './SageSelection';
 import TeamSelection from './TeamSelection';
 
 export default function GameSetupPage() {
-    const { currentSession, isLoadingGameSession } = useGameSessionContext();
     const { 
         error, 
         isLoadingGame, 
@@ -19,16 +17,12 @@ export default function GameSetupPage() {
         handleTeamJoin,
     } = useGameSetup();
 
-    if (isLoadingGame || isLoadingGameSession) {
+    if (isLoadingGame) {
         return <LoadingScreen message="Connecting to game..." />;
     }
 
     if (error) {
         return <ErrorScreen message={error} />;
-    }
-
-    if (!currentSession) {
-        return <ErrorScreen message="Game session not found" />;
     }
 
     return (

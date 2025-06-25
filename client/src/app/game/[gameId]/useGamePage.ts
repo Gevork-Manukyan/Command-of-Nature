@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket.service';
 import { useUserContext } from '@/contexts/UserContext';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function useGamePage() {
-    const router = useRouter();
     const { userId } = useUserContext();
     const { currentSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');

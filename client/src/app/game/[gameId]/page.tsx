@@ -11,26 +11,22 @@ export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
-    const { currentSession, isLoadingGameSession } = useGameSessionContext();
+    const { currentSession } = useGameSessionContext();
     const { error, isLoadingGame, hasFinishedSetup } = useGamePage();
 
     // Redirect to setup if game hasn't finished setup
     useEffect(() => {
-        if (!isLoadingGameSession && !isLoadingGame && currentSession && !hasFinishedSetup) {
+        if (!isLoadingGame && currentSession && !hasFinishedSetup) {
             router.push(`/game/${gameId}/setup`);
         }
-    }, [isLoadingGameSession, isLoadingGame, currentSession, hasFinishedSetup, gameId, router]);
+    }, [isLoadingGame, currentSession, hasFinishedSetup, gameId, router]);
 
-    if (isLoadingGame || isLoadingGameSession) {
+    if (isLoadingGame) {
         return <LoadingScreen message="Connecting to game..." />;
     }
 
     if (error) {
         return <ErrorScreen message={error} />;
-    }
-
-    if (!currentSession) {
-        return <ErrorScreen message="Game session not found" />;
     }
 
     return (

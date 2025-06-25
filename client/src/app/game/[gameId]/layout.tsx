@@ -4,21 +4,35 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { ErrorScreen } from '@/components/ErrorScreen';
 
 export default function GameLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const router = useRouter();
-    const { currentSession } = useGameSessionContext();
-    const { isLeaving, goToLobby, leaveGame } = useGameNavigation();
+    const { currentSession, isLoadingGameSession } = useGameSessionContext();
+    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation();
     const params = useParams();
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
 
+    // Handle loading states
+    if (isLoadingGameSession) {
+        return <LoadingScreen message="Loading game session..." />;
+    }
+
     if (isLeaving) {
         return <LoadingScreen message="Leaving game..." />;
+    }
+
+    // Handle error states
+    if (navigationError) {
+        return <ErrorScreen message={navigationError} />;
+    }
+
+    if (!currentSession) {
+        return <ErrorScreen message="Game session not found" />;
     }
 
     return (
