@@ -17,13 +17,22 @@ export function useGameNavigation() {
     };
 
     const leaveGame = async () => {
+        if (!currentSession) {
+            router.push('/lobby');
+            return;
+        };
+
         setIsLeaving(true);
-        if (!currentSession) return;
 
         try {
             await socketService.leaveGame(currentSession.id);
-            updateCurrentSession(null);
             router.push('/lobby');
+
+            // Wait for the router to push to the lobby before updating the current session
+            // This is a temporary solution to avoid race conditions (visual bug)
+            setTimeout(() => {
+                updateCurrentSession(null);
+            }, 100);
         } catch (err) {
             console.error('Failed to leave game:', err);
             setError(err instanceof Error ? err.message : 'Failed to leave game');
