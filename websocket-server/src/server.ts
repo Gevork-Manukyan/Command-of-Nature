@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import gamesRouter from "./routes/games";
+import gameListingsRouter from "./routes/game-listings";
+import usersRouter from "./routes/users";
 import { PORT, processEventMiddleware, socketErrorHandler } from "./lib";
 import { GameEventEmitter, GameStateManager, ValidationError, InvalidSpaceError } from "./services";
 import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent } from "shared-types";
@@ -12,8 +14,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Add API routes
+// API routes
 app.use('/api/games', gamesRouter);
+app.use('/api/game-listings', gameListingsRouter);
+app.use('/api/users', usersRouter);
 
 const server = createServer(app);
 const io = new Server(server, {

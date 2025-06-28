@@ -83,27 +83,6 @@ class ApiClient {
     });
   }
 
-  // User methods
-  async getUser(userId: string) {
-    return this.request<{
-      _id: string;
-      username: string;
-      isOnline: boolean;
-      activeGameIds: string[];
-    }>(`/api/users/${userId}`);
-  }
-
-  async updateUser(userId: string, data: Partial<{ 
-    username: string;
-    isOnline: boolean;
-    activeGameIds: string[];
-  }>) {
-    return this.request(`/api/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  }
-
   // Game methods
   async joinGame(userId: string, gameId: string) {
     return this.request(`/api/users/${userId}/games`, {
