@@ -1,11 +1,33 @@
 import express from 'express';
+import { GameStateManager } from '../../services';
+import { CreateGameData, GameListing } from '@shared-types';
+import { UserSocketManager } from '../../services/UserSocketManager';
 
 const router = express.Router();
+const gameStateManager = GameStateManager.getInstance();
+const userSocketManager = UserSocketManager.getInstance();
 
 // POST /api/games/setup/create
 router.post('/create', async (req, res) => {
-  // TODO: Implement create game logic
-  res.json({ message: 'Create game endpoint - not implemented yet' });
+    const { userId, numPlayers, gameName, isPrivate, password }: CreateGameData = req.body;
+    const socketId = userSocketManager.getSocketId(userId);
+    if (!socketId) {
+        res.status(404).json({ error: 'Socket ID not found' });
+        return;
+    }
+    
+    const { game } = await gameStateManager.createGame(numPlayers, gameName, isPrivate, password || '');
+    gameStateManager.playerJoinGame(userId, socketId, game.id, true, password);
+    const gameListing: GameListing = {
+      id: game.id,
+      gameName: game.gameName,
+      isPrivate: game.isPrivate,
+      numPlayersTotal: game.numPlayersTotal,
+      numCurrentPlayers: game.players.length,
+    }
+    
+    userSocketManager.joinGameRoom(userId, game.id);
+    res.json(gameListing);
 });
 
 // POST /api/games/setup/join
