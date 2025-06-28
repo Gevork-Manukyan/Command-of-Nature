@@ -13,10 +13,12 @@ export class GameEventEmitter {
     this.gameStateManager = GameStateManager.getInstance();
   }
 
-  static getInstance(io: Server | Namespace): GameEventEmitter {
+  static getInstance(io?: Server | Namespace): GameEventEmitter {
     if (!GameEventEmitter.instance) {
+      if (!io) throw new Error('IO parameter is required when creating the first GameEventEmitter instance');
       GameEventEmitter.instance = new GameEventEmitter(io);
     }
+    
     return GameEventEmitter.instance;
   }
 
