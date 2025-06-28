@@ -1,5 +1,5 @@
 import { NotFoundError, ValidationError } from "../../services/CustomError/BaseError";
-import { Card, Sage, Decklist, IPlayerMethods, IPlayerData } from "shared-types";
+import { Card, Sage, Decklist, IPlayerMethods, IPlayerData } from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib/utilities";
 import { IPlayer } from './db-model';
 import { Types } from 'mongoose';

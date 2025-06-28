@@ -9,7 +9,6 @@ export type GameListing = {
 }
 
 export interface IPlayerData {
-    socketId: string;
     userId: string;
     isReady: boolean;
     isSetup: boolean;
@@ -24,7 +23,6 @@ export interface IPlayerData {
 }
 
 export interface IPlayerMethods {
-    updateSocketId(newSocketId: string): void;
     setIsReady(value: boolean): void;
     toggleReady(): void;
     setIsSetup(value: boolean): void;

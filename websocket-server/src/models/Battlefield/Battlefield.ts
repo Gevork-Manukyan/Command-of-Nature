@@ -1,6 +1,6 @@
 import { ValidationError } from "../../services/CustomError/BaseError";
 import { NullSpaceError } from "../../services/CustomError/GameError";
-import { ElementalCard, AbilityResult, SpaceOption, OnePlayerSpaceOptions, TwoPlayerSpaceOptions } from "shared-types";
+import { ElementalCard, AbilityResult, SpaceOption, OnePlayerSpaceOptions, TwoPlayerSpaceOptions } from "@shared-types";
 import { BattlefieldSpace } from "../BattlefieldSpace/BattlefieldSpace";
 import { IBattlefield } from './db-model';
 import { IBattlefieldSpace } from '../BattlefieldSpace/db-model';

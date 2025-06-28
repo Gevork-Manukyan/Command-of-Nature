@@ -10,7 +10,7 @@ import {
   InstantCardSchema,
   InstantStarterCardSchema,
   UtilityCardSchema,
-} from "shared-types";
+} from "@shared-types";
 
 export const ALL_CARDS = {
 

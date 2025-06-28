@@ -1,6 +1,6 @@
 import { Document, Schema } from 'mongoose';
 import { IBattlefield, BattlefieldSchema } from '../Battlefield/db-model';
-import { Card } from 'shared-types';
+import { Card } from '@shared-types';
 
 // Define the base type
 type TeamBase = {

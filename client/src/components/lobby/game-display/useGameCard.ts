@@ -1,7 +1,7 @@
 import { useUserContext } from "@/contexts/UserContext";
 import { socketService } from "@/services/socket.service";
 import { useState } from "react";
-import { GameListing } from "shared-types";
+import { GameListing } from "@shared-types";
 
 export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean) => void) {
     const { userId } = useUserContext();

@@ -20,7 +20,7 @@ import {
     PlayerFinishedSetupEvent,
     CancelSetupEvent,
     AllPlayersSetupEvent
-} from 'shared-types';
+} from '@shared-types';
 import { config } from '@/lib/server/config';
 
 class SocketService {

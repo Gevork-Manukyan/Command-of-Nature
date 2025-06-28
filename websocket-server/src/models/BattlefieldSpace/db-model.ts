@@ -1,5 +1,5 @@
 import { Document, Schema } from 'mongoose';
-import { ElementalCard, SpaceOption } from 'shared-types';
+import { ElementalCard, SpaceOption } from '@shared-types';
 import { Direction } from './BattlefieldSpace';
 
 // Define the base type

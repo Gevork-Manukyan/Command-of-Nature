@@ -1,7 +1,7 @@
 import { isElementalWarriorCard } from "../../lib/card-validators";
 import { ValidationError } from "../../services/CustomError/BaseError";
 import { NullSpaceError } from "../../services/CustomError/GameError";
-import { ElementalCard, SpaceOption, ElementalWarriorCard } from "shared-types";
+import { ElementalCard, SpaceOption, ElementalWarriorCard } from "@shared-types";
 import { IBattlefieldSpace } from './db-model';
 
 export type Direction = "TL" | "T" | "TR" | "L" | "R" | "BL" | "B" | "BR"

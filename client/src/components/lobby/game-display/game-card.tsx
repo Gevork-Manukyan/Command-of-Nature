@@ -1,5 +1,5 @@
 import { useGameCard } from "@/components/lobby/game-display/useGameCard";
-import { GameListing } from "shared-types";
+import { GameListing } from "@shared-types";
 
 
 interface GameCardProps {

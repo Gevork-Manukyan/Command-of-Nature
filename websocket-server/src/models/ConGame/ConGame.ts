@@ -6,7 +6,7 @@ import {
   SageUnavailableError, ShopFullError 
 } from "../../services";
 import { gameId, TeamOrder } from "../../types";
-import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist, SageSchema } from "shared-types";
+import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist, SageSchema } from "@shared-types";
 import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";

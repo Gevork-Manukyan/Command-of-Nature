@@ -1,4 +1,4 @@
-import { Sage } from "shared-types";
+import { Sage } from "@shared-types";
 import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo, TransitionEvent } from "../types";
 import { ValidationError } from "./CustomError/BaseError";
