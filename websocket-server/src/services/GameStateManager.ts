@@ -66,8 +66,9 @@ export class GameStateManager {
             throw new ValidationError("You are already in this game", "userId");
         }
         
-        if (game.players.length >= game.numPlayersTotal) 
+        if (game.players.length >= game.numPlayersTotal) {
             throw new ValidationError("Cannot add more players", "players");
+        }
         
         const player = new Player(new Types.ObjectId(userId).toString(), socketId, isHost);
         game.addPlayer(player);

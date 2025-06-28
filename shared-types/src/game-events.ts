@@ -1,3 +1,4 @@
+export const RegisterUserSocketEvent = "register-user-socket";
 export const CreateGameEvent = "create-game";
 export const JoinGameEvent = "join-game";
 export const PlayerJoinedEvent = "player-joined";

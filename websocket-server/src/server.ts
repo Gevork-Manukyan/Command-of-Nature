@@ -8,7 +8,7 @@ import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
 import { PORT, processEventMiddleware, socketErrorHandler } from "./lib";
 import { GameEventEmitter, GameStateManager, ValidationError, InvalidSpaceError } from "./services";
-import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent } from "@shared-types";
+import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent, RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 
 const app = express();
@@ -37,17 +37,9 @@ const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
 
 gameNamespace.on("connection", (socket) => {
-  // Store socket ID and userId pair for REST API responses
-  socket.on("register-user-socket", ({ userId }: { userId: string }) => {
-    userSocketManager.registerSocket(userId, socket);
-    socket.emit("user-socket-registered");
-  });
-
-
   /* -------- MIDDLEWARE -------- */
   socket.use(([event, rawData], next) => {
-    next();
-    // processEventMiddleware(socket, event as keyof SocketEventMap, rawData, next)
+    processEventMiddleware(socket, event as keyof SocketEventMap, rawData, next)
   });
 
   socket.on("error", (error: Error) => {
@@ -61,6 +53,12 @@ gameNamespace.on("connection", (socket) => {
   socket.on(DebugEvent, socketErrorHandler(socket, DebugEvent, async () => {
     socket.emit("debug", gameStateManager);
   }));
+
+  // Store socket ID and userId pair for REST API responses
+  socket.on(RegisterUserSocketEvent, ({ userId }: RegisterUserData) => {
+    userSocketManager.registerSocket(userId, socket);
+    socket.emit("user-socket-registered");
+  });
 
   socket.on(JoinGameEvent, socketErrorHandler(socket, JoinGameEvent, async ({ userId, gameId, password }: JoinGameData) => {
     gameStateManager.verifyJoinGameEvent(gameId);

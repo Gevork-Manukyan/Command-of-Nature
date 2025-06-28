@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { AllSpaceOptionsSchema } from "./game-setup-types";
 import { ElementalWarriorStarterCardSchema, SageSchema } from "./card-types";
-import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, DebugEvent } from "./game-events";
+import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, DebugEvent, RegisterUserSocketEvent } from "./game-events";
+
+const registerUserSocketSchema = z.object({
+  userId: z.string(),
+});
 
 const createGameSchema = z.object({
   userId: z.string(),
@@ -96,6 +100,7 @@ const debugSchema = z.object({
 
 // Define EventSchemas record
 export const EventSchemas = {
+  [RegisterUserSocketEvent]: registerUserSocketSchema,
   [CreateGameEvent]: createGameSchema,
   [JoinGameEvent]: joinGameSchema,
   [SelectSageEvent]: selectSageSchema,
@@ -119,6 +124,7 @@ export const EventSchemas = {
 } as const;
 
 // Infer the types from the schemas directly
+export type RegisterUserData = z.infer<typeof registerUserSocketSchema>;
 export type CreateGameData = z.infer<typeof createGameSchema>;
 export type JoinGameData = z.infer<typeof joinGameSchema>;
 export type SelectSageData = z.infer<typeof selectSageSchema>;
@@ -142,6 +148,7 @@ export type DebugData = z.infer<typeof debugSchema>;
 
 // Create a mapped type for socket events
 export type SocketEventMap = {
+  [RegisterUserSocketEvent]: RegisterUserData;
   [CreateGameEvent]: CreateGameData;
   [JoinGameEvent]: JoinGameData;
   [SelectSageEvent]: SelectSageData;
