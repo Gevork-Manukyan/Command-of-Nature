@@ -1,10 +1,14 @@
 import express from 'express';
-import setupRouter from './setup';
-import gameplayRouter from './gameplay';
+import { GameEventEmitter } from '../../services';
+import createGameplayRouter from './gameplay';
+import createSetupRouter from './setup';
 
-const router = express.Router();
 
-router.use('/setup', setupRouter);
-router.use('/gameplay', gameplayRouter);
+export default function createGamesRouter(gameEventEmitter: GameEventEmitter) {
+    const router = express.Router();
 
-export default router; 
+    router.use('/setup', createSetupRouter(gameEventEmitter));
+    router.use('/gameplay', createGameplayRouter(gameEventEmitter));
+
+    return router; 
+}

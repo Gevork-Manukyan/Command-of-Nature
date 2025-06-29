@@ -3,23 +3,19 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
-import gamesRouter from "./routes/games";
 import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
 import { PORT, processEventMiddleware, socketErrorHandler } from "./lib";
 import { GameEventEmitter, GameStateManager, ValidationError, InvalidSpaceError } from "./services";
 import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent, RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
+import createGamesRouter from "./routes/games";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API routes
-app.use('/api/games', gamesRouter);
-app.use('/api/game-listings', gameListingsRouter);
-app.use('/api/users', usersRouter);
-
+// Create server and io
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -35,6 +31,11 @@ const gameNamespace = io.of("/gameplay");
 const gameEventEmitter = GameEventEmitter.getInstance(gameNamespace);
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
+
+// API routes
+app.use('/api/games', createGamesRouter(gameEventEmitter));
+app.use('/api/game-listings', gameListingsRouter);
+app.use('/api/users', usersRouter);
 
 gameNamespace.on("connection", (socket) => {
   /* -------- MIDDLEWARE -------- */
@@ -60,23 +61,23 @@ gameNamespace.on("connection", (socket) => {
     socket.emit("user-socket-registered");
   });
 
-  socket.on(JoinGameEvent, socketErrorHandler(socket, JoinGameEvent, async ({ userId, gameId, password }: JoinGameData) => {
-    gameStateManager.verifyJoinGameEvent(gameId);
-    await gameStateManager.playerJoinGame(userId, socket.id, gameId, false, password);
-    gameStateManager.processJoinGameEvent(gameId);
-    const game = gameStateManager.getGame(gameId);
-    const gameListing: GameListing = {
-      id: gameId,
-      gameName: game.gameName,
-      isPrivate: game.isPrivate,
-      numPlayersTotal: game.numPlayersTotal,
-      numCurrentPlayers: game.players.length,
-    }
+  // socket.on(JoinGameEvent, socketErrorHandler(socket, JoinGameEvent, async ({ userId, gameId, password }: JoinGameData) => {
+  //   gameStateManager.verifyJoinGameEvent(gameId);
+  //   await gameStateManager.playerJoinGame(userId, socket.id, gameId, false, password);
+  //   gameStateManager.processJoinGameEvent(gameId);
+  //   const game = gameStateManager.getGame(gameId);
+  //   const gameListing: GameListing = {
+  //     id: gameId,
+  //     gameName: game.gameName,
+  //     isPrivate: game.isPrivate,
+  //     numPlayersTotal: game.numPlayersTotal,
+  //     numCurrentPlayers: game.players.length,
+  //   }
     
-    socket.join(gameId);
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, "player-joined", { userId });
-    socket.emit(`${JoinGameEvent}--success`, gameListing);
-  }));
+  //   socket.join(gameId);
+  //   gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, "player-joined", { userId });
+  //   socket.emit(`${JoinGameEvent}--success`, gameListing);
+  // }));
 
   socket.on(RejoinGameEvent, socketErrorHandler(socket, RejoinGameEvent, async ({ gameId, userId }: RejoinGameData) => {
     await gameStateManager.playerRejoinedGame(gameId, userId, socket.id);

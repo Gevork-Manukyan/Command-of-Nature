@@ -2,6 +2,7 @@ import { Server, Namespace } from "socket.io";
 import { gameId } from "../types";
 import { Player } from "../models";
 import { GameStateManager } from "./GameStateManager";
+import { InternalServerError } from "./CustomError/BaseError";
 
 export class GameEventEmitter {
   private static instance: GameEventEmitter;
@@ -15,7 +16,7 @@ export class GameEventEmitter {
 
   static getInstance(io?: Server | Namespace): GameEventEmitter {
     if (!GameEventEmitter.instance) {
-      if (!io) throw new Error('IO parameter is required when creating the first GameEventEmitter instance');
+      if (!io) throw new InternalServerError('IO parameter is required when creating the first GameEventEmitter instance');
       GameEventEmitter.instance = new GameEventEmitter(io);
     }
     
