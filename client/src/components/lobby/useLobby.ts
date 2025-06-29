@@ -32,13 +32,6 @@ export default function useLobby() {
             }
         };
         fetchGames();
-
-        const connectToWebsocket = async () => {
-            if (!socketService.getConnected()) {
-                await socketService.connect();
-            }
-        }
-        connectToWebsocket();
     }, []);
 
 

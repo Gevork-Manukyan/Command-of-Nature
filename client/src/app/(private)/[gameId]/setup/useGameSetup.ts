@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket.service';
-import { useUserContext } from '@/contexts/UserContext';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, TeamJoinedEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent } from '@shared-types';
 
@@ -23,12 +22,10 @@ export function useGameSetup() {
     const router = useRouter();
     const pathname = usePathname();
     const gameId = pathname.split('/').pop();
-    const { userId } = useUserContext();
     const { currentSession } = useGameSessionContext();
 
     // Error Handling State
     const [error, setError] = useState<string>('');
-    const [isLoadingGame, setIsLoadingGame] = useState(false);
 
     // Game Related State
     const [currentPhase, setCurrentPhase] = useState<SetupPhase>('sage-selection');
@@ -41,31 +38,6 @@ export function useGameSetup() {
         "Porella": true,
         "Torrent": true,
     });
-
-    // Handle socket connection and game rejoining
-    useEffect(() => {
-        if (!userId || !currentSession) return;
-
-        const connectAndRejoin = async () => {
-            try {
-                setIsLoadingGame(true);
-                setError('');
-
-                if (!socketService.getConnected()) {
-                    await socketService.connect();
-                }
-
-                await socketService.rejoinGame(userId, currentSession.id);
-                setIsLoadingGame(false);
-            } catch (err) {
-                console.error('Failed to rejoin game:', err);
-                setError(err instanceof Error ? err.message : 'Failed to rejoin game');
-                setIsLoadingGame(false);
-            }
-        };
-
-        connectAndRejoin();
-    }, [userId, currentSession]);
 
     // Setup socket event listeners for game setup - these are the handlers for the events that are emitted by the server
     useEffect(() => {
@@ -191,7 +163,6 @@ export function useGameSetup() {
 
     return {
         error,
-        isLoadingGame,
         currentPhase,
         selectedSage,
         availableSages,

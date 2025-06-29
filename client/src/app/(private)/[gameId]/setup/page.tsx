@@ -1,7 +1,6 @@
 "use client";
 
 import { useGameSetup } from './useGameSetup';
-import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import SageSelection from './SageSelection';
 import TeamSelection from './TeamSelection';
@@ -9,17 +8,12 @@ import TeamSelection from './TeamSelection';
 export default function GameSetupPage() {
     const { 
         error, 
-        isLoadingGame, 
         currentPhase,
         selectedSage,
         availableSages,
         handleSageConfirm,
         handleTeamJoin,
     } = useGameSetup();
-
-    if (isLoadingGame) {
-        return <LoadingScreen message="Connecting to game..." />;
-    }
 
     if (error) {
         return <ErrorScreen message={error} />;

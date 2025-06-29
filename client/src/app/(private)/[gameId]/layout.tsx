@@ -1,8 +1,11 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import { useUserContext } from '@/contexts/UserContext';
+import { socketService } from '@/services/socket.service';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
 
@@ -11,15 +14,40 @@ export default function GameLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const { userId } = useUserContext();
     const { currentSession, isLoadingGameSession } = useGameSessionContext();
     const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation();
     const params = useParams();
     const gameId = params.gameId as string;
     const shortGameId = gameId.toString().slice(-6);
+    
+    // Rejoin game state
+    const [isRejoiningGame, setIsRejoiningGame] = useState(false);
+    const [rejoinError, setRejoinError] = useState<string>('');
+
+    // Handle game rejoining - this happens once when entering any game page
+    useEffect(() => {
+        if (!userId || !currentSession) return;
+
+        const rejoinGame = async () => {
+            try {
+                setIsRejoiningGame(true);
+                setRejoinError('');
+                await socketService.rejoinGame(userId, currentSession.id);
+                setIsRejoiningGame(false);
+            } catch (err) {
+                console.error('Failed to rejoin game:', err);
+                setRejoinError(err instanceof Error ? err.message : 'Failed to rejoin game');
+                setIsRejoiningGame(false);
+            }
+        };
+
+        rejoinGame();
+    }, [userId, currentSession]);
 
     // Handle loading states
-    if (isLoadingGameSession) {
-        return <LoadingScreen message="Loading game session..." />;
+    if (isLoadingGameSession || isRejoiningGame) {
+        return <LoadingScreen message={isRejoiningGame ? "Rejoining game..." : "Loading game session..."} />;
     }
 
     if (isLeaving) {
@@ -27,8 +55,8 @@ export default function GameLayout({
     }
 
     // Handle error states
-    if (navigationError) {
-        return <ErrorScreen message={navigationError} />;
+    if (navigationError || rejoinError) {
+        return <ErrorScreen message={rejoinError || navigationError} />;
     }
 
     if (!currentSession) {
