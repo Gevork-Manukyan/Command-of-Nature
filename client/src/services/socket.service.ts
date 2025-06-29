@@ -68,7 +68,7 @@ class SocketService {
     return true;
   }
 
-  public connect(): Promise<void> {
+  public connect(userId: string): Promise<void> {
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -95,7 +95,10 @@ class SocketService {
           reconnectionAttempts: 3,
           reconnectionDelay: 1000,
           timeout: 20000,
-          transports: ['websocket', 'polling'] // Explicitly specify transport methods
+          transports: ['websocket', 'polling'], // Explicitly specify transport methods
+          query: {
+            userId: userId
+          }
         });
 
         this.socket.on('connect_error', (error) => {

@@ -47,6 +47,22 @@ gameNamespace.on("connection", (socket) => {
     console.error("Socket error:", error);
   });
 
+  /* -------- AUTO-REGISTER USER ON CONNECT -------- */
+  // Extract userId from query parameters
+  const userId = socket.handshake.query.userId as string;
+  if (userId) {
+    userSocketManager.registerSocket(userId, socket);
+    socket.emit(`${RegisterUserSocketEvent}--success`);
+  } else {
+    console.warn('Socket connected without userId in query parameters');
+  }
+
+  // Store socket ID and userId pair for REST API responses
+  socket.on(RegisterUserSocketEvent, ({ userId }: RegisterUserData) => {
+    userSocketManager.registerSocket(userId, socket);
+    socket.emit(`${RegisterUserSocketEvent}--success`);
+  });
+
   /* -------- GAME SETUP -------- */
   // TODO: some events should emit to all players that something happened
 
@@ -54,30 +70,6 @@ gameNamespace.on("connection", (socket) => {
   socket.on(DebugEvent, socketErrorHandler(socket, DebugEvent, async () => {
     socket.emit("debug", gameStateManager);
   }));
-
-  // Store socket ID and userId pair for REST API responses
-  socket.on(RegisterUserSocketEvent, ({ userId }: RegisterUserData) => {
-    userSocketManager.registerSocket(userId, socket);
-    socket.emit("user-socket-registered");
-  });
-
-  // socket.on(JoinGameEvent, socketErrorHandler(socket, JoinGameEvent, async ({ userId, gameId, password }: JoinGameData) => {
-  //   gameStateManager.verifyJoinGameEvent(gameId);
-  //   await gameStateManager.playerJoinGame(userId, socket.id, gameId, false, password);
-  //   gameStateManager.processJoinGameEvent(gameId);
-  //   const game = gameStateManager.getGame(gameId);
-  //   const gameListing: GameListing = {
-  //     id: gameId,
-  //     gameName: game.gameName,
-  //     isPrivate: game.isPrivate,
-  //     numPlayersTotal: game.numPlayersTotal,
-  //     numCurrentPlayers: game.players.length,
-  //   }
-    
-  //   socket.join(gameId);
-  //   gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, "player-joined", { userId });
-  //   socket.emit(`${JoinGameEvent}--success`, gameListing);
-  // }));
 
   socket.on(RejoinGameEvent, socketErrorHandler(socket, RejoinGameEvent, async ({ gameId, userId }: RejoinGameData) => {
     await gameStateManager.playerRejoinedGame(gameId, userId, socket.id);
