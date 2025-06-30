@@ -76,15 +76,6 @@ gameNamespace.on("connection", (socket) => {
   }));
 
   // TODO: implement on client side
-  socket.on(ClearTeamsEvent, socketErrorHandler(socket, ClearTeamsEvent, async ({ gameId }: ClearTeamsData) => {
-    gameStateManager.verifyClearTeamsEvent(gameId);
-    gameStateManager.getGame(gameId).clearTeams();
-    gameStateManager.processClearTeamsEvent(gameId);
-
-    gameEventEmitter.emitToAllPlayers(gameId, `${ClearTeamsEvent}--success`);
-  }));
-
-  // TODO: implement on client side
   socket.on(AllTeamsJoinedEvent, socketErrorHandler(socket, AllTeamsJoinedEvent, async ({ gameId }: AllTeamsJoinedData) => {
     gameStateManager.verifyAllTeamsJoinedEvent(gameId);
     await gameStateManager.allTeamsJoined(gameId);

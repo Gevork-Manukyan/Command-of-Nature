@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -138,8 +138,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-teams-joined
     router.post('/:gameId/all-teams-joined', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement all teams joined logic
-      res.json({ message: 'All teams joined endpoint - not implemented yet' });
+      const { gameId }: AllTeamsJoinedData = req.body;
+
+      gameStateManager.verifyAllTeamsJoinedEvent(gameId);
+      await gameStateManager.allTeamsJoined(gameId);
+      gameStateManager.processAllTeamsJoinedEvent(gameId);
+
+      gameEventEmitter.emitToAllPlayers(gameId, `${AllTeamsJoinedEvent}--success`);
+      res.status(200).json({ message: 'All teams joined successfully' });
     }));
     
     // TODO: implement on client side
