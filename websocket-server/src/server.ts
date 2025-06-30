@@ -75,17 +75,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit("debug", gameStateManager);
   }));
 
-  // TODO: implement on client side
-  socket.on(AllPlayersSetupEvent, socketErrorHandler(socket, AllPlayersSetupEvent, async ({ gameId }: AllPlayersSetupData) => {
-    gameStateManager.verifyAllPlayersSetupEvent(gameId);
-    const game = gameStateManager.getGame(gameId);
-    if (game.numPlayersFinishedSetup !== game.players.length) throw new ValidationError("All players have not finished setup", "players");
-    const activeGame = gameStateManager.beginBattle(game);
-    gameStateManager.processAllPlayersSetupEvent(gameId);
-    gameEventEmitter.emitStartTurn(activeGame.getActiveTeamPlayers(), activeGame.getWaitingTeamPlayers());
-    socket.emit(`${AllPlayersSetupEvent}--success`);
-  }));
-
   socket.on(ExitGameEvent, socketErrorHandler(socket, ExitGameEvent, async ({ gameId }: ExitGameData) => {
     socket.leave(gameId);
     socket.emit(`${ExitGameEvent}--success`);

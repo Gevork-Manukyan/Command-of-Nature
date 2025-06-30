@@ -1,6 +1,6 @@
 import express from 'express';
-import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { GameEventEmitter, GameStateManager, NotFoundError, ValidationError } from '../../services';
+import { AllPlayersSetupData, AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -243,8 +243,15 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-players-setup
     router.post('/:gameId/all-players-setup', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement all players setup logic
-      res.json({ message: 'All players setup endpoint - not implemented yet' });
+      const { gameId }: AllPlayersSetupData = req.body;
+
+      gameStateManager.verifyAllPlayersSetupEvent(gameId);
+      const game = gameStateManager.getGame(gameId);
+      if (game.numPlayersFinishedSetup !== game.players.length) throw new ValidationError("All players have not finished setup", "players");
+      const activeGame = gameStateManager.beginBattle(game);
+      gameStateManager.processAllPlayersSetupEvent(gameId);
+      gameEventEmitter.emitStartTurn(activeGame.getActiveTeamPlayers(), activeGame.getWaitingTeamPlayers());
+      res.status(200).json({ message: 'All players setup successfully' });
     }));
     
     // TODO: implement on client side
