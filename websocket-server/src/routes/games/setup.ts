@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -226,8 +226,18 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/cancel-setup
     router.post('/:gameId/cancel-setup', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement cancel setup logic
-      res.json({ message: 'Cancel setup endpoint - not implemented yet' });
+      const { userId, gameId }: CancelSetupData = req.body;
+      const socketId = getSocketId(userId);
+
+      gameStateManager.verifyCancelSetupEvent(gameId);
+      const game = gameStateManager.getGame(gameId);
+      const player = game.getPlayer(socketId);
+      player.cancelPlayerSetup();
+      game.decrementPlayersFinishedSetup();
+      gameStateManager.processCancelSetupEvent(gameId);
+
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${CancelSetupEvent}--success`, { id: player.userId });
+      res.status(200).json({ message: 'Setup cancelled successfully' });
     }));
     
     // TODO: implement on client side

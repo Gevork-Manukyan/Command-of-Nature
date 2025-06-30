@@ -76,16 +76,6 @@ gameNamespace.on("connection", (socket) => {
   }));
 
   // TODO: implement on client side
-  socket.on(CancelSetupEvent, socketErrorHandler(socket, CancelSetupEvent, async ({ gameId }: CancelSetupData) => {
-    gameStateManager.verifyCancelSetupEvent(gameId);
-    const game = gameStateManager.getGame(gameId)
-    game.getPlayer(socket.id).cancelPlayerSetup();
-    game.decrementPlayersFinishedSetup();
-    gameStateManager.processCancelSetupEvent(gameId);
-    socket.emit(`${CancelSetupEvent}--success`)
-  }))
-
-  // TODO: implement on client side
   socket.on(AllPlayersSetupEvent, socketErrorHandler(socket, AllPlayersSetupEvent, async ({ gameId }: AllPlayersSetupData) => {
     gameStateManager.verifyAllPlayersSetupEvent(gameId);
     const game = gameStateManager.getGame(gameId);
