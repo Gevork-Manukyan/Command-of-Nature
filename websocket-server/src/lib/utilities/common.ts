@@ -8,4 +8,4 @@ export function convertToCustomError(error: unknown): CustomError {
     error instanceof Error ? error.message : "An unexpected error occurred",
     "INTERNAL_ERROR"
   );
-} 
+}

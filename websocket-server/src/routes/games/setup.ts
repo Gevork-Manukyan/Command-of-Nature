@@ -1,10 +1,18 @@
 import express from 'express';
-import { GameEventEmitter, GameStateManager } from '../../services';
+import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
 import { CreateGameData, GameListing, JoinGameData } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
+
+function getSocketId(userId: string) {
+    const socketId = userSocketManager.getSocketId(userId);
+    if (!socketId) {
+        throw new NotFoundError("Socket ID not found");
+    }
+    return socketId;
+}
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
@@ -12,11 +20,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // POST /api/games/setup/create
     router.post('/create', async (req, res) => {
         const { userId, numPlayers, gameName, isPrivate, password }: CreateGameData = req.body;
-        const socketId = userSocketManager.getSocketId(userId);
-        if (!socketId) {
-            res.status(404).json({ error: 'Socket ID not found' });
-            return;
-        }
+        const socketId = getSocketId(userId);
         
         const { game } = await gameStateManager.createGame(numPlayers, gameName, isPrivate, password || '');
         gameStateManager.playerJoinGame(userId, socketId, game.id, true, password);
@@ -35,11 +39,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // POST /api/games/setup/join
     router.post('/join', async (req, res) => {
       const { userId, gameId, password }: JoinGameData = req.body;
-      const socketId = userSocketManager.getSocketId(userId);
-      if (!socketId) {
-        res.status(404).json({ error: 'Socket ID not found' });
-        return;
-      }
+      const socketId = getSocketId(userId);
     
       gameStateManager.verifyJoinGameEvent(gameId);
       await gameStateManager.playerJoinGame(userId, socketId, gameId, false, password);
