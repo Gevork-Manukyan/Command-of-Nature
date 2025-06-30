@@ -75,18 +75,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit("debug", gameStateManager);
   }));
 
-  socket.on(ExitGameEvent, socketErrorHandler(socket, ExitGameEvent, async ({ gameId }: ExitGameData) => {
-    socket.leave(gameId);
-    socket.emit(`${ExitGameEvent}--success`);
-  }));
-
-  // TODO: How to handle if someone leaves the game midway through?
-  socket.on(LeaveGameEvent, socketErrorHandler(socket, LeaveGameEvent, async ({ gameId }: LeaveGameData) => {
-    await gameStateManager.removePlayerFromGame(gameId, socket.id);
-    socket.leave(gameId);
-    socket.emit(`${LeaveGameEvent}--success`);
-  }));
-
   /* -------- GAME BATTLING -------- */
   socket.on(GetDayBreakCardsEvent, socketErrorHandler(socket, GetDayBreakCardsEvent, async ({ gameId }: GetDayBreakCardsData) => {
     gameStateManager.verifyGetDayBreakCardsEvent(gameId);

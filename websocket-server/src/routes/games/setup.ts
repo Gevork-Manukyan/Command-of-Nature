@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError, ValidationError } from '../../services';
-import { AllPlayersSetupData, AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllPlayersSetupData, AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -117,8 +117,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       await gameStateManager.joinTeam(gameId, socketId, team);
       gameStateManager.processJoinTeamEvent(gameId);
 
-      const player = gameStateManager.getGame(gameId).getPlayer(socketId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, "team-joined", { id: player.userId, team });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, "team-joined", { id: userId, team });
       res.status(200).json({ message: 'Team joined successfully' });
     }));
     
@@ -158,8 +157,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       const isReady = gameStateManager.toggleReadyStatus(gameId, socketId);
       gameStateManager.processToggleReadyStatusEvent(gameId);
 
-      const player = gameStateManager.getGame(gameId).getPlayer(socketId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${ToggleReadyStatusEvent}--success`, { id: player.userId, isReady });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${ToggleReadyStatusEvent}--success`, { id: userId, isReady });
       res.status(200).json({ message: 'Ready status toggled successfully' });
     }));
     
@@ -214,12 +212,11 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
       gameStateManager.verifyFinishedSetupEvent(gameId);
       const game = gameStateManager.getGame(gameId);
-      const player = game.getPlayer(socketId);
-      player.finishPlayerSetup();
+      game.getPlayer(socketId).finishPlayerSetup();
       game.incrementPlayersFinishedSetup();
       gameStateManager.processFinishedSetupEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${PlayerFinishedSetupEvent}--success`, { id: player.userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${PlayerFinishedSetupEvent}--success`, { id: userId });
       res.status(200).json({ message: 'Setup finished successfully' });
     }));
     
@@ -231,12 +228,11 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
       gameStateManager.verifyCancelSetupEvent(gameId);
       const game = gameStateManager.getGame(gameId);
-      const player = game.getPlayer(socketId);
-      player.cancelPlayerSetup();
+      game.getPlayer(socketId).cancelPlayerSetup();
       game.decrementPlayersFinishedSetup();
       gameStateManager.processCancelSetupEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${CancelSetupEvent}--success`, { id: player.userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${CancelSetupEvent}--success`, { id: userId });
       res.status(200).json({ message: 'Setup cancelled successfully' });
     }));
     
@@ -255,17 +251,26 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     }));
     
     // TODO: implement on client side
+    // TODO: How to handle if someone leaves the game midway through?
     // POST /api/games/setup/:gameId/exit
     router.post('/:gameId/exit', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement exit game logic
-      res.json({ message: 'Exit game endpoint - not implemented yet' });
+      const { userId, gameId }: ExitGameData = req.body;
+
+      userSocketManager.leaveGameRoom(userId, gameId);
+      gameEventEmitter.emitToAllPlayers(gameId, `${ExitGameEvent}--success`, { id: userId });
+      res.status(200).json({ message: 'Game exited successfully' });
     }));
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/leave
     router.post('/:gameId/leave', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement leave game logic
-      res.json({ message: 'Leave game endpoint - not implemented yet' });
+      const { userId, gameId }: LeaveGameData = req.body;
+      const socketId = getSocketId(userId);
+
+      await gameStateManager.removePlayerFromGame(gameId, socketId);
+      userSocketManager.leaveGameRoom(userId, gameId);
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${LeaveGameEvent}--success`, { id: userId });
+      res.status(200).json({ message: 'Game left successfully' });
     }));
 
     return router;

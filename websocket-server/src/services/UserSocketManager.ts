@@ -32,4 +32,11 @@ export class UserSocketManager {
             socket.join(gameId);
         }
     }
+
+    leaveGameRoom(userId: string, gameId: string): void {
+        const socket = this.getSocket(userId);
+        if (socket) {
+            socket.leave(gameId);
+        }
+    }
 }
