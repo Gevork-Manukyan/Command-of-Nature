@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -179,8 +179,16 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/choose-warriors
     router.post('/:gameId/choose-warriors', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement choose warriors logic
-      res.json({ message: 'Choose warriors endpoint - not implemented yet' });
+      const { userId, gameId, choices }: ChoseWarriorsData = req.body;
+      const socketId = getSocketId(userId);
+
+      gameStateManager.verifyChooseWarriorsEvent(gameId);
+      const game = gameStateManager.getGame(gameId);
+      const player = game.getPlayer(socketId);
+      game.getPlayerTeam(player.userId).chooseWarriors(player, choices);
+      gameStateManager.processChooseWarriorsEvent(gameId);
+
+      res.status(200).json({ message: 'Warriors chosen successfully' });
     }));
     
     // TODO: implement on client side
