@@ -47,7 +47,7 @@ gameNamespace.on("connection", (socket) => {
     console.error("Socket error:", error);
   });
 
-  /* -------- AUTO-REGISTER USER ON CONNECT -------- */
+  /* -------- AUTO-REGISTER USER ID ON CONNECT -------- */
   // Extract userId from query parameters
   const userId = socket.handshake.query.userId as string;
   if (userId) {
