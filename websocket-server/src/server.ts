@@ -76,26 +76,6 @@ gameNamespace.on("connection", (socket) => {
   }));
 
   // TODO: implement on client side
-  socket.on(SwapWarriorsEvent, socketErrorHandler(socket, SwapWarriorsEvent, async ({ gameId }: SwapWarriorsData) => {
-    gameStateManager.verifySwapWarriorsEvent(gameId);
-    const game = gameStateManager.getGame(gameId);
-    const player = game.getPlayer(socket.id);
-    game.getPlayerTeam(player.userId).swapWarriors(player);
-    gameStateManager.processSwapWarriorsEvent(gameId);
-    socket.emit(`${SwapWarriorsEvent}--success`)
-  }));
-
-  // TODO: implement on client side
-  socket.on(PlayerFinishedSetupEvent, socketErrorHandler(socket, PlayerFinishedSetupEvent, async ({ gameId }: PlayerFinishedSetupData) => {
-    gameStateManager.verifyFinishedSetupEvent(gameId);
-    const game = gameStateManager.getGame(gameId);
-    game.getPlayer(socket.id).finishPlayerSetup();
-    game.incrementPlayersFinishedSetup();
-    gameStateManager.processFinishedSetupEvent(gameId);
-    socket.emit(`${PlayerFinishedSetupEvent}--success`)
-  }));
-
-  // TODO: implement on client side
   socket.on(CancelSetupEvent, socketErrorHandler(socket, CancelSetupEvent, async ({ gameId }: CancelSetupData) => {
     gameStateManager.verifyCancelSetupEvent(gameId);
     const game = gameStateManager.getGame(gameId)

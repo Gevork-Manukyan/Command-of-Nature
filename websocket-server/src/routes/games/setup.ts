@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, PlayerFinishedSetupData, PlayerFinishedSetupEvent, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -209,8 +209,18 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/finish-setup
     router.post('/:gameId/finish-setup', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement finish setup logic
-      res.json({ message: 'Finish setup endpoint - not implemented yet' });
+      const { userId, gameId }: PlayerFinishedSetupData = req.body;
+      const socketId = getSocketId(userId);
+
+      gameStateManager.verifyFinishedSetupEvent(gameId);
+      const game = gameStateManager.getGame(gameId);
+      const player = game.getPlayer(socketId);
+      player.finishPlayerSetup();
+      game.incrementPlayersFinishedSetup();
+      gameStateManager.processFinishedSetupEvent(gameId);
+
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${PlayerFinishedSetupEvent}--success`, { id: player.userId });
+      res.status(200).json({ message: 'Setup finished successfully' });
     }));
     
     // TODO: implement on client side
