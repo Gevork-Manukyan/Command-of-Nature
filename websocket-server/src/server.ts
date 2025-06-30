@@ -10,6 +10,7 @@ import { GameEventEmitter, GameStateManager, ValidationError, InvalidSpaceError 
 import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent, RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 app.use(cors());
@@ -36,6 +37,9 @@ const userSocketManager = UserSocketManager.getInstance();
 app.use('/api/games', createGamesRouter(gameEventEmitter));
 app.use('/api/game-listings', gameListingsRouter);
 app.use('/api/users', usersRouter);
+
+// Error handling middleware (must be last)
+app.use(errorHandler as express.ErrorRequestHandler);
 
 gameNamespace.on("connection", (socket) => {
   /* -------- MIDDLEWARE -------- */
@@ -268,7 +272,6 @@ gameNamespace.on("connection", (socket) => {
       Take Damage
   */
 });
-
 
 // Connect to MongoDB first
 mongoose.connect(process.env.DATABASE_URL || "mongodb://localhost:27017/command_of_nature")
