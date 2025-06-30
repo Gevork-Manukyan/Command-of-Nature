@@ -76,16 +76,6 @@ gameNamespace.on("connection", (socket) => {
   }));
 
   // TODO: implement on client side
-  socket.on(StartGameEvent, socketErrorHandler(socket, StartGameEvent, async ({ gameId }: StartGameData) => {
-    gameStateManager.verifyAllPlayersReadyEvent(gameId);
-    await gameStateManager.startGame(gameId);
-    gameStateManager.processAllPlayersReadyEvent(gameId);
-    
-    gameEventEmitter.emitPickWarriors(gameId);
-    socket.emit(`${StartGameEvent}--success`);
-  }));
-
-  // TODO: implement on client side
   socket.on(ChoseWarriorsEvent, socketErrorHandler(socket, ChoseWarriorsEvent, async ({ gameId, choices }: ChoseWarriorsData) => {
     gameStateManager.verifyChooseWarriorsEvent(gameId);
     const game = gameStateManager.getGame(gameId);

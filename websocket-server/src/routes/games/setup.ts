@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -166,8 +166,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/start
     router.post('/:gameId/start', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement start game logic
-      res.json({ message: 'Start game endpoint - not implemented yet' });
+      const { gameId }: StartGameData = req.body;
+
+      gameStateManager.verifyAllPlayersReadyEvent(gameId);
+      await gameStateManager.startGame(gameId);
+      gameStateManager.processAllPlayersReadyEvent(gameId);
+
+      gameEventEmitter.emitPickWarriors(gameId);
+      res.status(200).json({ message: 'Game started successfully' });
     }));
     
     // TODO: implement on client side
