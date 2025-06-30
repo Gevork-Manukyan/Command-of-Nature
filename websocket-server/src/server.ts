@@ -75,36 +75,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit("debug", gameStateManager);
   }));
 
-  socket.on(SelectSageEvent, socketErrorHandler(socket, SelectSageEvent, async ({ gameId, sage }: SelectSageData) => {
-    gameStateManager.verifySelectSageEvent(gameId);
-    await gameStateManager.setPlayerSage(gameId, socket.id, sage);
-    gameStateManager.processSelectSageEvent(gameId);
-
-    const availableSages = gameStateManager.getGame(gameId).getAvailableSages();
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, `sage-selected`, { selectedSage: sage, availableSages });
-    socket.emit(`${SelectSageEvent}--success`);
-  }));
-
-  // TODO: implement on client side
-  socket.on(AllSagesSelectedEvent, socketErrorHandler(socket, AllSagesSelectedEvent, async ({ gameId }: AllSagesSelectedData) => {
-    gameStateManager.verifyAllSagesSelectedEvent(gameId);
-    await gameStateManager.allPlayersSelectedSage(gameId);
-    gameStateManager.processAllSagesSelectedEvent(gameId);
-
-    gameEventEmitter.emitToAllPlayers(gameId, `${AllSagesSelectedEvent}--success`);
-  }));
-
-  // TODO: implement on client side
-  socket.on(JoinTeamEvent, socketErrorHandler(socket, JoinTeamEvent, async ({ gameId, team }: JoinTeamData) => {
-    gameStateManager.verifyJoinTeamEvent(gameId);
-    await gameStateManager.joinTeam(gameId, socket.id, team);
-    gameStateManager.processJoinTeamEvent(gameId);
-    
-    const player = gameStateManager.getGame(gameId).getPlayer(socket.id);
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, "team-joined", { id: player.userId, team });
-    socket.emit(`${JoinTeamEvent}--success`);
-  }));
-
   // TODO: implement on client side
   socket.on(ClearTeamsEvent, socketErrorHandler(socket, ClearTeamsEvent, async ({ gameId }: ClearTeamsData) => {
     gameStateManager.verifyClearTeamsEvent(gameId);

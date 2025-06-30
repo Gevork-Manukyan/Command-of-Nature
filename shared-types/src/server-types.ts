@@ -22,74 +22,90 @@ const joinGameSchema = z.object({
 });
 
 const selectSageSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
   sage: SageSchema,
 });
 
 const allSagesSelectedSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const toggleReadyStatusSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const joinTeamSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
   team: z.union([z.literal(1), z.literal(2)]),
 });
 
 const clearTeamsSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const allTeamsJoinedSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const startGameSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const choseWarriorsSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
   choices: z.tuple([ElementalWarriorStarterCardSchema, ElementalWarriorStarterCardSchema]),
 });
 
 const swapWarriorsSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 })
 
 const playerFinishedSetupSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const cancelSetupSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 })
 
 const allPlayersSetupSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 })
 
 const exitGameSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 })
 
 const rejoinGameSchema = z.object({
-  gameId: z.string(),
   userId: z.string(),
+  gameId: z.string(),
 })
 
 const leaveGameSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const getDayBreakCardsSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
 });
 
 const activateDayBreakSchema = z.object({
+  userId: z.string(),
   gameId: z.string(),
   spaceOption: AllSpaceOptionsSchema,
 });
