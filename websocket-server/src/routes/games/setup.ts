@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { CreateGameData, GameListing, JoinGameData } from '@shared-types';
+import { CreateGameData, GameListing, JoinGameData, RejoinGameData } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -55,15 +55,29 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         numCurrentPlayers: game.players.length,
       }
     
-      userSocketManager.joinGameRoom(userId, game.id);
+      userSocketManager.joinGameRoom(userId, gameId);
       gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, "player-joined", { userId });
       res.json(gameListing);
     }));
     
     // POST /api/games/setup/rejoin
     router.post('/rejoin', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement rejoin game logic
-      res.json({ message: 'Rejoin game endpoint - not implemented yet' });
+      const { userId, gameId }: RejoinGameData = req.body;
+      const socketId = getSocketId(userId);
+
+      await gameStateManager.playerRejoinedGame(gameId, userId, socketId);
+      const game = gameStateManager.getGame(gameId);
+      const gameListing: GameListing = {
+        id: gameId,
+        gameName: game.gameName,
+        isPrivate: game.isPrivate,
+        numPlayersTotal: game.numPlayersTotal,
+        numCurrentPlayers: game.players.length,
+      }
+
+      userSocketManager.joinGameRoom(userId, gameId);
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, "player-rejoined", { userId });
+      res.json(gameListing);
     }));
     
     // POST /api/games/setup/:gameId/sage

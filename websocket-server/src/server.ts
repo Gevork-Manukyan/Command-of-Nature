@@ -75,13 +75,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit("debug", gameStateManager);
   }));
 
-  socket.on(RejoinGameEvent, socketErrorHandler(socket, RejoinGameEvent, async ({ gameId, userId }: RejoinGameData) => {
-    await gameStateManager.playerRejoinedGame(gameId, userId, socket.id);
-    socket.join(gameId);
-    socket.emit(`${RejoinGameEvent}--success`);
-    gameEventEmitter.emitToAllPlayers(gameId, "player-rejoined", { userId });
-  }));
-
   socket.on(SelectSageEvent, socketErrorHandler(socket, SelectSageEvent, async ({ gameId, sage }: SelectSageData) => {
     gameStateManager.verifySelectSageEvent(gameId);
     await gameStateManager.setPlayerSage(gameId, socket.id, sage);
