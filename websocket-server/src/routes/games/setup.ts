@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -151,8 +151,16 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/toggle-ready
     router.post('/:gameId/toggle-ready', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement toggle ready status logic
-      res.json({ message: 'Toggle ready status endpoint - not implemented yet' });
+      const { userId, gameId }: ToggleReadyStatusData = req.body;
+      const socketId = getSocketId(userId);
+
+      gameStateManager.verifyToggleReadyStatusEvent(gameId);
+      const isReady = gameStateManager.toggleReadyStatus(gameId, socketId);
+      gameStateManager.processToggleReadyStatusEvent(gameId);
+
+      const player = gameStateManager.getGame(gameId).getPlayer(socketId);
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `${ToggleReadyStatusEvent}--success`, { id: player.userId, isReady });
+      res.status(200).json({ message: 'Ready status toggled successfully' });
     }));
     
     // TODO: implement on client side

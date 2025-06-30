@@ -76,27 +76,6 @@ gameNamespace.on("connection", (socket) => {
   }));
 
   // TODO: implement on client side
-  socket.on(AllTeamsJoinedEvent, socketErrorHandler(socket, AllTeamsJoinedEvent, async ({ gameId }: AllTeamsJoinedData) => {
-    gameStateManager.verifyAllTeamsJoinedEvent(gameId);
-    await gameStateManager.allTeamsJoined(gameId);
-    gameStateManager.processAllTeamsJoinedEvent(gameId);
-
-    gameEventEmitter.emitToAllPlayers(gameId, `${AllTeamsJoinedEvent}--success`);
-  }));
-
-  // TODO: implement on client side
-  socket.on(ToggleReadyStatusEvent, socketErrorHandler(socket, ToggleReadyStatusEvent, async ({ gameId }: ToggleReadyStatusData) => {
-    gameStateManager.verifyToggleReadyStatusEvent(gameId);
-    const isReady = gameStateManager.toggleReadyStatus(gameId, socket.id);
-    gameStateManager.processToggleReadyStatusEvent(gameId);
-
-    const player = gameStateManager.getGame(gameId).getPlayer(socket.id);
-    const eventName = isReady ? "ready-status--ready" : "ready-status--not-ready";
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socket.id, eventName, { id: player.userId, isReady });
-    socket.emit(eventName);
-  }));
-
-  // TODO: implement on client side
   socket.on(StartGameEvent, socketErrorHandler(socket, StartGameEvent, async ({ gameId }: StartGameData) => {
     gameStateManager.verifyAllPlayersReadyEvent(gameId);
     await gameStateManager.startGame(gameId);
