@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, AllTeamsJoinedData, AllTeamsJoinedEvent, ChoseWarriorsData, ChoseWarriorsEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData, StartGameData, SwapWarriorsData, SwapWarriorsEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -194,8 +194,16 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/swap-warriors
     router.post('/:gameId/swap-warriors', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement swap warriors logic
-      res.json({ message: 'Swap warriors endpoint - not implemented yet' });
+      const { userId, gameId }: SwapWarriorsData = req.body;
+      const socketId = getSocketId(userId);
+
+      gameStateManager.verifySwapWarriorsEvent(gameId);
+      const game = gameStateManager.getGame(gameId);
+      const player = game.getPlayer(socketId);
+      game.getPlayerTeam(player.userId).swapWarriors(player);
+      gameStateManager.processSwapWarriorsEvent(gameId);
+
+      res.status(200).json({ message: 'Warriors swapped successfully' });
     }));
     
     // TODO: implement on client side
