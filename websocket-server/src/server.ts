@@ -67,35 +67,6 @@ gameNamespace.on("connection", (socket) => {
     socket.emit(`${RegisterUserSocketEvent}--success`);
   });
 
-  /* -------- GAME SETUP -------- */
-  // TODO: some events should emit to all players that something happened
-
-  // TODO: FOR DEBUGING
-  socket.on(DebugEvent, socketErrorHandler(socket, DebugEvent, async () => {
-    socket.emit("debug", gameStateManager);
-  }));
-
-  /* -------- GAME BATTLING -------- */
-  socket.on(GetDayBreakCardsEvent, socketErrorHandler(socket, GetDayBreakCardsEvent, async ({ gameId }: GetDayBreakCardsData) => {
-    gameStateManager.verifyGetDayBreakCardsEvent(gameId);
-    const game = gameStateManager.getActiveGame(gameId);
-    const dayBreakCards = game.getDayBreakCards(socket.id);
-    gameStateManager.processGetDayBreakCardsEvent(gameId);
-    gameEventEmitter.emitToPlayers(game.getActiveTeamPlayers(), "day-break-cards", dayBreakCards);
-  }));
-
-  socket.on(ActivateDayBreakEvent, socketErrorHandler(socket, ActivateDayBreakEvent, async ({ gameId, spaceOption }: ActivateDayBreakData) => {
-    gameStateManager.verifyActivateDayBreakEvent(gameId);
-    const game = gameStateManager.getActiveGame(gameId);
-
-    if (game.players.length === 2 && AllSpaceOptionsSchema.safeParse(spaceOption).error) {
-      throw new InvalidSpaceError(spaceOption);
-    }
-
-    game.activateDayBreak(socket.id, spaceOption);
-    gameStateManager.processActivateDayBreakEvent(gameId);
-  }));
-
   /*
     PHASE 1
       Daybreak Effects
