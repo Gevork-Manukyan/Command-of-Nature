@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError } from '../../services';
-import { AllSagesSelectedData, AllSagesSelectedEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData } from '@shared-types';
+import { AllSagesSelectedData, AllSagesSelectedEvent, ClearTeamsData, ClearTeamsEvent, CreateGameData, GameListing, JoinGameData, JoinTeamData, RejoinGameData, SelectSageData } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -125,8 +125,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/clear-teams
     router.post('/:gameId/clear-teams', asyncHandler(async (req: Request, res: Response) => {
-      // TODO: Implement clear teams logic
-      res.json({ message: 'Clear teams endpoint - not implemented yet' });
+      const { gameId }: ClearTeamsData = req.body;
+
+      gameStateManager.verifyClearTeamsEvent(gameId);
+      gameStateManager.getGame(gameId).clearTeams();
+      gameStateManager.processClearTeamsEvent(gameId);
+
+      gameEventEmitter.emitToAllPlayers(gameId, `${ClearTeamsEvent}--success`);
+      res.status(200).json({ message: 'Teams cleared successfully' });
     }));
     
     // TODO: implement on client side
