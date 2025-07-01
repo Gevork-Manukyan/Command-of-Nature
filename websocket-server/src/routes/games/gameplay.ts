@@ -20,7 +20,8 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
 
   // POST /api/games/gameplay/:gameId/day-break-cards
   router.post('/:gameId/day-break-cards', async (req, res) => {
-    const { userId, gameId }: GetDayBreakCardsData = req.body;
+    const { userId }: GetDayBreakCardsData = req.body;
+    const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
 
     gameStateManager.verifyGetDayBreakCardsEvent(gameId);
@@ -33,7 +34,8 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
 
   // POST /api/games/gameplay/:gameId/activate-day-break
   router.post('/:gameId/activate-day-break', async (req, res) => {
-    const { userId, gameId, spaceOption }: ActivateDayBreakData = req.body;
+    const { userId, spaceOption }: ActivateDayBreakData = req.body;
+    const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
     
     gameStateManager.verifyActivateDayBreakEvent(gameId);

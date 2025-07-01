@@ -5,9 +5,11 @@ import { useParams } from 'next/navigation';
 import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useUserContext } from '@/contexts/UserContext';
-import { socketService } from '@/services/socket';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
+import GameApiClient from '@/services/game-api';
+
+const gameApiClient = GameApiClient.getInstance();
 
 export default function GameLayout({
     children,
@@ -33,7 +35,7 @@ export default function GameLayout({
             try {
                 setIsRejoiningGame(true);
                 setRejoinError('');
-                await socketService.rejoinGame(userId, currentSession.id);
+                await gameApiClient.rejoinGame({ userId, gameId });
                 setIsRejoiningGame(false);
             } catch (err) {
                 console.error('Failed to rejoin game:', err);

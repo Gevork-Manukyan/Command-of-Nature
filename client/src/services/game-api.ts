@@ -21,8 +21,9 @@ import {
 } from "@shared-types/server-types";
 
 class GameApiClient {
-
+  private static instance: GameApiClient;
   private baseUrl = 'http://localhost:3000/api/games';
+  private constructor() {}
 
   private async fetch(endpoint: string, data: any, method: string) {
     const url = `${this.baseUrl}${endpoint}`;
@@ -34,6 +35,13 @@ class GameApiClient {
     return response.json();
   }
 
+  public static getInstance(): GameApiClient {
+    if (!GameApiClient.instance) {
+      GameApiClient.instance = new GameApiClient();
+    }
+    return GameApiClient.instance;
+  }
+
   // Game Listings
   async getAllGames(isStarted?: boolean) {
     const query = isStarted !== undefined ? `?isStarted=${isStarted}` : '';
@@ -41,81 +49,93 @@ class GameApiClient {
   }
 
   // Setup Endpoints
+  private getSetupUrl(url: string, data: any, method: string) {
+    return this.fetch(`/setup${url}`, data, method);
+  }
+
+  private getSetupUrlWithGameId(url: string, gameId: string, data: any, method: string) {
+    return this.getSetupUrl(`/${gameId}${url}`, data, method);
+  }
+  
   async createGame(data: CreateGameData) {
-    return this.fetch('/setup/create', data, 'POST');
+    return this.getSetupUrl('/create', data, 'POST');
   }
 
   async joinGame(data: JoinGameData) {
-    return this.fetch('/setup/join', data, 'POST');
+    return this.getSetupUrl('/join', data, 'POST');
   }
 
   async rejoinGame(data: RejoinGameData) {
-    return this.fetch('/setup/rejoin', data, 'POST');
+    return this.getSetupUrl('/rejoin', data, 'POST');
   }
 
-  async selectSage(data: SelectSageData) {
-    return this.fetch(`/setup/${data.gameId}/sage`, data, 'POST');
+  async selectSage(gameId: string, data: SelectSageData) {
+    return this.getSetupUrlWithGameId('/sage', gameId, data, 'POST');
   }
 
-  async allSagesSelected(data: AllSagesSelectedData) {
-    return this.fetch(`/setup/${data.gameId}/all-sages-selected`, data, 'POST');
+  async allSagesSelected(gameId: string, data: AllSagesSelectedData) {
+    return this.getSetupUrlWithGameId('/all-sages-selected', gameId, data, 'POST');
   }
 
-  async joinTeam(data: JoinTeamData) {
-    return this.fetch(`/setup/${data.gameId}/join-team`, data, 'POST');
+  async joinTeam(gameId: string, data: JoinTeamData) {
+    return this.getSetupUrlWithGameId('/join-team', gameId, data, 'POST');
   }
 
-  async clearTeams(data: ClearTeamsData) {
-    return this.fetch(`/setup/${data.gameId}/clear-teams`, data, 'POST');
+  async clearTeams(gameId: string, data: ClearTeamsData) {
+    return this.getSetupUrlWithGameId('/clear-teams', gameId, data, 'POST');
   }
 
-  async allTeamsJoined(data: AllTeamsJoinedData) {
-    return this.fetch(`/setup/${data.gameId}/all-teams-joined`, data, 'POST');
+  async allTeamsJoined(gameId: string, data: AllTeamsJoinedData) {
+    return this.getSetupUrlWithGameId('/all-teams-joined', gameId, data, 'POST');
   }
 
-  async toggleReady(data: ToggleReadyStatusData) {
-    return this.fetch(`/setup/${data.gameId}/toggle-ready`, data, 'POST');
+  async toggleReady(gameId: string, data: ToggleReadyStatusData) {
+    return this.getSetupUrlWithGameId('/toggle-ready', gameId, data, 'POST');
   }
 
-  async startGame(data: StartGameData) {
-    return this.fetch(`/setup/${data.gameId}/start`, data, 'POST');
+  async startGame(gameId: string, data: StartGameData) {
+    return this.getSetupUrlWithGameId('/start', gameId, data, 'POST');
   }
 
-  async chooseWarriors(data: ChoseWarriorsData) {
-    return this.fetch(`/setup/${data.gameId}/choose-warriors`, data, 'POST');
+  async chooseWarriors(gameId: string, data: ChoseWarriorsData) {
+    return this.getSetupUrlWithGameId('/choose-warriors', gameId, data, 'POST');
   }
 
-  async swapWarriors(data: SwapWarriorsData) {
-    return this.fetch(`/setup/${data.gameId}/swap-warriors`, data, 'POST');
+  async swapWarriors(gameId: string, data: SwapWarriorsData) {
+    return this.getSetupUrlWithGameId('/swap-warriors', gameId, data, 'POST');
   }
 
-  async finishSetup(data: PlayerFinishedSetupData) {
-    return this.fetch(`/setup/${data.gameId}/finish-setup`, data, 'POST');
+  async finishSetup(gameId: string, data: PlayerFinishedSetupData) {
+    return this.getSetupUrlWithGameId('/finish-setup', gameId, data, 'POST');
   }
 
-  async cancelSetup(data: CancelSetupData) {
-    return this.fetch(`/setup/${data.gameId}/cancel-setup`, data, 'POST');
+  async cancelSetup(gameId: string, data: CancelSetupData) {
+    return this.getSetupUrlWithGameId('/cancel-setup', gameId, data, 'POST');
   }
 
-  async allPlayersSetup(data: AllPlayersSetupData) {
-    return this.fetch(`/setup/${data.gameId}/all-players-setup`, data, 'POST');
+  async allPlayersSetup(gameId: string, data: AllPlayersSetupData) {
+    return this.getSetupUrlWithGameId('/all-players-setup', gameId, data, 'POST');
   }
 
-  async exitGame(data: ExitGameData) {
-    return this.fetch(`/setup/${data.gameId}/exit`, data, 'POST');
+  async exitGame(gameId: string, data: ExitGameData) {
+    return this.getSetupUrlWithGameId('/exit', gameId, data, 'POST');
   }
 
-  async leaveGame(data: LeaveGameData) {
-    return this.fetch(`/setup/${data.gameId}/leave`, data, 'POST');
+  async leaveGame(gameId: string, data: LeaveGameData) {
+    return this.getSetupUrlWithGameId('/leave', gameId, data, 'POST');
   }
 
   // Gameplay Endpoints
-  async getDayBreakCards(data: GetDayBreakCardsData) {
-    return this.fetch(`/gameplay/${data.gameId}/day-break-cards`, data, 'POST');
+  private getGameplayUrlWithGameId(url: string, gameId: string, data: any, method: string) {
+    return this.fetch(`/gameplay/${gameId}${url}`, data, method);
+  }
+  
+  async getDayBreakCards(gameId: string, data: GetDayBreakCardsData) {
+    return this.getGameplayUrlWithGameId('/day-break-cards', gameId, data, 'POST');
   }
 
-  async activateDayBreak(data: ActivateDayBreakData) {
-    return this.fetch(`/gameplay/${data.gameId}/activate-day-break`, data, 'POST');
+  async activateDayBreak(gameId: string, data: ActivateDayBreakData) {
+    return this.getGameplayUrlWithGameId('/activate-day-break', gameId, data, 'POST');
   }
 }
 
