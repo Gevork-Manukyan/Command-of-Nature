@@ -1,5 +1,5 @@
 import { useUserContext } from "@/contexts/UserContext";
-import { socketService } from "@/services/socket.service";
+import { socketService } from "@/services/socket";
 import { useState } from "react";
 import { GameListing } from "@shared-types";
 

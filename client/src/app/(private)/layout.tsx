@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useUserContext } from '@/contexts/UserContext';
-import { socketService } from '@/services/socket.service';
+import { socketService } from '@/services/socket';
 
 export default function PrivateLayout({
   children,

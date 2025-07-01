@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-import { socketService } from '@/services/socket.service';
+import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function useGameNavigation() {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameListing } from "@shared-types";
 import { apiClient } from "@/lib/client/api-client";
-import { socketService } from "@/services/socket.service";
+import { socketService } from "@/services/socket";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useRouter } from "next/navigation";
 

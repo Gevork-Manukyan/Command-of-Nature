@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { socketService } from '@/services/socket.service';
+import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function useGamePage() {
