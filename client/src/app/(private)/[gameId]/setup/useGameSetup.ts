@@ -3,6 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, TeamJoinedEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent } from '@shared-types';
+import { gameApiClient } from "@/services/game-api";
 
 type SetupPhase = 'sage-selection' | 'team-formation' | 'warrior-selection' | 'ready' | 'setup-complete';
 
@@ -21,7 +22,7 @@ interface Teams {
 export function useGameSetup() {
     const router = useRouter();
     const pathname = usePathname();
-    const gameId = pathname.split('/').pop();
+    const gameId = pathname.split('/').pop() || '';
     const { currentSession } = useGameSessionContext();
 
     // Error Handling State
@@ -130,7 +131,7 @@ export function useGameSetup() {
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentSession) return;
         try {
-            await socketService.selectSage(currentSession.id, sage);
+            await gameApiClient.selectSage(gameId, { userId: currentSession.id, sage });
             setAvailableSages(prev => {
                 // make the previously confirmed sage available again
                 const newAvailableSages = { ...prev };
@@ -154,7 +155,7 @@ export function useGameSetup() {
     const handleTeamJoin = async (team: 1 | 2) => {
         if (!currentSession) return;
         try {
-            await socketService.joinTeam(currentSession.id, team);
+            await gameApiClient.joinTeam(gameId, { userId: currentSession.id, team });
         } catch (err) {
             console.error('Failed to join team:', err);
             setError(err instanceof Error ? err.message : 'Failed to join team');

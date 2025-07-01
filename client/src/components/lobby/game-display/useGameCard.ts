@@ -1,7 +1,7 @@
 import { useUserContext } from "@/contexts/UserContext";
-import { socketService } from "@/services/socket";
 import { useState } from "react";
 import { GameListing } from "@shared-types";
+import { gameApiClient } from "@/services/game-api";
 
 export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean) => void) {
     const { userId } = useUserContext();
@@ -18,7 +18,7 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
   
       try {
           setIsJoining(true);
-          await socketService.joinGame(userId, game.id, password);
+          await gameApiClient.joinGame({ userId, gameId: game.id, password: password || undefined });
       } catch (err) {
           console.error('Failed to join game:', err);
           setIsJoining(false);

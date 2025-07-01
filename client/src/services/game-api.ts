@@ -139,4 +139,4 @@ class GameApiClient {
   }
 }
 
-export default GameApiClient;
+export const gameApiClient = GameApiClient.getInstance();

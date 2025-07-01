@@ -7,20 +7,18 @@ import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ErrorScreen } from '@/components/ErrorScreen';
-import GameApiClient from '@/services/game-api';
-
-const gameApiClient = GameApiClient.getInstance();
+import { gameApiClient } from '@/services/game-api';
 
 export default function GameLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { userId } = useUserContext();
-    const { currentSession, isLoadingGameSession } = useGameSessionContext();
-    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation();
     const params = useParams();
     const gameId = params.gameId as string;
+    const { userId } = useUserContext();
+    const { currentSession, isLoadingGameSession } = useGameSessionContext();
+    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId);
     const shortGameId = gameId.toString().slice(-6);
     
     // Rejoin game state

@@ -1,7 +1,7 @@
 "use client";
 
 import { useUserContext } from '@/contexts/UserContext';
-import { socketService } from '@/services/socket';
+import { gameApiClient } from '@/services/game-api';
 import { useState } from 'react';
 
 interface CreateGameModalProps {
@@ -12,7 +12,7 @@ interface CreateGameModalProps {
 
 export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameModalProps) => {
   const { userId } = useUserContext();
-  const [numPlayers, setNumPlayers] = useState<number>(2);
+  const [numPlayers, setNumPlayers] = useState<2 | 4>(2);
   const [gameName, setGameName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
@@ -32,7 +32,8 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
     try {
         setIsCreatingGame(true);
         setIsJoining(true);
-        await socketService.createGame(userId, {
+        await gameApiClient.createGame({
+            userId,
             numPlayers,
             gameName,
             isPrivate,
