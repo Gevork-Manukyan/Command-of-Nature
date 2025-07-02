@@ -46,8 +46,8 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
         if (response.error) {
             throw new Error(response.error);
         } 
-        updateCurrentSession(response.data);
-        router.push(`/game/${response.data.id}`);
+        updateCurrentSession(response);
+        router.push(`/game/${response.id}`);
         onClose();
     } catch (err) {
         console.error('Failed to create game:', err);

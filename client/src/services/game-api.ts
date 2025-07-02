@@ -33,12 +33,7 @@ class GameApiClient {
       body: JSON.stringify(data)
     });
     
-    const json = await response.json();
-    return {
-      data: json,
-      status: response.status,
-      error: json.error ? json.error : null
-    }
+    return await response.json();
   }
 
   public static getInstance(): GameApiClient {
@@ -117,10 +112,12 @@ class GameApiClient {
     return this.getSetupUrlWithGameId('/all-players-setup', gameId, data, 'POST');
   }
 
+  // just go back to the lobby
   async exitGame(gameId: string, data: ExitGameData) {
     return this.getSetupUrlWithGameId('/exit', gameId, data, 'POST');
   }
 
+  // leave the game and the session
   async leaveGame(gameId: string, data: LeaveGameData) {
     return this.getSetupUrlWithGameId('/leave', gameId, data, 'POST');
   }
