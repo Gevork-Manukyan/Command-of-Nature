@@ -1,5 +1,6 @@
 "use client";
 
+import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { gameApiClient } from '@/services/game-api';
 import { useRouter } from 'next/navigation';
@@ -19,7 +20,8 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState('');
   const [isCreatingGame, setIsCreatingGame] = useState(false);
-
+  const { updateCurrentSession } = useGameSessionContext();
+  
   const isFormValid = () => {
     if (!gameName.trim()) return false;
     if (isPrivate && !password.trim()) return false;
@@ -44,7 +46,9 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
         if (response.error) {
             throw new Error(response.error);
         } 
+        updateCurrentSession(response.data);
         router.push(`/game/${response.data.id}`);
+        onClose();
     } catch (err) {
         console.error('Failed to create game:', err);
         setIsJoining(false);

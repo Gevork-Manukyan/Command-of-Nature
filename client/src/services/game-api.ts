@@ -22,7 +22,7 @@ import {
 
 class GameApiClient {
   private static instance: GameApiClient;
-  private baseUrl = 'http://localhost:3000/api/games';
+  private baseUrl = 'http://localhost:3003/api/games';
   private constructor() {}
 
   private async fetch(endpoint: string, data: any, method: string) {
@@ -32,7 +32,13 @@ class GameApiClient {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    return response.json();
+    
+    const json = await response.json();
+    return {
+      data: json,
+      status: response.status,
+      error: json.error ? json.error : null
+    }
   }
 
   public static getInstance(): GameApiClient {

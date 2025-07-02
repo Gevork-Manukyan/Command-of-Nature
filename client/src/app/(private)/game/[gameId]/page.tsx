@@ -1,17 +1,35 @@
 "use client";
 
-import { useGamePage } from './useGamePage';
 import { useParams, useRouter } from 'next/navigation';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { socketService } from '@/services/socket';
 
 export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
     const { currentSession } = useGameSessionContext();
-    const { error, hasFinishedSetup } = useGamePage();
+    const [error, setError] = useState<string>('');
+    const [hasFinishedSetup, setHasFinishedSetup] = useState(false);
+    
+    // TODO: This is a temporary solution to check if the game has finished setup.
+    // Setup socket event listeners
+    useEffect(() => {
+        if (!currentSession) return;
+
+        const handleSetupComplete = () => {
+            setHasFinishedSetup(true);
+        };
+
+        // Register event listeners
+        socketService.on('setup-complete', handleSetupComplete);
+
+        return () => {
+            socketService.off('setup-complete', handleSetupComplete);
+        };
+    }, [currentSession]);
 
     // Redirect to setup if game hasn't finished setup
     useEffect(() => {
