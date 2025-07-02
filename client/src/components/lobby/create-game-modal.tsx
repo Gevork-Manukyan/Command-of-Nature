@@ -2,6 +2,7 @@
 
 import { useUserContext } from '@/contexts/UserContext';
 import { gameApiClient } from '@/services/game-api';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CreateGameModalProps {
@@ -11,6 +12,7 @@ interface CreateGameModalProps {
 }
 
 export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameModalProps) => {
+  const router = useRouter();
   const { userId } = useUserContext();
   const [numPlayers, setNumPlayers] = useState<2 | 4>(2);
   const [gameName, setGameName] = useState('');
@@ -32,13 +34,17 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
     try {
         setIsCreatingGame(true);
         setIsJoining(true);
-        await gameApiClient.createGame({
+        const response = await gameApiClient.createGame({
             userId,
             numPlayers,
             gameName,
             isPrivate,
             password: isPrivate ? password : undefined
         });
+        if (response.error) {
+            throw new Error(response.error);
+        } 
+        router.push(`/game/${response.data.id}`);
     } catch (err) {
         console.error('Failed to create game:', err);
         setIsJoining(false);
