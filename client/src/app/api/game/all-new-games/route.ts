@@ -6,7 +6,7 @@ const CACHE_DURATION = 5; // Cache duration in seconds
 
 export async function GET() {
     try {
-        const response = await fetch(`${SOCKET_SERVER_URL}/api/games?isStarted=false`, {
+        const response = await fetch(`${SOCKET_SERVER_URL}/api/game-listings?isStarted=false`, {
             next: { revalidate: CACHE_DURATION }, // Enable Next.js cache with revalidation
         });
         

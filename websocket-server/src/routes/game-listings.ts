@@ -4,6 +4,7 @@ import { GameListing } from '@shared-types';
 
 const router = express.Router();
 
+// GET /api/game-listings?isStarted=false
 router.get('/', async (req, res) => {
     try {
         const { isStarted } = req.query;

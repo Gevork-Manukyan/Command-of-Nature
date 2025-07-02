@@ -42,12 +42,6 @@ class GameApiClient {
     return GameApiClient.instance;
   }
 
-  // Game Listings
-  async getAllGames(isStarted?: boolean) {
-    const query = isStarted !== undefined ? `?isStarted=${isStarted}` : '';
-    return this.fetch(`/listings${query}`, {}, 'GET');
-  }
-
   // Setup Endpoints
   private getSetupUrl(url: string, data: any, method: string) {
     return this.fetch(`/setup${url}`, data, method);
