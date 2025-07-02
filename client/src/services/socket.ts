@@ -187,16 +187,6 @@ class SocketService {
   }
   
   // Event handlers
-  public onGameCreated(callback: (gameData: GameListing) => void): void {
-    this.on(`${CreateGameEvent}--success`, callback);
-    this.on(`${CreateGameEvent}--error`, callback);
-  }
-
-  public onGameJoined(callback: (gameData: GameListing) => void): void {
-    this.on(`${JoinGameEvent}--success`, callback);
-    this.on(`${JoinGameEvent}--error`, callback);
-  }
-
   public onGameStarted(callback: (gameData: GameListing) => void): void {
     this.on(`${StartGameEvent}--success`, callback);
     this.on(`${StartGameEvent}--error`, callback);
