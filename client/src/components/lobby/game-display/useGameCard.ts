@@ -3,12 +3,14 @@ import { useState } from "react";
 import { GameListing } from "@shared-types";
 import { gameApiClient } from "@/services/game-api";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
+import { useRouter } from "next/navigation";
 
 export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean) => void) {
     const { userId } = useUserContext();
     const [password, setPassword] = useState("");
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const { updateCurrentSession } = useGameSessionContext();
+    const router = useRouter();
 
     const handleJoinClick = async () => {
       if (game.isPrivate && !showPasswordInput) {
@@ -23,12 +25,14 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
           const response = await gameApiClient.joinGame({ userId, gameId: game.id, password: password || undefined });
           if (response.error) {
             throw new Error(response.error);
-          } else {
-            updateCurrentSession(response);
-          }
+          } 
+          
+          router.push(`/game/${response.id}`);
+          updateCurrentSession(response);
       } catch (err) {
           console.error('Failed to join game:', err);
-          setIsJoining(false);
+      } finally {
+        setIsJoining(false);
       }
     };
 
