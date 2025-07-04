@@ -1,7 +1,7 @@
 "use client";
 
 import { useGameSetup } from './useGameSetup';
-import { ErrorScreen } from '@/components/ErrorScreen';
+import { ErrorScreen } from '@/components/error/error-screen';
 import SageSelection from './SageSelection';
 import TeamSelection from './TeamSelection';
 

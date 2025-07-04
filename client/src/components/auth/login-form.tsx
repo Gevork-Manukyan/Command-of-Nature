@@ -11,6 +11,7 @@ import { useUserContext } from "@/contexts/UserContext"
 import { LoginFormData, loginFormSchema } from "@/lib/zod-schemas"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ErrorMessage } from "@/components/error/error-message"
 
 export function LoginForm() {
   const router = useRouter()
@@ -60,7 +61,7 @@ export function LoginForm() {
                     {...loginForm("username")}
                     disabled={isLoading}
                 />
-                {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
+                {errors.username && <ErrorMessage message={errors.username.message || ""} />}
                 
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -79,10 +80,10 @@ export function LoginForm() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+                {errors.password && <ErrorMessage message={errors.password.message || ""} />}
             </div>
           </div>
-          {apiError && <p className="text-sm text-red-500 mt-2">{apiError}</p>}
+          {apiError && <ErrorMessage message={apiError} />}
 
           <div className="flex flex-col gap-2 mt-4 justify-between items-center">
             <Button type="submit" disabled={isLoading}>

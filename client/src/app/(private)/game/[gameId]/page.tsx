@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { ErrorScreen } from '@/components/ErrorScreen';
+import { ErrorScreen } from '@/components/error/error-screen';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useEffect, useState } from 'react';
 import { socketService } from '@/services/socket';

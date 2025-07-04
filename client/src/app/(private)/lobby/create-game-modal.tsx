@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { ErrorMessage } from '@/components/error/error-message';
 
 interface CreateGameModalProps {
   isOpen: boolean;
@@ -92,7 +93,7 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
               placeholder="Enter game name"
               disabled={isCreatingGame}
             />
-            {errors.gameName && <p className="text-sm text-red-500">{errors.gameName.message}</p>}
+            {errors.gameName && <ErrorMessage message={errors.gameName.message || ""} />}
           </div>
 
           {/* Number of Players Selection */}
@@ -185,7 +186,7 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
           >
             {isCreatingGame ? 'Creating Game...' : 'Create Game'}
           </button>
-          {apiError && <p className="text-sm text-red-500">{apiError}</p>}
+          {apiError && <ErrorMessage message={apiError} />}
         </form>
       </div>
     </div>

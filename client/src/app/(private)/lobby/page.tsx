@@ -3,11 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { CreateGameModal } from './create-game-modal';
 import { GameCard } from './game-display/game-card';
-import { LoadingSpinner } from './game-display/loading-spinner';
-import { ErrorMessage } from './game-display/error-message';
+import { LoadingSpinner } from '../../../components/loading/loading-spinner';
+import { ErrorMessage } from '../../../components/error/error-message';
 import { EmptyState } from './game-display/empty-state';
 import useLobby from "@/app/(private)/lobby/useLobby";
-import { LoadingScreen } from '../../../components/LoadingScreen';
+import { LoadingScreen } from '../../../components/loading/loading-screen';
 import { useUserContext } from '@/contexts/UserContext';
 
 export default function LobbyPage() {

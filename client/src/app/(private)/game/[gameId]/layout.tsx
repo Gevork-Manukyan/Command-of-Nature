@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation';
 import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useUserContext } from '@/contexts/UserContext';
-import { LoadingScreen } from '@/components/LoadingScreen';
-import { ErrorScreen } from '@/components/ErrorScreen';
+import { LoadingScreen } from '@/components/loading/loading-screen';
+import { ErrorScreen } from '@/components/error/error-screen';
 import { gameApiClient } from '@/services/game-api';
 
 export default function GameLayout({
