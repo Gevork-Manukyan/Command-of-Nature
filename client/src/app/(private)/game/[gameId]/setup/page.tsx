@@ -2,8 +2,8 @@
 
 import { useGameSetup } from './useGameSetup';
 import { ErrorScreen } from '@/components/error/error-screen';
-import SageSelection from './SageSelection';
-import TeamSelection from './TeamSelection';
+import SageSelection from './sage-selection';
+import TeamSelection from './team-selection';
 
 export default function GameSetupPage() {
     const { 
