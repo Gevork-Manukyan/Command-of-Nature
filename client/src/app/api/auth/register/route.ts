@@ -3,6 +3,7 @@ import { hash } from 'bcryptjs';
 import { generateToken, setAuthCookie } from '@/lib/server/auth';
 import { User } from '@/lib/server/models/User';
 import dbConnect from '@/lib/server/db';
+import { userResponseSchema } from '@/lib/zod-schemas';
 
 export async function POST(request: Request) {
   try {
@@ -34,11 +35,14 @@ export async function POST(request: Request) {
       username: user.username
     });
     
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user.toObject();
+    // Remove password from response and replace _id with id
+    const { password: _, _id, ...userWithoutPassword } = user.toObject();
+
+    // Validate the user response
+    const parsedUser = userResponseSchema.parse({...userWithoutPassword, id: _id.toString()});
 
     // Create response
-    const response = NextResponse.json(userWithoutPassword, { status: 201 });
+    const response = NextResponse.json(parsedUser, { status: 201 });
 
     // Set the auth cookie
     setAuthCookie(token);

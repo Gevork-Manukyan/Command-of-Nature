@@ -1,4 +1,5 @@
 import { GameListing } from "@shared-types";
+import { UserResponse } from "../zod-schemas";
 
 type ApiResponse<T> = {
   data?: T;
@@ -57,21 +58,14 @@ class ApiClient {
 
   // Auth methods
   async register(data: { username: string; password: string }) {
-    return this.request<{ id: string; username: string }>('/api/auth/register', {
+    return this.request<UserResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async login(data: { username: string; password: string }) {
-    return this.request<{
-      _id: string;
-      username: string;
-      isOnline: boolean;
-      gamesPlayed: number;
-      gamesWon: number;
-      activeGameIds: string[];
-    }>('/api/auth/login', {
+    return this.request<UserResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     });
