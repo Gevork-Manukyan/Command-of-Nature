@@ -2,56 +2,42 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn-ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn-ui/card"
 import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { Eye, EyeOff } from "lucide-react"
 import { useUserContext } from "@/contexts/UserContext"
+import { useForm } from "react-hook-form"
+import { RegisterFormData, registerFormSchema } from "@/lib/zod-schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 export function RegisterForm() {
   const router = useRouter()
   const { register } = useUserContext()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-
-  const validateForm = () => {
-    if (!username || !password || !confirmPassword) {
-      setError("All fields are required")
-      return false
+  const [apiError, setApiError] = useState("")
+  const { 
+    register: registerForm, 
+    handleSubmit, 
+    formState: { errors, isLoading } 
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: ""
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters")
-      return false
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return false
-    }
-    return true
-  }
+  })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-
-    if (!validateForm()) return;
-
-    setIsLoading(true)
-
-    const result = await register(username, password)
-    
+  async function onSubmit(data: RegisterFormData) {
+    setApiError("")
+    const result = await register(data.username, data.password)
     if (result.success) {
       router.push("/lobby")
     } else {
-      setError(result.error || "Registration failed")
+      setApiError(result.error || "Registration failed")
     }
-    
-    setIsLoading(false)
   }
 
   return (
@@ -64,16 +50,16 @@ export function RegisterForm() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 placeholder="Choose a username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                {...registerForm("username")}
               />
+              {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
 
               <Label htmlFor="password">Password</Label>
               <div className="relative">
@@ -81,8 +67,7 @@ export function RegisterForm() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...registerForm("password")}
                 />
                 <button
                   type="button"
@@ -92,30 +77,31 @@ export function RegisterForm() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
 
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input 
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
                 placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...registerForm("confirmPassword")}
               />
-
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>}
             </div>
+          </div>
+
+          {apiError && <p className="text-sm text-red-500 mt-2">{apiError}</p>}
+        
+          <div className="flex flex-col gap-2 mt-4 justify-between items-center">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Register"}
+            </Button>
+            <a href="/login" className="text-sm text-muted-foreground hover:underline">
+              Already have an account? Login
+            </a>
           </div>
         </form>
       </CardContent>
-
-      <CardFooter className="flex flex-col gap-2 justify-between">
-        <Button onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Register"}
-        </Button>
-        <a href="/login" className="text-sm text-muted-foreground hover:underline">
-          Already have an account? Login
-        </a>
-      </CardFooter>
     </Card>
   )
 } 

@@ -2,36 +2,42 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn-ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn-ui/card"
 import { Button } from "@/components/shadcn-ui/button"
 import { Input } from "@/components/shadcn-ui/input"
 import { Label } from "@/components/shadcn-ui/label"
 import { Eye, EyeOff } from "lucide-react"
 import { useUserContext } from "@/contexts/UserContext"
+import { LoginFormData, loginFormSchema } from "@/lib/zod-schemas"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 export function LoginForm() {
   const router = useRouter()
   const { login } = useUserContext()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [apiError, setApiError] = useState("")
+  const { 
+    register: loginForm, 
+    handleSubmit, 
+    formState: { errors, isLoading } 
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      username: "",
+      password: ""
+    }
+  })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
-
-    const result = await login(username, password)
+  async function onSubmit(data: LoginFormData) {
+    setApiError("")
+    const result = await login(data.username, data.password)
     
     if (result.success) {
       router.push("/lobby")
     } else {
-      setError(result.error || "Login failed")
+      setApiError(result.error || "Login failed")
     }
-    
-    setLoading(false)
   }
 
   return (
@@ -44,26 +50,25 @@ export function LoginForm() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="username">Username</Label>
                 <Input
                     id="username"
                     placeholder="Enter your username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    {...loginForm("username")}
                     disabled={isLoading}
                 />
-
+                {errors.username && <p className="text-sm text-red-500">{errors.username.message}</p>}
+                
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input 
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...loginForm("password")}
                       disabled={isLoading}
                   />
                   <button
@@ -74,19 +79,19 @@ export function LoginForm() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-
-              {error && <p className="text-sm text-red-500">{error}</p>}
+                {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
             </div>
+          </div>
+          {apiError && <p className="text-sm text-red-500 mt-2">{apiError}</p>}
+
+          <div className="flex flex-col gap-2 mt-4 justify-between items-center">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
+            <a href="/register" className="text-sm text-muted-foreground">Don't have an account?</a>
           </div>
         </form>
       </CardContent>
-
-      <CardFooter className="flex flex-col gap-2 justify-between">
-        <Button onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
-        </Button>
-        <a href="/register" className="text-sm text-muted-foreground">Don't have an account?</a>
-      </CardFooter>
     </Card>
   )
 } 
