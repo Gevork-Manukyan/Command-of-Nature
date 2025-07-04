@@ -1,4 +1,5 @@
 import { GameListing } from "@shared-types";
+import { useGameCard } from "./useGameCard";
 
 
 interface GameCardProps {
