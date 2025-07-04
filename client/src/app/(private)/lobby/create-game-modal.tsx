@@ -2,9 +2,14 @@
 
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { useUserContext } from '@/contexts/UserContext';
+import { CreateGameFormData, createGameFormSchema } from '@/lib/zod-schemas';
 import { gameApiClient } from '@/services/game-api';
+import { Input } from '@/components/shadcn-ui/input';
+import { Label } from '@/components/shadcn-ui/label';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface CreateGameModalProps {
   isOpen: boolean;
@@ -13,24 +18,27 @@ interface CreateGameModalProps {
 }
 
 export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameModalProps) => {
-  const router = useRouter();
-  const { userId } = useUserContext();
-  const [numPlayers, setNumPlayers] = useState<2 | 4>(2);
-  const [gameName, setGameName] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [password, setPassword] = useState('');
-  const [isCreatingGame, setIsCreatingGame] = useState(false);
-  const { updateCurrentSession } = useGameSessionContext();
-  
-  const isFormValid = () => {
-    if (!gameName.trim()) return false;
-    if (isPrivate && !password.trim()) return false;
-    return true;
-  };
-
   if (!isOpen) return null;
 
-  const handleSubmit = async () => {
+  const router = useRouter();
+  const { userId } = useUserContext();
+  const [isCreatingGame, setIsCreatingGame] = useState(false);
+  const { updateCurrentSession } = useGameSessionContext();
+  const [apiError, setApiError] = useState("");
+  const { register, handleSubmit, setValue, watch, formState: { errors, isValid } } = useForm<CreateGameFormData>({
+    resolver: zodResolver(createGameFormSchema),
+    defaultValues: {
+      gameName: "",
+      numPlayers: "2",
+      isPrivate: false,
+      password: ""
+    }
+  });
+  
+  const watchedNumPlayers = watch("numPlayers");
+  const watchedIsPrivate = watch("isPrivate");  
+
+  const onSubmit = async (data: CreateGameFormData) => {
     if (!userId) throw new Error('User ID not found');
 
     try {
@@ -38,19 +46,17 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
         setIsJoining(true);
         const response = await gameApiClient.createGame({
             userId,
-            numPlayers,
-            gameName,
-            isPrivate,
-            password: isPrivate ? password : undefined
+            numPlayers: parseInt(data.numPlayers) as 2 | 4,
+            gameName: data.gameName,
+            isPrivate: data.isPrivate,
+            password: data.isPrivate ? data.password : undefined
         });
-        if (response.error) {
-            throw new Error(response.error);
-        } 
+        if (response.error) throw new Error(response.error);
         updateCurrentSession(response);
         router.push(`/game/${response.id}`);
         onClose();
     } catch (err) {
-        console.error('Failed to create game:', err);
+        setApiError(err as string);
         setIsJoining(false);
     } finally {
         setIsCreatingGame(false);
@@ -73,33 +79,33 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
           </button>
         </div>
         
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Game Name Input */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="gameName" className="font-medium text-gray-700">
+            <Label htmlFor="gameName">
               Game Name:
-            </label>
-            <input
+            </Label>
+            <Input
               id="gameName"
               type="text"
-              value={gameName}
-              onChange={(e) => setGameName(e.target.value)}
+              {...register("gameName")}
               placeholder="Enter game name"
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               disabled={isCreatingGame}
             />
+            {errors.gameName && <p className="text-sm text-red-500">{errors.gameName.message}</p>}
           </div>
 
           {/* Number of Players Selection */}
           <div className="flex flex-col gap-2">
-            <label className="font-medium text-gray-700">
+            <Label>
               Number of Players:
-            </label>
+            </Label>
             <div className="flex gap-4">
               <button
-                onClick={() => setNumPlayers(2)}
+                type="button"
+                onClick={() => setValue("numPlayers", "2")}
                 className={`w-24 h-24 rounded-xl border-2 flex items-center justify-center font-bold text-xl transition-colors duration-200 ${
-                  numPlayers === 2
+                  watchedNumPlayers === "2"
                     ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
                     : 'border-gray-300 text-gray-600 hover:border-indigo-400'
                 }`}
@@ -108,9 +114,10 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
                 2
               </button>
               <button
-                onClick={() => setNumPlayers(4)}
+                type="button"
+                onClick={() => setValue("numPlayers", "4")}
                 className={`w-24 h-24 rounded-xl border-2 flex items-center justify-center font-bold text-xl transition-colors duration-200 ${
-                  numPlayers === 4
+                  watchedNumPlayers === "4"
                     ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
                     : 'border-gray-300 text-gray-600 hover:border-indigo-400'
                 }`}
@@ -123,14 +130,15 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
 
           {/* Private Game Toggle */}
           <div className="flex flex-col gap-2">
-            <label className="font-medium text-gray-700">
+            <Label>
               Game Privacy:
-            </label>
+            </Label>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsPrivate(false)}
+                type="button"
+                onClick={() => setValue("isPrivate", false)}
                 className={`px-4 py-2 rounded-lg font-medium ${
-                  !isPrivate
+                  !watchedIsPrivate
                     ? 'bg-indigo-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
@@ -139,9 +147,10 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
                 Public
               </button>
               <button
-                onClick={() => setIsPrivate(true)}
+                type="button"
+                onClick={() => setValue("isPrivate", true)}
                 className={`px-4 py-2 rounded-lg font-medium ${
-                  isPrivate
+                  watchedIsPrivate
                     ? 'bg-indigo-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
@@ -153,18 +162,16 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
           </div>
 
           {/* Password Input (only shown for private games) */}
-          {isPrivate && (
+          {watchedIsPrivate === true && (
             <div className="flex flex-col gap-2">
-              <label htmlFor="password" className="font-medium text-gray-700">
+              <Label htmlFor="password">
                 Password:
-              </label>
-              <input
+              </Label>
+              <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register("password")}
                 placeholder="Enter password"
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 disabled={isCreatingGame}
               />
             </div>
@@ -172,13 +179,14 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
 
           {/* Submit Button */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             className="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-            disabled={isCreatingGame || !isFormValid()}
+            disabled={isCreatingGame || !isValid}
           >
             {isCreatingGame ? 'Creating Game...' : 'Create Game'}
           </button>
-        </div>
+          {apiError && <p className="text-sm text-red-500">{apiError}</p>}
+        </form>
       </div>
     </div>
   );

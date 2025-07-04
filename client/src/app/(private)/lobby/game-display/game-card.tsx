@@ -1,4 +1,4 @@
-import { useGameCard } from "@/components/lobby/game-display/useGameCard";
+import { useGameCard } from "@/app/(private)/lobby/game-display/useGameCard";
 import { GameListing } from "@shared-types";
 
 
