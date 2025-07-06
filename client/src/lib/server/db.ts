@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { getServerEnv } from '../env';
+
 
 declare global {
   var mongoose: {
@@ -7,17 +9,7 @@ declare global {
   };
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const MONGODB_DB = process.env.MONGODB_DB || 'command_of_nature';
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env');
-}
-
-if (!MONGODB_DB) {
-  throw new Error('Please define the MONGODB_DB environment variable inside .env');
-}
-
+const serverEnv = getServerEnv();
 let cached = global.mongoose;
 
 if (!cached) {
@@ -32,10 +24,10 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      dbName: MONGODB_DB,
+      dbName: serverEnv.MONGODB_DB,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => mongoose.connection);
+    cached.promise = mongoose.connect(serverEnv.MONGODB_URI, opts).then((mongoose) => mongoose.connection);
   }
 
   try {
