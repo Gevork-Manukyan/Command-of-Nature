@@ -19,6 +19,7 @@ import {
   GetDayBreakCardsData,
   ActivateDayBreakData
 } from "@shared-types/server-types";
+import { socketService } from "./socket";
 
 class GameApiClient {
   private static instance: GameApiClient;
@@ -26,6 +27,12 @@ class GameApiClient {
   private constructor() {}
 
   private async fetch(endpoint: string, data: any, method: string) {
+    // Check socket connection before making any API call
+    if (!socketService.getConnected()) {
+      console.error('Socket connection required.');
+      return;
+    }    
+
     const url = `${this.baseUrl}${endpoint}`;
     const response = await fetch(url, {
       method,
