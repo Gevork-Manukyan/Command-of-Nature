@@ -1,25 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { 
     GameListing, 
-    JoinGameEvent, 
-    RejoinGameEvent, 
-    ExitGameEvent, 
-    LeaveGameEvent, 
     StartGameEvent, 
-    CreateGameEvent,
-    SelectSageEvent,
-    JoinTeamEvent,
-    ChoseWarriorsEvent,
-    ToggleReadyStatusEvent,
-    Sage,
-    ElementalWarriorStarterCard,
-    AllSagesSelectedEvent,
-    AllTeamsJoinedEvent,
-    ClearTeamsEvent,
-    SwapWarriorsEvent,
-    PlayerFinishedSetupEvent,
-    CancelSetupEvent,
-    AllPlayersSetupEvent
 } from '@shared-types';
 import { config } from '@/lib/server/config';
 
