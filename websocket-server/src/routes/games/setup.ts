@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError, ValidationError } from '../../services';
-import { AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChooseWarriorsData, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, PlayerJoinedEvent, PlayerLeftEvent, PlayerRejoinedEvent, RejoinGameData, SageSelectedEvent, SelectSageData, SwapWarriorsData, TeamJoinedEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChooseWarriorsData, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, PlayerJoinedData, PlayerJoinedEvent, PlayerLeftData, PlayerLeftEvent, PlayerRejoinedData, PlayerRejoinedEvent, ReadyStatusToggledData, ReadyStatusToggledEvent, RejoinGameData, SageSelectedData, SageSelectedEvent, SelectSageData, SwapWarriorsData, TeamJoinedData, TeamJoinedEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -56,7 +56,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       }
     
       userSocketManager.joinGameRoom(userId, gameId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerJoinedEvent, { userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerJoinedEvent, { userId } as PlayerJoinedData);
       res.json(gameListing);
     }));
     
@@ -76,7 +76,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       }
 
       userSocketManager.joinGameRoom(userId, gameId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerRejoinedEvent, { userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerRejoinedEvent, { userId } as PlayerRejoinedData);
       res.json(gameListing);
     }));
     
@@ -91,7 +91,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       gameStateManager.processSelectSageEvent(gameId);
 
       const availableSages = gameStateManager.getGame(gameId).getAvailableSages();
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, SageSelectedEvent, { selectedSage: sage, availableSages });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, SageSelectedEvent, { userId, sage, availableSages } as SageSelectedData);
       res.status(200).json({ message: 'Sage selected successfully' });
     }));
     
@@ -119,7 +119,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       await gameStateManager.joinTeam(gameId, socketId, team);
       gameStateManager.processJoinTeamEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, TeamJoinedEvent, { id: userId, team });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, TeamJoinedEvent, { userId, team } as TeamJoinedData);
       res.status(200).json({ message: 'Team joined successfully' });
     }));
     
@@ -160,7 +160,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       const isReady = gameStateManager.toggleReadyStatus(gameId, socketId);
       gameStateManager.processToggleReadyStatusEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, ToggleReadyStatusEvent, { id: userId, isReady });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, ReadyStatusToggledEvent, { userId, isReady } as ReadyStatusToggledData);
       res.status(200).json({ message: 'Ready status toggled successfully' });
     }));
     
@@ -222,7 +222,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       game.incrementPlayersFinishedSetup();
       gameStateManager.processFinishedSetupEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerFinishedSetupEvent, { id: userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerFinishedSetupEvent, { userId } as PlayerFinishedSetupData);
       res.status(200).json({ message: 'Setup finished successfully' });
     }));
     
@@ -239,7 +239,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       game.decrementPlayersFinishedSetup();
       gameStateManager.processCancelSetupEvent(gameId);
 
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, CancelSetupEvent, { id: userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, CancelSetupEvent, { userId } as CancelSetupData);
       res.status(200).json({ message: 'Setup cancelled successfully' });
     }));
     
@@ -279,7 +279,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
       await gameStateManager.removePlayerFromGame(gameId, socketId);
       userSocketManager.leaveGameRoom(userId, gameId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { id: userId });
+      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { userId } as PlayerLeftData);
       res.status(200).json({ message: 'Game left successfully' });
     }));
 

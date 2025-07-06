@@ -1,15 +1,20 @@
+// UNIVERSAL EVENTS
 export const RegisterUserSocketEvent = "register-user-socket";
 export const CreateGameEvent = "create-game";
 export const JoinGameEvent = "join-game";
 export const PlayerJoinedEvent = "player-joined";
 export const PlayerLeftEvent = "player-left";
 export const PlayerRejoinedEvent = "player-rejoined";
+export const ExitGameEvent = "exit-game";
+export const RejoinGameEvent = "rejoin-game";
+export const LeaveGameEvent = "leave-game";
+
+// SET UP EVENTS
 export const SelectSageEvent = "select-sage";
 export const SageSelectedEvent = "sage-selected";
 export const AllSagesSelectedEvent = "all-sages-selected";
 export const ToggleReadyStatusEvent = "toggle-ready-status";
-export const ReadyStatusReadyEvent = "ready-status--ready";
-export const ReadyStatusNotReadyEvent = "ready-status--not-ready";
+export const ReadyStatusToggledEvent = "ready-status-toggled";
 export const JoinTeamEvent = "join-team";
 export const TeamJoinedEvent = "team-joined";
 export const ClearTeamsEvent = "clear-teams";
@@ -21,9 +26,8 @@ export const SwapWarriorsEvent = "swap-warriors";
 export const PlayerFinishedSetupEvent = "player-finished-setup";
 export const CancelSetupEvent = "cancel-setup";
 export const AllPlayersSetupEvent = "all-players-setup";
-export const ExitGameEvent = "exit-game";
-export const RejoinGameEvent = "rejoin-game";
-export const LeaveGameEvent = "leave-game";
+
+// GAMEPLAY EVENTS
 export const GetDayBreakCardsEvent = "get-day-break-cards";
 export const ActivateDayBreakEvent = "activate-day-break";
 export const StartTurnEvent = "start-turn";
