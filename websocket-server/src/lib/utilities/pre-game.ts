@@ -51,13 +51,7 @@ export function handleSocketError(
   });
 }
 
-export function processEventMiddleware<T extends keyof SocketEventMap>(socket: Socket, eventName: T, rawData: any, next: (err?: Error) => void) {
-  // TODO: FOR DEBUGING
-  if (!IS_PRODUCTION && eventName === "debug") {
-    next();
-    return;
-  }
-  
+export function processEventMiddleware<T extends keyof SocketEventMap>(socket: Socket, eventName: T, rawData: any, next: (err?: Error) => void) {  
   try {
     // Ensure the event is recognized
     if (!(eventName in EventSchemas)) {

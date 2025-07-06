@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AllSpaceOptionsSchema } from "./game-setup-types";
 import { ElementalWarriorStarterCardSchema, SageSchema } from "./card-types";
-import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, DebugEvent, RegisterUserSocketEvent } from "./game-events";
+import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent } from "./game-events";
 
 const registerUserSocketSchema = z.object({
   userId: z.string(),
@@ -56,7 +56,7 @@ const startGameSchema = z.object({
   userId: z.string(),
 });
 
-const choseWarriorsSchema = z.object({
+const chooseWarriorsSchema = z.object({
   userId: z.string(),
   choices: z.tuple([ElementalWarriorStarterCardSchema, ElementalWarriorStarterCardSchema]),
 });
@@ -94,10 +94,6 @@ const activateDayBreakSchema = z.object({
   spaceOption: AllSpaceOptionsSchema,
 });
 
-const debugSchema = z.object({
-  
-});
-
 // Define EventSchemas record
 export const EventSchemas = {
   [RegisterUserSocketEvent]: registerUserSocketSchema,
@@ -110,7 +106,7 @@ export const EventSchemas = {
   [ClearTeamsEvent]: clearTeamsSchema,
   [AllTeamsJoinedEvent]: allTeamsJoinedSchema,
   [StartGameEvent]: startGameSchema,
-  [ChoseWarriorsEvent]: choseWarriorsSchema,
+  [ChooseWarriorsEvent]: chooseWarriorsSchema,
   [SwapWarriorsEvent]: swapWarriorsSchema,
   [PlayerFinishedSetupEvent]: playerFinishedSetupSchema,
   [CancelSetupEvent]: cancelSetupSchema,
@@ -120,7 +116,6 @@ export const EventSchemas = {
   [LeaveGameEvent]: leaveGameSchema,
   [GetDayBreakCardsEvent]: getDayBreakCardsSchema,
   [ActivateDayBreakEvent]: activateDayBreakSchema,
-  [DebugEvent]: debugSchema,
 } as const;
 
 // Infer the types from the schemas directly
@@ -134,7 +129,7 @@ export type JoinTeamData = z.infer<typeof joinTeamSchema>;
 export type ClearTeamsData = z.infer<typeof clearTeamsSchema>;
 export type AllTeamsJoinedData = z.infer<typeof allTeamsJoinedSchema>;
 export type StartGameData = z.infer<typeof startGameSchema>;
-export type ChoseWarriorsData = z.infer<typeof choseWarriorsSchema>;
+export type ChooseWarriorsData = z.infer<typeof chooseWarriorsSchema>;
 export type SwapWarriorsData = z.infer<typeof swapWarriorsSchema>;
 export type PlayerFinishedSetupData = z.infer<typeof playerFinishedSetupSchema>;
 export type CancelSetupData = z.infer<typeof cancelSetupSchema>;
@@ -144,7 +139,6 @@ export type RejoinGameData = z.infer<typeof rejoinGameSchema>;
 export type LeaveGameData = z.infer<typeof leaveGameSchema>;
 export type GetDayBreakCardsData = z.infer<typeof getDayBreakCardsSchema>;
 export type ActivateDayBreakData = z.infer<typeof activateDayBreakSchema>;
-export type DebugData = z.infer<typeof debugSchema>;
 
 // Create a mapped type for socket events
 export type SocketEventMap = {
@@ -158,7 +152,7 @@ export type SocketEventMap = {
   [ClearTeamsEvent]: ClearTeamsData;
   [AllTeamsJoinedEvent]: AllTeamsJoinedData;
   [StartGameEvent]: StartGameData;
-  [ChoseWarriorsEvent]: ChoseWarriorsData;
+  [ChooseWarriorsEvent]: ChooseWarriorsData;
   [SwapWarriorsEvent]: SwapWarriorsData;
   [PlayerFinishedSetupEvent]: PlayerFinishedSetupData;
   [CancelSetupEvent]: CancelSetupData;
@@ -168,5 +162,4 @@ export type SocketEventMap = {
   [LeaveGameEvent]: LeaveGameData;
   [GetDayBreakCardsEvent]: GetDayBreakCardsData;
   [ActivateDayBreakEvent]: ActivateDayBreakData;
-  [DebugEvent]: DebugData;
 }

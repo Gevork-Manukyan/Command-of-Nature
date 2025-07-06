@@ -8,7 +8,7 @@ import {
   AllTeamsJoinedData,
   ToggleReadyStatusData,
   StartGameData,
-  ChoseWarriorsData,
+  ChooseWarriorsData,
   SwapWarriorsData,
   PlayerFinishedSetupData,
   CancelSetupData,
@@ -99,7 +99,7 @@ class GameApiClient {
     return this.getSetupUrlWithGameId('/start', gameId, data, 'POST');
   }
 
-  async chooseWarriors(gameId: string, data: ChoseWarriorsData) {
+  async chooseWarriors(gameId: string, data: ChooseWarriorsData) {
     return this.getSetupUrlWithGameId('/choose-warriors', gameId, data, 'POST');
   }
 

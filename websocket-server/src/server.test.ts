@@ -3,7 +3,7 @@ import { io } from "./server";
 import { PORT } from "./lib";
 import { GameStateManager, GameEventEmitter } from "./services";
 import { ConGame, Player, Team } from "./models";
-import { AllPlayersSetupEvent, CancelSetupEvent, ChoseWarriorsEvent, PlayerFinishedSetupEvent, StartGameEvent, SwapWarriorsEvent, ClearTeamsData, CreateGameData, JoinTeamData, LeaveGameData, SelectSageData, ToggleReadyStatusData, JoinGameData } from "@shared-types";
+import { AllPlayersSetupEvent, CancelSetupEvent, ChooseWarriorsEvent, PlayerFinishedSetupEvent, StartGameEvent, SwapWarriorsEvent, ClearTeamsData, CreateGameData, JoinTeamData, LeaveGameData, SelectSageData, ToggleReadyStatusData, JoinGameData } from "@shared-types";
 import { ALL_CARDS } from "./constants";
 const { AcornSquire, QuillThornback } = ALL_CARDS;
 
@@ -345,9 +345,9 @@ describe("Server.ts", () => {
             mockTeam.chooseWarriors = jest.fn()
 
             const choices = [AcornSquire, QuillThornback]
-            clientSocket.emit(ChoseWarriorsEvent, { userId: testPlayerId, choices })
+            clientSocket.emit(ChooseWarriorsEvent, { userId: testPlayerId, choices })
 
-            clientSocket.once(`${ChoseWarriorsEvent}--success`, () => {
+            clientSocket.once(`${ChooseWarriorsEvent}--success`, () => {
                 expect(gameStateManager.getGame).toHaveBeenCalledWith(testGameId)
                 expect(mockGame.getPlayer).toHaveBeenCalledWith(expect.any(String))
                 expect(mockGame.getPlayerTeam).toHaveBeenCalledWith(expect.any(String))

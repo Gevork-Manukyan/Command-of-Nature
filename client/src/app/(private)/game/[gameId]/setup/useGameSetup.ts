@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, TeamJoinedEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent } from '@shared-types';
+import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent } from '@shared-types';
 import { gameApiClient } from "@/services/game-api";
 import { useUserContext } from "@/contexts/UserContext";
 
@@ -55,10 +55,6 @@ export function useGameSetup() {
             setCurrentPhase('team-formation');
         };
 
-        const handleJoinTeam = (data: { id: string, team: number }) => {
-            
-        };
-
         const handleClearTeams = () => {
             
         };
@@ -75,7 +71,7 @@ export function useGameSetup() {
             setCurrentPhase('setup-complete');
         };
 
-        const handleChoseWarriors = () => {
+        const handleChooseWarriors = () => {
             setCurrentPhase('ready');
         };
 
@@ -99,12 +95,11 @@ export function useGameSetup() {
         socketService.on(PlayerJoinedEvent, handlePlayerJoined);
         socketService.on(SageSelectedEvent, handleSageSelected);
         socketService.on(AllSagesSelectedEvent, handleAllSagesSelected);
-        socketService.on(JoinTeamEvent, handleJoinTeam);
         socketService.on(ClearTeamsEvent, handleClearTeams);
         socketService.on(AllTeamsJoinedEvent, handleAllTeamsJoined);
         socketService.on(ToggleReadyStatusEvent, handleToggleReadyStatus);
         socketService.on(StartGameEvent, handleStartGame);
-        socketService.on(ChoseWarriorsEvent, handleChoseWarriors);
+        socketService.on(ChooseWarriorsEvent, handleChooseWarriors);
         socketService.on(SwapWarriorsEvent, handleSwapWarriors);
         socketService.on(PlayerFinishedSetupEvent, handlePlayerFinishedSetup);
         socketService.on(CancelSetupEvent, handleCancelSetup);
@@ -114,12 +109,11 @@ export function useGameSetup() {
             socketService.off(PlayerJoinedEvent, handlePlayerJoined);
             socketService.off(SageSelectedEvent, handleSageSelected);
             socketService.off(AllSagesSelectedEvent, handleAllSagesSelected);
-            socketService.off(JoinTeamEvent, handleJoinTeam);
             socketService.off(ClearTeamsEvent, handleClearTeams);
             socketService.off(AllTeamsJoinedEvent, handleAllTeamsJoined);
             socketService.off(ToggleReadyStatusEvent, handleToggleReadyStatus);
             socketService.off(StartGameEvent, handleStartGame);
-            socketService.off(ChoseWarriorsEvent, handleChoseWarriors);
+            socketService.off(ChooseWarriorsEvent, handleChooseWarriors);
             socketService.off(SwapWarriorsEvent, handleSwapWarriors);
             socketService.off(PlayerFinishedSetupEvent, handlePlayerFinishedSetup);
             socketService.off(CancelSetupEvent, handleCancelSetup);

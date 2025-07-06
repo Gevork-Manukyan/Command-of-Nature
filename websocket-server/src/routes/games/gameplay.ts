@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, InvalidSpaceError, NotFoundError } from '../../services';
-import { ActivateDayBreakData, AllSpaceOptionsSchema, GetDayBreakCardsData } from '@shared-types';
+import { ActivateDayBreakData, AllSpaceOptionsSchema, GetDayBreakCardsData, GetDayBreakCardsEvent } from '@shared-types';
 import { UserSocketManager } from 'src/services/UserSocketManager';
 
 const gameStateManager = GameStateManager.getInstance();
@@ -28,7 +28,7 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     const game = gameStateManager.getActiveGame(gameId);
     const dayBreakCards = game.getDayBreakCards(socketId);
     gameStateManager.processGetDayBreakCardsEvent(gameId);
-    gameEventEmitter.emitToPlayers(game.getActiveTeamPlayers(), "day-break-cards", dayBreakCards);
+    gameEventEmitter.emitToPlayers(game.getActiveTeamPlayers(), GetDayBreakCardsEvent, dayBreakCards);
     res.status(200).json({ message: 'Day break cards fetched successfully' });
   });
 

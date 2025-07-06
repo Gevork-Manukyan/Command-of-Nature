@@ -1,6 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 import { 
     GameListing, 
+    PlayerJoinedEvent, 
+    PlayerLeftEvent, 
     StartGameEvent, 
 } from '@shared-types';
 import { config } from '@/lib/server/config';
@@ -86,7 +88,6 @@ class SocketService {
         this.socket.on('connect_error', (error) => {
           console.error('Socket connection error:', error);
           this.setConnected(false);
-          this.emit('connection-error', { message: 'Failed to connect to game server' });
           reject(error);
         });
 
@@ -170,16 +171,16 @@ class SocketService {
   
   // Event handlers
   public onGameStarted(callback: (gameData: GameListing) => void): void {
-    this.on(`${StartGameEvent}--success`, callback);
+    this.on(`${StartGameEvent}`, callback);
     this.on(`${StartGameEvent}--error`, callback);
   }
 
   public onPlayerJoined(callback: (gameData: GameListing) => void): void {
-    this.on(`player-joined`, callback);
+    this.on(PlayerJoinedEvent, callback);
   }
 
   public onPlayerLeft(callback: (gameData: GameListing) => void): void {
-    this.on(`player-left`, callback);
+    this.on(PlayerLeftEvent, callback);
   }
 }
 

@@ -5,9 +5,9 @@ import express from "express";
 import cors from "cors";
 import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
-import { PORT, processEventMiddleware, socketErrorHandler } from "./lib";
-import { GameEventEmitter, GameStateManager, ValidationError, InvalidSpaceError } from "./services";
-import { AllSpaceOptionsSchema, CancelSetupData, ChoseWarriorsData, ClearTeamsData, CreateGameData, PlayerFinishedSetupData, JoinGameData, JoinTeamData, LeaveGameData, SelectSageData, SocketEventMap, StartGameData, SwapWarriorsData, ToggleReadyStatusData, AllPlayersSetupData, AllSagesSelectedData, ActivateDayBreakData, GetDayBreakCardsData, ExitGameData, RejoinGameData, AllTeamsJoinedData,ActivateDayBreakEvent, AllPlayersSetupEvent, AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupEvent, ChoseWarriorsEvent, ClearTeamsEvent, CreateGameEvent, DebugEvent, ExitGameEvent, GameListing, GetDayBreakCardsEvent, JoinGameEvent, JoinTeamEvent, LeaveGameEvent, PlayerFinishedSetupEvent, RejoinGameEvent, SelectSageEvent, StartGameEvent, SwapWarriorsEvent, ToggleReadyStatusEvent, RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
+import { PORT, processEventMiddleware } from "./lib";
+import { GameEventEmitter, GameStateManager } from "./services";
+import { RegisterUserSocketEvent, RegisterUserData, SocketEventMap } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
 import { errorHandler } from './middleware/errorHandler';
@@ -56,7 +56,7 @@ gameNamespace.on("connection", (socket) => {
   const userId = socket.handshake.query.userId as string;
   if (userId) {
     userSocketManager.registerSocket(userId, socket);
-    socket.emit(`${RegisterUserSocketEvent}--success`);
+    socket.emit(RegisterUserSocketEvent);
   } else {
     console.warn('Socket connected without userId in query parameters');
   }
@@ -64,7 +64,7 @@ gameNamespace.on("connection", (socket) => {
   // Store socket ID and userId pair for REST API responses
   socket.on(RegisterUserSocketEvent, ({ userId }: RegisterUserData) => {
     userSocketManager.registerSocket(userId, socket);
-    socket.emit(`${RegisterUserSocketEvent}--success`);
+    socket.emit(RegisterUserSocketEvent);
   });
 
   /*

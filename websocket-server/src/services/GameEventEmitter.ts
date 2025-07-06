@@ -3,6 +3,7 @@ import { gameId } from "../types";
 import { Player } from "../models";
 import { GameStateManager } from "./GameStateManager";
 import { InternalServerError } from "./CustomError/BaseError";
+import { PickWarriorsEvent, StartTurnEvent, WaitingTurnEvent } from "@shared-types";
 
 export class GameEventEmitter {
   private static instance: GameEventEmitter;
@@ -63,7 +64,6 @@ export class GameEventEmitter {
    * @param data - The data to send
    */
   emitToAllPlayers(gameId: gameId, eventName: string, data: any = null) {
-    console.log('Emitting event to all players:', eventName);
     this.io.in(gameId).emit(eventName, data);
   }
 
@@ -74,7 +74,7 @@ export class GameEventEmitter {
   emitPickWarriors(gameId: gameId) {
     const game = this.gameStateManager.getGame(gameId);
     game.players.forEach(player => {
-      this.emitToPlayer(player.socketId, "pick-warriors", player.decklist);
+      this.emitToPlayer(player.socketId, PickWarriorsEvent, player.decklist);
     })
   }
 
@@ -84,7 +84,7 @@ export class GameEventEmitter {
    * @param waitingPlayers - The waiting players
    */
   emitStartTurn(activePlayers: Player[], waitingPlayers: Player[]) {
-    this.emitToPlayers(activePlayers, "start-turn");
-    this.emitToPlayers(waitingPlayers, "waiting-turn");
+    this.emitToPlayers(activePlayers, StartTurnEvent);
+    this.emitToPlayers(waitingPlayers, WaitingTurnEvent);
   }
 }
