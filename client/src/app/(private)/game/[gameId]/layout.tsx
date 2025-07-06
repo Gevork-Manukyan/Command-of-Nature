@@ -8,6 +8,7 @@ import { useUserContext } from '@/contexts/UserContext';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { ErrorScreen } from '@/components/error/error-screen';
 import { gameApiClient } from '@/services/game-api';
+import { useSocketContext } from '@/contexts/SocketContext';
 
 export default function GameLayout({
     children,
@@ -16,6 +17,7 @@ export default function GameLayout({
 }) {
     const params = useParams();
     const { userId } = useUserContext();
+    const { isSocketConnected } = useSocketContext();
     const { currentGameSession, isLoadingGameSession } = useGameSessionContext();
     const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : '';
     const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId);
@@ -27,7 +29,7 @@ export default function GameLayout({
 
     // Handle game rejoining - this happens once when entering any game page
     useEffect(() => {
-        if (!userId || !currentGameSession) return;
+        if (!userId || !currentGameSession || !isSocketConnected) return;
 
         const rejoinGame = async () => {
             try {
@@ -43,7 +45,7 @@ export default function GameLayout({
         };
 
         rejoinGame();
-    }, [userId, currentGameSession]);
+    }, [userId, currentGameSession, isSocketConnected]);
 
     // Handle loading states
     if (isLoadingGameSession || isRejoiningGame) {

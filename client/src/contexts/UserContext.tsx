@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage, USER } from '@/lib/client/localstorage';
 import { apiClient } from '@/lib/client/api-client';
 
-interface UserContextType {
+type UserContextType = {
     userId: string | null;
     login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
     register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
