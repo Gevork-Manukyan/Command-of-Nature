@@ -150,6 +150,7 @@ export class ConGame {
    * @returns The player
    */
   getPlayer(playerId: Player["socketId"]): Player {
+    console.log("getPlayer", playerId)
     const player = this.players.find((item) => item.socketId === playerId);
     if (!player)
       throw new NotFoundError(
@@ -177,7 +178,6 @@ export class ConGame {
   setPlayerSage(playerId: Player["socketId"], sage: Sage) {
     const isSageAvailable = this.players.every(player => player.sage !== sage) 
     if (!isSageAvailable) throw new SageUnavailableError(sage);
-
     const player = this.getPlayer(playerId)
     player.setSage(sage)
   }

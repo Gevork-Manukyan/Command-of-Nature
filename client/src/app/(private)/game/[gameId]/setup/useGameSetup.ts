@@ -4,6 +4,7 @@ import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, TeamJoinedEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChoseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent } from '@shared-types';
 import { gameApiClient } from "@/services/game-api";
+import { useUserContext } from "@/contexts/UserContext";
 
 type SetupPhase = 'sage-selection' | 'team-formation' | 'warrior-selection' | 'ready' | 'setup-complete';
 
@@ -21,11 +22,9 @@ interface Teams {
 
 export function useGameSetup() {
     const router = useRouter();
-    const pathname = usePathname();
-    const gameId = pathname.split('/').pop() || '';
     const { currentSession } = useGameSessionContext();
-
-    // Error Handling State
+    const gameId = currentSession?.id || '';
+    const { userId } = useUserContext();
     const [error, setError] = useState<string>('');
 
     // Game Related State
@@ -129,9 +128,9 @@ export function useGameSetup() {
     }, [currentSession, router]);
 
     const handleSageConfirm = async (sage: Sage) => {
-        if (!currentSession) return;
+        if (!currentSession || !userId) return;
         try {
-            await gameApiClient.selectSage(gameId, { userId: currentSession.id, sage });
+            await gameApiClient.selectSage(gameId, { userId: userId, sage });
             setAvailableSages(prev => {
                 // make the previously confirmed sage available again
                 const newAvailableSages = { ...prev };
@@ -153,9 +152,9 @@ export function useGameSetup() {
     };
 
     const handleTeamJoin = async (team: 1 | 2) => {
-        if (!currentSession) return;
+        if (!currentSession || !userId) return;
         try {
-            await gameApiClient.joinTeam(gameId, { userId: currentSession.id, team });
+            await gameApiClient.joinTeam(gameId, { userId: userId, team });
         } catch (err) {
             console.error('Failed to join team:', err);
             setError(err instanceof Error ? err.message : 'Failed to join team');

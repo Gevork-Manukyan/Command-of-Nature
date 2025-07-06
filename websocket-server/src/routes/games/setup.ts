@@ -89,7 +89,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       gameStateManager.verifySelectSageEvent(gameId);
       await gameStateManager.setPlayerSage(gameId, socketId, sage);
       gameStateManager.processSelectSageEvent(gameId);
-      
+
       const availableSages = gameStateManager.getGame(gameId).getAvailableSages();
       gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, `sage-selected`, { selectedSage: sage, availableSages });
       res.status(200).json({ message: 'Sage selected successfully' });
