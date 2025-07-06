@@ -13,7 +13,7 @@ import { useUserContext } from '@/contexts/UserContext';
 export default function LobbyPage() {
     const router = useRouter();
     const { logout } = useUserContext();
-    const { currentSession, currentGames, showModal, setShowModal, isFetchingGames, isJoining, setIsJoining, error } = useLobby();
+    const { currentGameSession, currentGames, showModal, setShowModal, isFetchingGames, isJoining, setIsJoining, error } = useLobby();
 
     const renderActiveGames = () => {
         if (isFetchingGames) {
@@ -47,7 +47,7 @@ export default function LobbyPage() {
     }
 
     // If they're already in a game, show a message and a button to return to their game
-    if (currentSession) {
+    if (currentGameSession) {
         return (
             <div className="p-6 max-w-4xl mx-auto text-center bg-white rounded-xl shadow-lg">
                 <div className="absolute top-4 right-4">
@@ -59,9 +59,9 @@ export default function LobbyPage() {
                     </button>
                 </div>
                 <h1 className="text-4xl font-bold mb-4 text-gray-800">You&apos;re Already in a Game</h1>
-                <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentSession.id}</span></p>
+                <p className="mb-6 text-gray-600">You are currently in game: <span className="font-mono bg-gray-100 px-3 py-1 rounded">{currentGameSession.id}</span></p>
                 <button
-                    onClick={() => router.push(`/game/${currentSession.id}`)}
+                    onClick={() => router.push(`/game/${currentGameSession.id}`)}
                     className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-200 shadow-md"
                 >
                     Return to Game

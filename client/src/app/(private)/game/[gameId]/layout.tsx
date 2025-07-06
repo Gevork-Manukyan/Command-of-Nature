@@ -15,9 +15,9 @@ export default function GameLayout({
     children: React.ReactNode;
 }) {
     const params = useParams();
-    const gameId = params.gameId as string;
     const { userId } = useUserContext();
-    const { currentSession, isLoadingGameSession } = useGameSessionContext();
+    const { currentGameSession, isLoadingGameSession } = useGameSessionContext();
+    const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : '';
     const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId);
     const shortGameId = gameId.toString().slice(-6);
     
@@ -27,7 +27,7 @@ export default function GameLayout({
 
     // Handle game rejoining - this happens once when entering any game page
     useEffect(() => {
-        if (!userId || !currentSession) return;
+        if (!userId || !currentGameSession) return;
 
         const rejoinGame = async () => {
             try {
@@ -43,7 +43,7 @@ export default function GameLayout({
         };
 
         rejoinGame();
-    }, [userId, currentSession]);
+    }, [userId, currentGameSession]);
 
     // Handle loading states
     if (isLoadingGameSession || isRejoiningGame) {
@@ -59,7 +59,7 @@ export default function GameLayout({
         return <ErrorScreen message={rejoinError || navigationError} />;
     }
 
-    if (!currentSession) {
+    if (!currentGameSession) {
         return (
             <div className="flex flex-col min-h-screen">
                 <ErrorScreen message="Game session not found" />
@@ -71,7 +71,7 @@ export default function GameLayout({
         <div className="flex flex-col min-h-screen">
             <section className="h-24 flex flex-row items-center justify-around">
                 <div>
-                    <h1 className="text-4xl font-bold">Game: {currentSession?.gameName}</h1>
+                    <h1 className="text-4xl font-bold">Game: {currentGameSession?.gameName}</h1>
                     <p className="text-xl">Game ID: {shortGameId}</p>
                 </div>
                 <div className="flex gap-4">

@@ -10,14 +10,14 @@ export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
-    const { currentSession } = useGameSessionContext();
+    const { currentGameSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');
     const [hasFinishedSetup, setHasFinishedSetup] = useState(false);
     
     // TODO: This is a temporary solution to check if the game has finished setup.
     // Setup socket event listeners
     useEffect(() => {
-        if (!currentSession) return;
+        if (!currentGameSession) return;
 
         const handleSetupComplete = () => {
             setHasFinishedSetup(true);
@@ -29,14 +29,14 @@ export default function GamePage() {
         return () => {
             socketService.off('setup-complete', handleSetupComplete);
         };
-    }, [currentSession]);
+    }, [currentGameSession]);
 
     // Redirect to setup if game hasn't finished setup
     useEffect(() => {
-        if (currentSession && !hasFinishedSetup) {
+        if (currentGameSession && !hasFinishedSetup) {
             router.push(`/game/${gameId}/setup`);
         }
-    }, [currentSession, hasFinishedSetup, gameId, router]);
+    }, [currentGameSession, hasFinishedSetup, gameId, router]);
 
     if (error) {
         return <ErrorScreen message={error} />;

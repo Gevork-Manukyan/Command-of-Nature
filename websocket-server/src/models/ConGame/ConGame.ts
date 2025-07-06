@@ -150,7 +150,6 @@ export class ConGame {
    * @returns The player
    */
   getPlayer(playerId: Player["socketId"]): Player {
-    console.log("getPlayer", playerId)
     const player = this.players.find((item) => item.socketId === playerId);
     if (!player)
       throw new NotFoundError(

@@ -7,19 +7,19 @@ import { useUserContext } from "@/contexts/UserContext";
 export function useGameNavigation(gameId: string) {
     const router = useRouter();
     const { userId } = useUserContext();
-    const { currentSession, updateCurrentSession } = useGameSessionContext();
+    const { currentGameSession, updateCurrentSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');
     const [isLeaving, setIsLeaving] = useState(false);
 
     const goToLobby = async () => {
         setIsLeaving(true);
         router.push('/lobby');
-        if (!currentSession) return;
+        if (!currentGameSession) return;
         await gameApiClient.exitGame(gameId, { userId: userId! });
     };
 
     const leaveGame = async () => {
-        if (!currentSession) {
+        if (!currentGameSession) {
             router.push('/lobby');
             return;
         };

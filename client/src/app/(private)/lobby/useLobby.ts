@@ -9,7 +9,7 @@ export default function useLobby() {
     const [showModal, setShowModal] = useState(false);
     const [isFetchingGames, setIsFetchingGames] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
-    const { currentSession } = useGameSessionContext();
+    const { currentGameSession } = useGameSessionContext();
     const [error, setError] = useState<string>('');
 
     // Fetch all games from the server
@@ -32,7 +32,7 @@ export default function useLobby() {
     }, []);
 
     return {
-        currentSession,
+        currentGameSession,
         error,
         isFetchingGames,
         isJoining,

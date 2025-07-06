@@ -5,7 +5,7 @@ import { GameListing } from "@shared-types";
 import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage, GAME_SESSION } from '@/lib/client/localstorage';
 
 interface GameSessionContextType {
-    currentSession: GameListing | null;
+    currentGameSession: GameListing | null;
     isLoadingGameSession: boolean;
     updateCurrentSession: (session: GameListing | null) => void;
     clearCurrentSession: () => void;
@@ -14,7 +14,7 @@ interface GameSessionContextType {
 const GameSessionContext = createContext<GameSessionContextType | undefined>(undefined);
 
 export function GameSessionProvider({ children }: { children: ReactNode }) {
-    const [currentSession, setCurrentSession] = useState<GameListing | null>(null);
+    const [currentGameSession, setCurrentGameSession] = useState<GameListing | null>(null);
     const [isLoadingGameSession, setIsLoadingGameSession] = useState(true);
 
     // Load game session from localStorage on mount
@@ -22,7 +22,7 @@ export function GameSessionProvider({ children }: { children: ReactNode }) {
         setIsLoadingGameSession(true);
         const session = getFromLocalStorage<GameListing>(GAME_SESSION);
         if (session) {
-            setCurrentSession(session);
+            setCurrentGameSession(session);
         }
         setIsLoadingGameSession(false);
     }, []);
@@ -30,21 +30,21 @@ export function GameSessionProvider({ children }: { children: ReactNode }) {
     const updateCurrentSession = (session: GameListing | null) => {
         setIsLoadingGameSession(true);
         setToLocalStorage(GAME_SESSION, session);
-        setCurrentSession(session);
+        setCurrentGameSession(session);
         setIsLoadingGameSession(false);
     };
 
     const clearCurrentSession = () => {
         setIsLoadingGameSession(true);
         removeFromLocalStorage(GAME_SESSION);
-        setCurrentSession(null);
+        setCurrentGameSession(null);
         setIsLoadingGameSession(false);
     };
 
     return (
         <GameSessionContext.Provider
             value={{
-                currentSession,
+                currentGameSession,
                 isLoadingGameSession,
                 updateCurrentSession,
                 clearCurrentSession,

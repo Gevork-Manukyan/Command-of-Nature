@@ -22,8 +22,8 @@ interface Teams {
 
 export function useGameSetup() {
     const router = useRouter();
-    const { currentSession } = useGameSessionContext();
-    const gameId = currentSession?.id || '';
+    const { currentGameSession } = useGameSessionContext();
+    const gameId = currentGameSession?.id || '';
     const { userId } = useUserContext();
     const [error, setError] = useState<string>('');
 
@@ -41,7 +41,7 @@ export function useGameSetup() {
 
     // Setup socket event listeners for game setup - these are the handlers for the events that are emitted by the server
     useEffect(() => {
-        if (!currentSession) return;
+        if (!currentGameSession) return;
 
         const handlePlayerJoined = (data: { userId: string }) => {
             
@@ -125,10 +125,10 @@ export function useGameSetup() {
             socketService.off(CancelSetupEvent, handleCancelSetup);
             socketService.off(AllPlayersSetupEvent, handleAllPlayersSetup);
         };
-    }, [currentSession, router]);
+    }, [currentGameSession, router]);
 
     const handleSageConfirm = async (sage: Sage) => {
-        if (!currentSession || !userId) return;
+        if (!currentGameSession || !userId) return;
         try {
             await gameApiClient.selectSage(gameId, { userId: userId, sage });
             setAvailableSages(prev => {
@@ -152,7 +152,7 @@ export function useGameSetup() {
     };
 
     const handleTeamJoin = async (team: 1 | 2) => {
-        if (!currentSession || !userId) return;
+        if (!currentGameSession || !userId) return;
         try {
             await gameApiClient.joinTeam(gameId, { userId: userId, team });
         } catch (err) {
