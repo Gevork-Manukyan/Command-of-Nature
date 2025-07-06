@@ -1,12 +1,12 @@
 import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
-import { config } from './config';
+import { env } from '../env';
 
-if (!config.jwt.secret) {
+if (!env.JWT_SECRET) {
   throw new Error('JWT_SECRET is not defined in environment variables');
 }
 
-const JWT_SECRET = new TextEncoder().encode(config.jwt.secret);
+const JWT_SECRET = new TextEncoder().encode(env.JWT_SECRET);
 
 export interface TokenPayload extends JWTPayload {
   userId: string;
@@ -34,7 +34,7 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
 export function setAuthCookie(token: string) {
   cookies().set('auth-token', token, {
     httpOnly: true,
-    secure: config.nodeEnv === 'production',
+    secure: env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
     maxAge: 60 * 60 * 24 * 1, // 1 day

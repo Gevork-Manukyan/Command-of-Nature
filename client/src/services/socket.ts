@@ -5,7 +5,7 @@ import {
     PlayerLeftEvent, 
     StartGameEvent, 
 } from '@shared-types';
-import { config } from '@/lib/server/config';
+import { env } from '@/lib/env';
 
 class SocketService {
   private static instance: SocketService;
@@ -57,11 +57,11 @@ class SocketService {
       return this.connectionPromise;
     }
 
-    if (!config.socket.url) {
+    if (!env.NEXT_PUBLIC_SOCKET_URL) {
       throw new Error('Socket URL is not configured. Please set NEXT_PUBLIC_SOCKET_URL environment variable.');
     }
 
-    const url = this.constructUrl(config.socket.url, '/gameplay');
+    const url = this.constructUrl(env.NEXT_PUBLIC_SOCKET_URL, '/gameplay');
 
     if (this.socket) {
       this.disconnect();

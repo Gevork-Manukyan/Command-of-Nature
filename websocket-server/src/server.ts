@@ -5,12 +5,13 @@ import express from "express";
 import cors from "cors";
 import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
-import { PORT, processEventMiddleware } from "./lib";
+import { processEventMiddleware } from "./lib";
 import { GameEventEmitter, GameStateManager } from "./services";
 import { RegisterUserSocketEvent, RegisterUserData, SocketEventMap } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
 import { errorHandler } from './middleware/errorHandler';
+import { env } from "./lib/env";
 
 const app = express();
 app.use(cors());
@@ -105,12 +106,12 @@ gameNamespace.on("connection", (socket) => {
 });
 
 // Connect to MongoDB first
-mongoose.connect(process.env.DATABASE_URL || "mongodb://localhost:27017/command_of_nature")
+mongoose.connect(env.DATABASE_URL)
   .then(() => {
     console.debug('Connected to MongoDB');
     // Start the server after successful database connection
-    server.listen(PORT, async () => {
-      console.debug(`WebSocket server running on http://localhost:${PORT}`);
+    server.listen(env.PORT, async () => {
+      console.debug(`WebSocket server running on http://localhost:${env.PORT}`);
       await gameStateManager.loadExistingGames();
     ""});
   })

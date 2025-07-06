@@ -1,4 +1,4 @@
-import { DropletDeck, IS_PRODUCTION, LeafDeck, PebbleDeck, TwigDeck } from "../../constants";
+import { DropletDeck, LeafDeck, PebbleDeck, TwigDeck } from "../../constants";
 import { CustomError, ValidationError, HostOnlyActionError, InvalidSageError, InvalidDataError } from "../../services";
 import { Socket } from "socket.io";
 import { GameStateManager } from "../../services/GameStateManager";

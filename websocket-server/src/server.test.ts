@@ -1,10 +1,10 @@
 import Client, { Socket } from "socket.io-client";
 import { io } from "./server";
-import { PORT } from "./lib";
 import { GameStateManager, GameEventEmitter } from "./services";
 import { ConGame, Player, Team } from "./models";
 import { AllPlayersSetupEvent, CancelSetupEvent, ChooseWarriorsEvent, PlayerFinishedSetupEvent, StartGameEvent, SwapWarriorsEvent, ClearTeamsData, CreateGameData, JoinTeamData, LeaveGameData, SelectSageData, ToggleReadyStatusData, JoinGameData } from "@shared-types";
 import { ALL_CARDS } from "./constants";
+import { env } from "./lib/env";
 const { AcornSquire, QuillThornback } = ALL_CARDS;
 
 let clientSocket: Socket;
@@ -23,9 +23,9 @@ const gameStateManager = GameStateManager.getInstance();
 beforeAll((done) => {
   // Start the server (ensure it's tied to your real server.ts code)
   testServer = require("./server").server;
-  testServer.listen(PORT, () => {
+  testServer.listen(env.PORT, () => {
     // Connect the client to the same server
-    clientSocket = Client(`http://localhost:${PORT}/gameplay`, {
+    clientSocket = Client(`http://localhost:${env.PORT}/gameplay`, {
       transports: ["websocket"],
     }); // Connect to the "/gameplay" namespace
     clientSocket.on("connect", done); // Wait until the connection is established

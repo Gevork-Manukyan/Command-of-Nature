@@ -1,7 +1,7 @@
-import { config } from '@/lib/server/config';
+import { env } from '@/lib/env';
 import { NextResponse } from 'next/server';
 
-const SOCKET_SERVER_URL = config.socket.url;
+const SOCKET_SERVER_URL = env.NEXT_PUBLIC_SOCKET_URL;
 const CACHE_DURATION = 5; // Cache duration in seconds
 
 export async function GET() {
