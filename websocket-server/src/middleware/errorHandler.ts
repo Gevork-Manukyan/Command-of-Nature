@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError, NotFoundError } from '../services/CustomError/BaseError';
-import { InvalidSpaceError } from '../services/CustomError/GameError';
+import { InvalidSpaceError, HostOnlyActionError } from '../services/CustomError/GameError';
 
 export interface ApiError extends Error {
   status?: number;
@@ -29,6 +29,14 @@ export function errorHandler(err: ApiError, req: Request, res: Response, next: N
     return res.status(err.status).json({
       error: 'Invalid Space Error',
       message: err.message
+    });
+  }
+
+  if (err instanceof HostOnlyActionError) {
+    return res.status(err.status).json({
+      error: 'Host Only Action',
+      message: err.message,
+      code: err.code
     });
   }
 

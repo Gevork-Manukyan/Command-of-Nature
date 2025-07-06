@@ -43,11 +43,6 @@ app.use('/api/users', usersRouter);
 app.use(errorHandler as express.ErrorRequestHandler);
 
 gameNamespace.on("connection", (socket) => {
-  /* -------- MIDDLEWARE -------- */
-  socket.use(([event, rawData], next) => {
-    processEventMiddleware(socket, event as keyof SocketEventMap, rawData, next)
-  });
-
   socket.on("error", (error: Error) => {
     console.error("Socket error:", error);
   });

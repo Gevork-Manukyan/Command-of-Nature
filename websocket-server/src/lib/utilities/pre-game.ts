@@ -22,6 +22,7 @@ export function getSageDecklist(sage: Sage | null) {
   }
 }
 
+// TODO: These were used when the server was using socket events instead of REST API
 export function socketErrorHandler<T extends keyof SocketEventMap>(
   socket: Socket,
   eventName: T,

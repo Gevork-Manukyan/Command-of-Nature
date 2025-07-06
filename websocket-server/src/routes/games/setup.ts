@@ -3,18 +3,12 @@ import { GameEventEmitter, GameStateManager, NotFoundError, ValidationError } fr
 import { AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChooseWarriorsData, ChooseWarriorsEvent, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, PlayerJoinedData, PlayerJoinedEvent, PlayerLeftData, PlayerLeftEvent, PlayerRejoinedData, PlayerRejoinedEvent, ReadyStatusToggledData, ReadyStatusToggledEvent, RejoinGameData, SageSelectedData, SageSelectedEvent, SelectSageData, SwapWarriorsData, SwapWarriorsEvent, TeamJoinedData, TeamJoinedEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
+import { getSocketId } from '../../lib/utilities/common';
 import { Request, Response } from 'express';
+import { requireHostForAllPlayersSetup, requireHostForAllSagesSelected, requireHostForAllTeamsJoined, requireHostForClearTeams } from 'src/middleware/hostOnly';
 
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
-
-function getSocketId(userId: string) {
-    const socketId = userSocketManager.getSocketId(userId);
-    if (!socketId) {
-        throw new NotFoundError("Socket ID not found");
-    }
-    return socketId;
-}
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
@@ -97,7 +91,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-sages-selected
-    router.post('/:gameId/all-sages-selected', asyncHandler(async (req: Request, res: Response) => {
+    router.post('/:gameId/all-sages-selected', requireHostForAllSagesSelected, asyncHandler(async (req: Request, res: Response) => {
       const gameId = req.params.gameId;
 
       gameStateManager.verifyAllSagesSelectedEvent(gameId);
@@ -125,7 +119,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/clear-teams
-    router.post('/:gameId/clear-teams', asyncHandler(async (req: Request, res: Response) => {
+    router.post('/:gameId/clear-teams', requireHostForClearTeams, asyncHandler(async (req: Request, res: Response) => {
       const gameId = req.params.gameId;
 
       gameStateManager.verifyClearTeamsEvent(gameId);
@@ -138,7 +132,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-teams-joined
-    router.post('/:gameId/all-teams-joined', asyncHandler(async (req: Request, res: Response) => {
+    router.post('/:gameId/all-teams-joined', requireHostForAllTeamsJoined, asyncHandler(async (req: Request, res: Response) => {
       const gameId = req.params.gameId;
 
       gameStateManager.verifyAllTeamsJoinedEvent(gameId);
@@ -166,7 +160,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/start
-    router.post('/:gameId/start', asyncHandler(async (req: Request, res: Response) => {
+    router.post('/:gameId/start', requireHostForAllPlayersSetup, asyncHandler(async (req: Request, res: Response) => {
       const gameId = req.params.gameId;
 
       gameStateManager.verifyAllPlayersReadyEvent(gameId);
@@ -248,7 +242,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     
     // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-players-setup
-    router.post('/:gameId/all-players-setup', asyncHandler(async (req: Request, res: Response) => {
+    router.post('/:gameId/all-players-setup', requireHostForAllPlayersSetup, asyncHandler(async (req: Request, res: Response) => {
       const gameId = req.params.gameId;
 
       gameStateManager.verifyAllPlayersSetupEvent(gameId);
@@ -258,32 +252,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       gameStateManager.processAllPlayersSetupEvent(gameId);
       gameEventEmitter.emitStartTurn(activeGame.getActiveTeamPlayers(), activeGame.getWaitingTeamPlayers());
       res.status(200).json({ message: 'All players setup successfully' });
-    }));
-    
-    // TODO: implement on client side
-    // Exits the game for everyone. Only the host can exit the game.
-    // POST /api/games/setup/:gameId/exit
-    router.post('/:gameId/exit', asyncHandler(async (req: Request, res: Response) => {
-      const { userId }: ExitGameData = req.body;
-      const gameId = req.params.gameId;
-      const socketId = getSocketId(userId);
-
-      userSocketManager.leaveGameRoom(userId, gameId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, ExitGameEvent);
-      res.status(200).json({ message: 'Game exited successfully' });
-    }));
-    
-    // TODO: implement on client side
-    // POST /api/games/setup/:gameId/leave
-    router.post('/:gameId/leave', asyncHandler(async (req: Request, res: Response) => {
-      const { userId }: LeaveGameData = req.body;
-      const gameId = req.params.gameId;
-      const socketId = getSocketId(userId);
-
-      await gameStateManager.removePlayerFromGame(gameId, socketId);
-      userSocketManager.leaveGameRoom(userId, gameId);
-      gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { userId } as PlayerLeftData);
-      res.status(200).json({ message: 'Game left successfully' });
     }));
 
     return router;

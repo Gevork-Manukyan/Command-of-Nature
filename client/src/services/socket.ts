@@ -1,10 +1,4 @@
 import { io, Socket } from 'socket.io-client';
-import { 
-    GameListing, 
-    PlayerJoinedEvent, 
-    PlayerLeftEvent, 
-    StartGameEvent, 
-} from '@shared-types';
 import { env } from '@/lib/env';
 
 class SocketService {
@@ -167,20 +161,6 @@ class SocketService {
       throw new Error('Account Session Expired');
     }
     this.socket?.emit(event, ...args);
-  }
-  
-  // Event handlers
-  public onGameStarted(callback: (gameData: GameListing) => void): void {
-    this.on(`${StartGameEvent}`, callback);
-    this.on(`${StartGameEvent}--error`, callback);
-  }
-
-  public onPlayerJoined(callback: (gameData: GameListing) => void): void {
-    this.on(PlayerJoinedEvent, callback);
-  }
-
-  public onPlayerLeft(callback: (gameData: GameListing) => void): void {
-    this.on(PlayerLeftEvent, callback);
   }
 }
 
