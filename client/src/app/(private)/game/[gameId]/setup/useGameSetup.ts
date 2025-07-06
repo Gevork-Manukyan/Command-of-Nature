@@ -73,7 +73,7 @@ export function useGameSetup() {
         };
 
         const handlePickWarriors = () => {
-            setCurrentPhase('ready');
+            
         };
 
         const handleSwapWarriors = () => {

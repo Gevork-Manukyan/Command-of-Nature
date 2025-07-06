@@ -1,6 +1,6 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, NotFoundError, ValidationError } from '../../services';
-import { AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChooseWarriorsData, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, PlayerJoinedData, PlayerJoinedEvent, PlayerLeftData, PlayerLeftEvent, PlayerRejoinedData, PlayerRejoinedEvent, ReadyStatusToggledData, ReadyStatusToggledEvent, RejoinGameData, SageSelectedData, SageSelectedEvent, SelectSageData, SwapWarriorsData, TeamJoinedData, TeamJoinedEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
+import { AllSagesSelectedEvent, AllTeamsJoinedEvent, CancelSetupData, CancelSetupEvent, ChooseWarriorsData, ChooseWarriorsEvent, ClearTeamsEvent, CreateGameData, ExitGameData, ExitGameEvent, GameListing, JoinGameData, JoinTeamData, LeaveGameData, LeaveGameEvent, PlayerFinishedSetupData, PlayerFinishedSetupEvent, PlayerJoinedData, PlayerJoinedEvent, PlayerLeftData, PlayerLeftEvent, PlayerRejoinedData, PlayerRejoinedEvent, ReadyStatusToggledData, ReadyStatusToggledEvent, RejoinGameData, SageSelectedData, SageSelectedEvent, SelectSageData, SwapWarriorsData, SwapWarriorsEvent, TeamJoinedData, TeamJoinedEvent, ToggleReadyStatusData, ToggleReadyStatusEvent } from '@shared-types';
 import { UserSocketManager } from '../../services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { Request, Response } from 'express';
@@ -173,7 +173,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       await gameStateManager.startGame(gameId);
       gameStateManager.processAllPlayersReadyEvent(gameId);
 
-      gameEventEmitter.emitPickWarriors(gameId);
+      const game = gameStateManager.getGame(gameId);
+      gameEventEmitter.emitPickWarriors(game.players);
       res.status(200).json({ message: 'Game started successfully' });
     }));
     
@@ -190,6 +191,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       game.getPlayerTeam(player.userId).chooseWarriors(player, choices);
       gameStateManager.processChooseWarriorsEvent(gameId);
 
+      gameEventEmitter.emitToTeammate(game, socketId, ChooseWarriorsEvent, { userId, choices } as ChooseWarriorsData);
       res.status(200).json({ message: 'Warriors chosen successfully' });
     }));
     
@@ -206,6 +208,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
       game.getPlayerTeam(player.userId).swapWarriors(player);
       gameStateManager.processSwapWarriorsEvent(gameId);
 
+      gameEventEmitter.emitToTeammate(game, socketId, SwapWarriorsEvent, { userId } as SwapWarriorsData);
       res.status(200).json({ message: 'Warriors swapped successfully' });
     }));
     

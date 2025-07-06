@@ -1,6 +1,6 @@
 import { Server, Namespace } from "socket.io";
 import { gameId } from "../types";
-import { Player } from "../models";
+import { ConGame, Player } from "../models";
 import { GameStateManager } from "./GameStateManager";
 import { InternalServerError } from "./CustomError/BaseError";
 import { PickWarriorsEvent, StartTurnEvent, WaitingTurnEvent } from "@shared-types";
@@ -47,6 +47,20 @@ export class GameEventEmitter {
   }
 
   /**
+   * Emits an event to the teammate of the player
+   * @param game - The game
+   * @param playerId - The player id
+   * @param eventName - The event name
+   * @param data - The data to send
+   */
+  emitToTeammate(game: ConGame, playerId: string, eventName: string, data: any = null) {
+    const teammate = game.getPlayerTeammate(playerId);
+    if (teammate) {
+      this.emitToPlayer(teammate.socketId, eventName, data);
+    }
+  }
+
+  /**
    * Emits an event to all players in the game except the sender
    * @param gameId - The game id
    * @param senderSocketId - The socket id of the sender
@@ -69,11 +83,10 @@ export class GameEventEmitter {
 
   /**
    * Emits an event to all players in the game to pick warriors
-   * @param gameId - The game id
+   * @param players - The players to emit to
    */
-  emitPickWarriors(gameId: gameId) {
-    const game = this.gameStateManager.getGame(gameId);
-    game.players.forEach(player => {
+  emitPickWarriors(players: Player[]) {
+    players.forEach(player => {
       this.emitToPlayer(player.socketId, PickWarriorsEvent, player.decklist);
     })
   }
