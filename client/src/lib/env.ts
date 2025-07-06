@@ -1,9 +1,18 @@
 import { z } from "zod";
 
-const envSchema = z.object({
+// Only validate client-side variables (safe for browser)
+const clientEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production']).default('development'),
-  JWT_SECRET: z.string().min(1),
   NEXT_PUBLIC_SOCKET_URL: z.string().min(1),
 });
 
-export const env = envSchema.parse(process.env);
+// Export client-side env (safe for browser)
+export const env = clientEnvSchema.parse(process.env);
+
+// Server-side validation function (only call on server)
+export const getServerEnv = () => {
+  const serverEnvSchema = clientEnvSchema.extend({
+    JWT_SECRET: z.string().min(1),
+  });
+  return serverEnvSchema.parse(process.env);
+};
