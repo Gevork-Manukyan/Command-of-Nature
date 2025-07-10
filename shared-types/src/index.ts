@@ -1,8 +1,11 @@
 // Game State Types
-export * from './game-state-types';
+export * from './player-types';
 
 // Game Setup Types
-export * from './game-setup-types';
+export * from './game-types';
+
+// Space Options
+export * from './space-options';
 
 // Game Events
 export * from './game-events';

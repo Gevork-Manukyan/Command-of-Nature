@@ -2,24 +2,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { Sage, PlayerJoinedEvent, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, ToggleReadyStatusEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent } from '@shared-types';
+import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
 import { gameApiClient } from "@/services/game-api";
 import { useUserContext } from "@/contexts/UserContext";
-
-// TODO: add to shared types
-type SetupPhase = 'sage-selection' | 'team-formation' | 'warrior-selection' | 'ready' | 'setup-complete';
-
-type Player = {
-    userId: string;
-    isReady: boolean;
-    sage: Sage | null;
-    team?: number;
-}
-
-type Teams = {
-    team1: Player[];
-    team2: Player[];
-}
 
 export function useGameSetup() {
     const router = useRouter();
@@ -44,8 +29,9 @@ export function useGameSetup() {
     useEffect(() => {
         if (!currentGameSession) return;
 
-        const handleSageSelected = (data: { userId: string, sage: Sage, availableSages: { [key in Sage]: boolean } }) => {
-            setAvailableSages(data.availableSages);
+        const handleSageSelected = (data: SageSelectedData) => {
+            const parsedData = sageSelectedSchema.parse(data);
+            setAvailableSages(parsedData.availableSages);
         };
         
         const handleAllSagesSelected = () => {

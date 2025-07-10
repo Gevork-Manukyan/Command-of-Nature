@@ -24,6 +24,6 @@
       "@shared-types/*": ["../shared-types/src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../shared-types/src/**/*"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../shared-types/src/**/*", "../websocket-server/src/types/gamestate-types.ts"],
   "exclude": ["node_modules"]
 }

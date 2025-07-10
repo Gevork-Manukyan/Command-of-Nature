@@ -1,13 +1,5 @@
 import { Card, Decklist, Sage } from './card-types';
 
-export type GameListing = {
-    id: string;
-    gameName: string;
-    isPrivate: boolean;
-    numPlayersTotal: number;
-    numCurrentPlayers: number;
-}
-
 export interface IPlayerData {
     userId: string;
     isReady: boolean;

@@ -43,7 +43,7 @@ export enum TransitionEvent {
     DONE_DRAWING_NEW_HAND = "done-drawing-new-hand",
     WIN_GAME = "win-game",
 }
-  
+
 export type Transition = {
     currentStateValue: State;
     possibleInputs: Input[];

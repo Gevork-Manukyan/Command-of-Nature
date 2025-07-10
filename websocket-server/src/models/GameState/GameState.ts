@@ -1,6 +1,6 @@
 import { GameStateError } from "../../services/CustomError/GameError";
-import { gameId } from "../../types";
-import { State, TransitionEvent, Transition, Input } from "../../types/gamestate-types";
+import { gameId, Input, Transition } from "../../types";
+import { State, TransitionEvent } from "../../types/gamestate-types";
 import { IGameState } from './db-model';
 
 export class GameState {

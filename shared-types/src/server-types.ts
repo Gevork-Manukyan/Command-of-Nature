@@ -1,13 +1,14 @@
 import { z } from "zod";
-import { AllSpaceOptionsSchema } from "./game-setup-types";
+import { AvailableSagesSchema } from "./game-types";
+import { AllSpaceOptionsSchema } from "./space-options";
 import { ElementalWarriorStarterCardSchema, SageSchema } from "./card-types";
 import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent, ReadyStatusToggledEvent, TeamJoinedEvent, SageSelectedEvent, PlayerRejoinedEvent, PlayerJoinedEvent, PlayerLeftEvent } from "./game-events";
 
-const registerUserSocketSchema = z.object({
+export const registerUserSocketSchema = z.object({
   userId: z.string(),
 });
 
-const createGameSchema = z.object({
+export const createGameSchema = z.object({
   userId: z.string(),
   gameName: z.string(),
   numPlayers: z.union([z.literal(2), z.literal(4)]),
@@ -15,109 +16,109 @@ const createGameSchema = z.object({
   password: z.string().optional(),
 })
 
-const joinGameSchema = z.object({
+export const joinGameSchema = z.object({
   userId: z.string(),
   gameId: z.string(),
   password: z.string().optional(),
 });
 
-const rejoinGameSchema = z.object({
+export const rejoinGameSchema = z.object({
   userId: z.string(),
   gameId: z.string(),
 })
 
-const playerJoinedSchema = z.object({
+export const playerJoinedSchema = z.object({
   userId: z.string(),
 });
 
-const playerRejoinedSchema = z.object({
+export const playerRejoinedSchema = z.object({
   userId: z.string(),
 });
 
-const selectSageSchema = z.object({
-  userId: z.string(),
-  sage: SageSchema,
-});
-
-const sageSelectedSchema = z.object({
+export const selectSageSchema = z.object({
   userId: z.string(),
   sage: SageSchema,
-  availableSages: z.record(SageSchema, z.boolean()),
 });
 
-const allSagesSelectedSchema = z.object({
+export const sageSelectedSchema = z.object({
+  userId: z.string(),
+  sage: SageSchema,
+  availableSages: AvailableSagesSchema,
+});
+
+export const allSagesSelectedSchema = z.object({
   userId: z.string(),
 });
 
-const toggleReadyStatusSchema = z.object({
+export const toggleReadyStatusSchema = z.object({
   userId: z.string(),
 });
 
-const readyStatusToggledSchema = z.object({
+export const readyStatusToggledSchema = z.object({
   userId: z.string(),
   isReady: z.boolean(),
 });
 
-const joinTeamSchema = z.object({
+export const joinTeamSchema = z.object({
   userId: z.string(),
   team: z.union([z.literal(1), z.literal(2)]),
 });
 
-const teamJoinedSchema = z.object({
+export const teamJoinedSchema = z.object({
   userId: z.string(),
   team: z.union([z.literal(1), z.literal(2)]),
 });
 
-const clearTeamsSchema = z.object({
+export const clearTeamsSchema = z.object({
   userId: z.string(),
 });
 
-const allTeamsJoinedSchema = z.object({
+export const allTeamsJoinedSchema = z.object({
   userId: z.string(),
 });
 
-const startGameSchema = z.object({
+export const startGameSchema = z.object({
   userId: z.string(),
 });
 
-const chooseWarriorsSchema = z.object({
+export const chooseWarriorsSchema = z.object({
   userId: z.string(),
   choices: z.tuple([ElementalWarriorStarterCardSchema, ElementalWarriorStarterCardSchema]),
 });
 
-const swapWarriorsSchema = z.object({
+export const swapWarriorsSchema = z.object({
   userId: z.string(),
 })
 
-const playerFinishedSetupSchema = z.object({
+export const playerFinishedSetupSchema = z.object({
   userId: z.string(),
 });
 
-const cancelSetupSchema = z.object({
+export const cancelSetupSchema = z.object({
   userId: z.string(),
 })
 
-const allPlayersSetupSchema = z.object({
+export const allPlayersSetupSchema = z.object({
   userId: z.string(),
 })
 
-const exitGameSchema = z.object({
+export const exitGameSchema = z.object({
   userId: z.string(),
 })
 
-const leaveGameSchema = z.object({
+export const leaveGameSchema = z.object({
   userId: z.string(),
 });
 
-const playerLeftSchema = z.object({
+export const playerLeftSchema = z.object({
   userId: z.string(),
 });
 
-const getDayBreakCardsSchema = z.object({
+export const getDayBreakCardsSchema = z.object({
   userId: z.string(),
 });
 
-const activateDayBreakSchema = z.object({
+export const activateDayBreakSchema = z.object({
   userId: z.string(),
   spaceOption: AllSpaceOptionsSchema,
 });
