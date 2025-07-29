@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "next-auth": "^5.0.0-beta.4",
     "react-hook-form": "^7.59.0",
     "shared-types": "1.0.0",
     "zod": "^3.25.74"

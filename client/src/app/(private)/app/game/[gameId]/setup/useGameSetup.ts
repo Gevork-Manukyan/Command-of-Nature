@@ -75,7 +75,7 @@ export function useGameSetup() {
         };
 
         const handleAllPlayersSetup = () => {
-            router.push(`/game/${gameId}`);
+            router.push(`/app/game/${gameId}`);
         };
 
         // Register event listeners

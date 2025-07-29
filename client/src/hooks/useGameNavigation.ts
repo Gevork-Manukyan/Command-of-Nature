@@ -13,14 +13,14 @@ export function useGameNavigation(gameId: string) {
 
     const goToLobby = async () => {
         setIsLeaving(true);
-        router.push('/lobby');
+        router.push('/app/lobby');
         if (!currentGameSession) return;
         await gameApiClient.exitGame(gameId, { userId: userId! });
     };
 
     const leaveGame = async () => {
         if (!currentGameSession) {
-            router.push('/lobby');
+            router.push('/app/lobby');
             return;
         };
 
@@ -28,7 +28,7 @@ export function useGameNavigation(gameId: string) {
 
         try {
             await gameApiClient.leaveGame(gameId, { userId: userId! });
-            router.push('/lobby');
+            router.push('/app/lobby');
 
             // Wait for the router to push to the lobby before updating the current session
             // This is a temporary solution to avoid race conditions (visual bug)

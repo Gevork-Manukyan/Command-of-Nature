@@ -34,7 +34,7 @@ export default function GamePage() {
     // Redirect to setup if game hasn't finished setup
     useEffect(() => {
         if (currentGameSession && !hasFinishedSetup) {
-            router.push(`/game/${gameId}/setup`);
+            router.push(`/app/game/${gameId}/setup`);
         }
     }, [currentGameSession, hasFinishedSetup, gameId, router]);
 

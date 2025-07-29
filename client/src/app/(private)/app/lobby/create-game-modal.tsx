@@ -54,7 +54,7 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
         });
         if (response.error) throw new Error(response.error);
         updateCurrentSession(response);
-        router.push(`/game/${response.id}`);
+        router.push(`/app/game/${response.id}`);
         onClose();
     } catch (err) {
         setApiError(err as string);

@@ -6,7 +6,7 @@ import { apiClient } from '@/lib/client/api-client';
 
 type UserContextType = {
     userId: string | null;
-    login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    // login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
     register: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<void>;
 }
@@ -24,25 +24,26 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const login = async (username: string, password: string) => {
-        try {
-            const { data, error } = await apiClient.login({ username, password });
+    // TODO: remove
+    // const login = async (username: string, password: string) => {
+    //     try {
+    //         const { data, error } = await apiClient.login({ username, password });
             
-            if (error) {
-                return { success: false, error };
-            }
+    //         if (error) {
+    //             return { success: false, error };
+    //         }
 
-            if (!data || !data.id) {
-                return { success: false, error: "Login response missing user ID" };
-            }
+    //         if (!data || !data.id) {
+    //             return { success: false, error: "Login response missing user ID" };
+    //         }
 
-            setUserId(data.id);
-            setToLocalStorage(USER, data.id);
-            return { success: true };
-        } catch (err) {
-            return { success: false, error: err instanceof Error ? err.message : "Login failed" };
-        }
-    };
+    //         setUserId(data.id);
+    //         setToLocalStorage(USER, data.id);
+    //         return { success: true };
+    //     } catch (err) {
+    //         return { success: false, error: err instanceof Error ? err.message : "Login failed" };
+    //     }
+    // };
 
     const register = async (username: string, password: string) => {
         try {
@@ -71,7 +72,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <UserContext.Provider value={{ userId, login, register, logout }}>
+        <UserContext.Provider value={{ 
+            userId, 
+            // login, 
+            register, 
+            logout 
+        }}>
             {children}
         </UserContext.Provider>
     );

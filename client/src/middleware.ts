@@ -1,57 +1,60 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { verifyToken } from '@/lib/server/auth'
+// import { NextResponse } from 'next/server'
+// import type { NextRequest } from 'next/server'
+// import { verifyToken } from '@/lib/server/auth'
 
-// List of public paths that don't require authentication
-const publicPaths = ['/login', '/register', '/api/auth/register', '/api/auth/login', '/api/test']
+// // List of public paths that don't require authentication
+// const publicPaths = ['/login', '/register', '/api/auth/register', '/api/auth/login', '/api/test']
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const isPublicPath = publicPaths.includes(pathname)
+// export async function middleware(request: NextRequest) {
+//   const { pathname } = request.nextUrl
+//   const isPublicPath = publicPaths.includes(pathname)
 
-  // Check for auth token in cookies
-  const token = request.cookies.get('auth-token')?.value
+//   // Check for auth token in cookies
+//   const token = request.cookies.get('auth-token')?.value
 
-  // Allow public paths
-  if (token && isPublicPath) {
-    const lobbyUrl = new URL('/lobby', request.url)
-    return NextResponse.redirect(lobbyUrl)
-  } else if (isPublicPath) {
-    return NextResponse.next()
-  }
+//   // Allow public paths
+//   if (token && isPublicPath) {
+//     const lobbyUrl = new URL('/app/lobby', request.url)
+//     return NextResponse.redirect(lobbyUrl)
+//   } else if (isPublicPath) {
+//     return NextResponse.next()
+//   }
 
-  // If no token and not a public path, redirect to login
-  if (!token && !isPublicPath) {
-    const loginUrl = new URL('/login', request.url)
-    return NextResponse.redirect(loginUrl)
-  }
+//   // If no token and not a public path, redirect to login
+//   if (!token && !isPublicPath) {
+//     const loginUrl = new URL('/login', request.url)
+//     return NextResponse.redirect(loginUrl)
+//   }
 
-  // Verify token for protected routes
-  if (token && !isPublicPath) {
-    const decoded = await verifyToken(token)
+//   // Verify token for protected routes
+//   if (token && !isPublicPath) {
+//     const decoded = await verifyToken(token)
     
-    if (!decoded) {
-      // Invalid token, redirect to login and clear the cookie
-      const response = NextResponse.redirect(new URL('/login', request.url))
-      response.cookies.delete('auth-token')
-      return response
-    }
+//     if (!decoded) {
+//       // Invalid token, redirect to login and clear the cookie
+//       const response = NextResponse.redirect(new URL('/login', request.url))
+//       response.cookies.delete('auth-token')
+//       return response
+//     }
 
-    // Add token to request headers for API routes
-    if (pathname.startsWith('/api/')) {
-      const requestHeaders = new Headers(request.headers)
-      requestHeaders.set('Authorization', `Bearer ${token}`)
+//     // Add token to request headers for API routes
+//     if (pathname.startsWith('/api/')) {
+//       const requestHeaders = new Headers(request.headers)
+//       requestHeaders.set('Authorization', `Bearer ${token}`)
       
-      return NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      })
-    }
-  }
+//       return NextResponse.next({
+//         request: {
+//           headers: requestHeaders,
+//         },
+//       })
+//     }
+//   }
 
-  return NextResponse.next()
-}
+//   return NextResponse.next()
+// }
+import { auth } from "./lib/server/auth";
+
+export default auth;
 
 // Configure which paths the middleware should run on
 export const config = {

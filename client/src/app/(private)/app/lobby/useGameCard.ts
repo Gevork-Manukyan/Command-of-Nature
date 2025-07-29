@@ -27,7 +27,7 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
             throw new Error(response.error);
           } 
           
-          router.push(`/game/${response.id}`);
+          router.push(`/app/game/${response.id}`);
           updateCurrentSession(response);
       } catch (err) {
           console.error('Failed to join game:', err);
