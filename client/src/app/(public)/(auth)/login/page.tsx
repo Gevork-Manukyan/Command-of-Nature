@@ -1,5 +1,6 @@
 import { Metadata } from "next"
-import LoginPage from "./login"
+import { LoginForm } from "./login-form"
+import { AuthCard } from "../auth-card"
 
 export const metadata: Metadata = {
   title: "Login",
@@ -7,5 +8,12 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <LoginPage />
+  return (
+    <AuthCard 
+      title="Login" 
+      description="Enter your name below to login to your account"
+    >
+      <LoginForm />
+    </AuthCard>
+  )
 } 

@@ -1,5 +1,6 @@
 import { Metadata } from "next"
-import RegisterPage from "./register"
+import { RegisterForm } from "./register-form"
+import { AuthCard } from "../auth-card"
 
 export const metadata: Metadata = {
   title: "Register",
@@ -7,5 +8,12 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <RegisterPage />
+  return (
+    <AuthCard 
+      title="Register" 
+      description="Create a new account to start playing"
+    >
+      <RegisterForm />
+    </AuthCard>
+  )
 } 
