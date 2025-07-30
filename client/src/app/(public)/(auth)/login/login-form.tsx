@@ -8,6 +8,7 @@ import { Eye, EyeOff } from "lucide-react"
 import { ErrorMessage } from "@/components/error/error-message"
 import { loginAction } from "@/actions/auth-actions"
 import { useFormState } from "react-dom"
+import { AuthBtn } from "../auth-btn"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -47,9 +48,7 @@ export function LoginForm() {
       {state && state.error && <ErrorMessage message={state.error} />}
 
       <div className="flex flex-col gap-2 mt-4 justify-between items-center">
-        <Button type="submit">
-          Login
-        </Button>
+        <AuthBtn>Login</AuthBtn>
         <a href="/register" className="text-sm text-muted-foreground">
           Don't have an account?
         </a>
