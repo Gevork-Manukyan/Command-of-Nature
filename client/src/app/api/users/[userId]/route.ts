@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
-import { User } from "@/lib/server/models/User";
-import dbConnect from "@/lib/server/db";
+import { prisma } from "@/lib/server/prisma";
 
 export async function GET(
   request: Request,
   { params }: { params: { userId: string } }
 ) {
   try {
-    await dbConnect();
-    const user = await User.findById(params.userId);
+    const user = await prisma.user.findUnique({
+      where: { id: params.userId },
+    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Remove password from response
-    const { password, ...userWithoutPassword } = user.toObject();
+    const { password, ...userWithoutPassword } = user;
 
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
@@ -29,11 +29,11 @@ export async function PATCH(
   { params }: { params: { userId: string } }
 ) {
   try {
-    await dbConnect();
     const updates = await request.json();
 
-    const user = await User.findByIdAndUpdate(params.userId, updates, {
-      new: true,
+    const user = await prisma.user.update({
+      where: { id: params.userId },
+      data: updates,
     });
 
     if (!user) {
@@ -41,7 +41,7 @@ export async function PATCH(
     }
 
     // Remove password from response
-    const { password, ...userWithoutPassword } = user.toObject();
+    const { password, ...userWithoutPassword } = user;
 
     return NextResponse.json(userWithoutPassword);
   } catch (error) {

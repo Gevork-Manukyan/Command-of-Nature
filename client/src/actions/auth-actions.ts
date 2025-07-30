@@ -1,7 +1,6 @@
 "use server";
 import { signIn, signOut } from "@/lib/server/auth";
-import dbConnect from "@/lib/server/db";
-import { getUserModel, User } from "@/lib/server/models/User";
+import { prisma } from "@/lib/server/prisma";
 import { registerFormSchema } from "@/lib/zod-schemas";
 import { hash } from "bcryptjs";
 import { AuthError } from "next-auth";
@@ -46,20 +45,21 @@ export async function registerAction(prevState: unknown, formData: unknown) {
   const { username, password } = validatedFormData.data;
 
   try {
-    await dbConnect();
-    const User = getUserModel();
-
     // Check if user already exists
-    const existingUser = await User.findOne({ username });
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
     if (existingUser) return { error: "Username already exists" };
 
     // Hash the password
     const hashedPassword = await hash(password, 10);
 
     // Create the user
-    await User.create({
-      username,
-      password: hashedPassword,
+    await prisma.user.create({
+      data: {
+        username,
+        password: hashedPassword,
+      },
     });
   } catch (error) {
     console.error("Registration error:", error);

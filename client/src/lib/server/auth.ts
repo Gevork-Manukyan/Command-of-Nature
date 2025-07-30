@@ -1,11 +1,14 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { loginFormSchema } from "../zod-schemas";
-import dbConnect from "./db";
-import { getUserModel } from "./models/User";
+import { prisma } from "./prisma";
 import { compare } from "bcryptjs";
+import { getServerEnv } from "../env";
+
+const serverEnv = getServerEnv();
 
 const config = {
+  secret: serverEnv.JWT_SECRET,
   pages: {
     signIn: "/login",
   },
@@ -20,9 +23,9 @@ const config = {
         // Retrieve User from DB
         const { username, password } = validatedFormData.data;
 
-        await dbConnect();
-        const User = getUserModel();
-        const user = await User.findOne({ username });
+        const user = await prisma.user.findUnique({
+          where: { username },
+        });
         if (!user) {
           console.error(`User ${username} not found`);
           return null;
@@ -35,9 +38,9 @@ const config = {
           return null;
         }
 
-        // Convert Mongoose _id to id for NextAuth compatibility
+        // Convert Prisma user to NextAuth format
         return {
-          id: user._id.toString(),
+          id: user.id,
           username: user.username,
           password: user.password,
         };
@@ -68,7 +71,7 @@ const config = {
           request.nextUrl.pathname.includes("/login") ||
           request.nextUrl.pathname.includes("/register")
         ) {
-          return false;
+          return Response.redirect(new URL("/app/lobby", request.url));
         }
 
         // User trying to access other public route
