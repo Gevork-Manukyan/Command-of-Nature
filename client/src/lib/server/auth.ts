@@ -49,23 +49,33 @@ const config = {
       const isLoggedIn = Boolean(auth?.user);
       const isTryingToAccessProtectedRoute = request.nextUrl.pathname.startsWith("/app");
 
+      // User logged in and trying to access protected route
       if (isTryingToAccessProtectedRoute && isLoggedIn) {
         return true;
       }
 
+      // User NOT logged in and trying to access protected route
       if (isTryingToAccessProtectedRoute && !isLoggedIn) {
         return false;
       }
 
+      // User logged in and trying to access public route
       if (!isTryingToAccessProtectedRoute && isLoggedIn) {
-        if 
+        // User trying to access login or register page
+        if (request.nextUrl.pathname.includes('/login') || request.nextUrl.pathname.includes('/register')) {
+          return false;
+        }
+
+        // User trying to access other public route
         return true;
       }
 
+      // User NOT logged in and trying to access public route
       if (!isTryingToAccessProtectedRoute && !isLoggedIn) {
         return true;
       }
 
+      // Default: Deny access
       return false;
     },
     jwt: async ({ token, user, trigger }) => {
