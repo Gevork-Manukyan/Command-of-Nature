@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { getServerEnv } from '../env';
+import mongoose from "mongoose";
+import { getServerEnv } from "../env";
 
 // Get server environment variables
 const serverEnv = getServerEnv();
@@ -23,11 +23,13 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,        // Disables buffering if disconnected
+      bufferCommands: false, // Disables buffering if disconnected
       dbName: serverEnv.MONGODB_DB, // Database name
     };
 
-    cached.promise = mongoose.connect(serverEnv.MONGODB_URI, opts).then((mongoose) => mongoose.connection);
+    cached.promise = mongoose
+      .connect(serverEnv.MONGODB_URI, opts)
+      .then((mongoose) => mongoose.connection);
   }
 
   try {
@@ -40,4 +42,4 @@ async function dbConnect() {
   return cached.conn;
 }
 
-export default dbConnect; 
+export default dbConnect;

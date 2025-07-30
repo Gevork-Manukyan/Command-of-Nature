@@ -1,7 +1,7 @@
 "use server";
 import { signIn, signOut } from "@/lib/server/auth";
 import dbConnect from "@/lib/server/db";
-import { User } from "@/lib/server/models/User";
+import { getUserModel, User } from "@/lib/server/models/User";
 import { registerFormSchema } from "@/lib/zod-schemas";
 import { hash } from "bcryptjs";
 import { AuthError } from "next-auth";
@@ -47,6 +47,7 @@ export async function registerAction(prevState: unknown, formData: unknown) {
 
   try {
     await dbConnect();
+    const User = getUserModel();
 
     // Check if user already exists
     const existingUser = await User.findOne({ username });

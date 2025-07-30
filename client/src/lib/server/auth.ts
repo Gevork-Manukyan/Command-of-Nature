@@ -2,12 +2,12 @@ import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { loginFormSchema } from "../zod-schemas";
 import dbConnect from "./db";
-import { User } from "./models/User";
+import { getUserModel } from "./models/User";
 import { compare } from "bcryptjs";
 
 const config = {
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   providers: [
     Credentials({
@@ -21,6 +21,7 @@ const config = {
         const { username, password } = validatedFormData.data;
 
         await dbConnect();
+        const User = getUserModel();
         const user = await User.findOne({ username });
         if (!user) {
           console.error(`User ${username} not found`);
@@ -38,16 +39,17 @@ const config = {
         return {
           id: user._id.toString(),
           username: user.username,
-          password: user.password
+          password: user.password,
         };
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     // Runs on every request with middleware
     authorized: ({ auth, request }) => {
       const isLoggedIn = Boolean(auth?.user);
-      const isTryingToAccessProtectedRoute = request.nextUrl.pathname.startsWith("/app");
+      const isTryingToAccessProtectedRoute =
+        request.nextUrl.pathname.startsWith("/app");
 
       // User logged in and trying to access protected route
       if (isTryingToAccessProtectedRoute && isLoggedIn) {
@@ -62,7 +64,10 @@ const config = {
       // User logged in and trying to access public route
       if (!isTryingToAccessProtectedRoute && isLoggedIn) {
         // User trying to access login or register page
-        if (request.nextUrl.pathname.includes('/login') || request.nextUrl.pathname.includes('/register')) {
+        if (
+          request.nextUrl.pathname.includes("/login") ||
+          request.nextUrl.pathname.includes("/register")
+        ) {
           return false;
         }
 
@@ -90,9 +95,9 @@ const config = {
     session: async ({ session, token }) => {
       session.user.id = token.userId;
       session.user.username = token.username;
-      
+
       return session;
-    }
+    },
   },
 } satisfies NextAuthConfig;
 
@@ -149,4 +154,4 @@ export const {
 
 // export function getTokenFromCookie(): string | undefined {
 //   return cookies().get('auth-token')?.value;
-// } 
+// }
