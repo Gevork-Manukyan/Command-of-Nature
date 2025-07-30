@@ -71,12 +71,7 @@ export async function registerAction(prevState: unknown, formData: unknown) {
 }
 
 export async function logoutAction() {
-  try {
-    await signOut({
-      redirectTo: "/login",
-    });
-  } catch (error) {
-    console.error("Error during logout:", error);
-    return { error: "Error during logout" };
-  }
+  await signOut({
+    redirectTo: "/login",
+  });
 }

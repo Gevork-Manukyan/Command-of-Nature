@@ -56,20 +56,6 @@ class ApiClient {
     }
   }
 
-  // Auth methods
-  async register(data: { username: string; password: string }) {
-    return this.request<UserResponse>('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async logout() {
-    return this.request('/api/auth/logout', {
-      method: 'POST',
-    });
-  }
-
   // Game methods
   async joinGame(userId: string, gameId: string) {
     return this.request(`/api/users/${userId}/games`, {
