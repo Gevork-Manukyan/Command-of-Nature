@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
-import { ConGameModel } from '../models/ConGame/db-model';
-import mongoose from 'mongoose';
+import { prisma } from '../lib/prisma';
 
 const router = express.Router();
 
@@ -9,12 +8,18 @@ router.get('/:userId/games', async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     try {
-        const games = await ConGameModel.find({
-            'players.userId': new mongoose.Types.ObjectId(userId)
-        }).select('gameName isPrivate isStarted numPlayersTotal players');
+        const games = await prisma.conGame.findMany({
+            where: {
+                players: {
+                    some: {
+                        userId: userId
+                    }
+                }
+            }
+        });
 
         const activeGames = games.map(game => ({
-            gameId: game._id,
+            gameId: game.id,
             gameName: game.gameName,
             isPrivate: game.isPrivate,
             isStarted: game.isStarted,

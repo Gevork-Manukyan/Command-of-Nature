@@ -1,122 +1,169 @@
-import { Model } from 'mongoose';
-import { IConGame } from './db-model';
-import { ConGame, ActiveConGame } from './ConGame';
-import { NotFoundError } from '../../services/CustomError/BaseError';
+import { ConGame, ActiveConGame } from "./ConGame";
+import { NotFoundError } from "../../services/CustomError/BaseError";
+import { prisma } from "../../lib/prisma";
+import { Player } from "../Player/Player";
 
 /**
  * Service class for managing ConGame instances in the database
  * @class ConGameService
  */
 export class ConGameService {
-    private model: Model<IConGame>;
+  constructor() {}
 
-    /**
-     * Creates a new ConGameService instance
-     * @param {Model<IConGame>} model - The Mongoose model for ConGame
-     */
-    constructor(model: Model<IConGame>) {
-        this.model = model;
+  async createGame(
+    numPlayers: ConGame["numPlayersTotal"],
+    gameName: ConGame["gameName"],
+    isPrivate: ConGame["isPrivate"],
+    password: ConGame["password"]
+  ): Promise<ConGame> {
+    const game = new ConGame(numPlayers, gameName, isPrivate, password);
+
+    try {
+      await prisma.conGame.create({
+        data: game.toPrismaObject(),
+      });
+    } catch (error) {
+      throw new Error("Failed to create game");
     }
 
-    async findAllGames(): Promise<ConGame[]> {
-        const docs = await this.model.find({});
-        return docs.map(doc => ConGame.fromMongoose(doc));
+    return game;
+  }
+
+  async findAllGames(): Promise<ConGame[]> {
+    const games = await prisma.conGame.findMany();
+    return games.map((game) => ConGame.fromPrisma(game));
+  }
+
+  async findAllActiveGames(): Promise<ActiveConGame[]> {
+    const games = await prisma.conGame.findMany({
+      where: {
+        isActive: true,
+      },
+    });
+
+    return games.map((game) => ActiveConGame.fromPrisma(game));
+  }
+
+  async findGameById(id: string): Promise<ConGame> {
+    const doc = await prisma.conGame.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async createGame(numPlayers: ConGame['numPlayersTotal'], gameName: ConGame['gameName'], isPrivate: ConGame['isPrivate'], password: ConGame['password']): Promise<ConGame> {
-        const game = new ConGame(numPlayers, gameName, isPrivate, password);
-        const doc = await this.model.create(game.toMongoose());
-        return ConGame.fromMongoose(doc);
+    return ConGame.fromPrisma(doc);
+  }
+
+  async findActiveGameById(id: string): Promise<ActiveConGame> {
+    const doc = await prisma.conGame.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async findGameById(id: string): Promise<ConGame> {
-        const doc = await this.model.findById(id);
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ConGame.fromMongoose(doc);
+    return ActiveConGame.fromPrisma(doc);
+  }
+
+  async updateGameState(id: string, game: ConGame): Promise<ConGame> {
+    const doc = await prisma.conGame.update({
+      where: { id: id },
+      data: game.toPrismaObject(),
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async findActiveGameById(id: string): Promise<ActiveConGame> {
-        const doc = await this.model.findById(id);
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ActiveConGame.fromMongoose(doc);
+    return ConGame.fromPrisma(doc);
+  }
+
+  async updateActiveGameState(
+    id: string,
+    game: ActiveConGame
+  ): Promise<ActiveConGame> {
+    const doc = await prisma.conGame.update({
+      where: { id: id },
+      data: game.toPrismaObject(),
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async updateGameState(id: string, game: ConGame): Promise<ConGame> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $set: game.toMongoose() },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ConGame.fromMongoose(doc);
+    return ActiveConGame.fromPrisma(doc);
+  }
+
+  async addPlayerToGame(id: string, player: Player): Promise<ConGame> {
+    const doc = await prisma.conGame.update({
+      where: { id: id },
+      data: { players: { push: player.toPrismaObject() } },
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async updateActiveGameState(id: string, game: ActiveConGame): Promise<ActiveConGame> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $set: game.toMongoose() },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ActiveConGame.fromMongoose(doc);
+    return ConGame.fromPrisma(doc);
+  }
+
+  async removePlayerFromGame(id: string, playerId: string): Promise<ConGame> {
+    // TODO: make sure this is correct
+    const doc = await prisma.conGame.update({
+      where: { id: id },
+      data: { players: { push: { socketId: playerId } } },
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async addPlayerToGame(id: string, player: any): Promise<ConGame> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $push: { players: player } },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ConGame.fromMongoose(doc);
+    return ConGame.fromPrisma(doc);
+  }
+
+  async updateShopCards(
+    id: string,
+    updates: {
+      currentCreatureShopCards?: any[];
+      currentItemShopCards?: any[];
+    }
+  ): Promise<ConGame> {
+    const doc = await prisma.conGame.update({
+      where: { id: id },
+      data: updates,
+    });
+
+    if (!doc) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
 
-    async removePlayerFromGame(id: string, playerId: string): Promise<ConGame> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $pull: { players: { socketId: playerId } } },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ConGame.fromMongoose(doc);
-    }
+    return ConGame.fromPrisma(doc);
+  }
 
-    async updateShopCards(id: string, updates: {
-        currentCreatureShopCards?: any[],
-        currentItemShopCards?: any[]
-    }): Promise<ConGame> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $set: updates },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
-        return ConGame.fromMongoose(doc);
-    }
+  async deleteGame(id: string): Promise<void> {
+    const result = await prisma.conGame.delete({
+      where: { id: id },
+    });
 
-    async deleteGame(id: string): Promise<void> {
-        const result = await this.model.findByIdAndDelete(id);
-        if (!result) {
-            throw new NotFoundError('ConGame', `Game with id ${id} not found`);
-        }
+    if (!result) {
+      throw new NotFoundError("ConGame", `Game with id ${id} not found`);
     }
+  }
 
-    async findGamesByStatus(isActive: boolean): Promise<ConGame[]> {
-        const docs = await this.model.find({ isActive });
-        return docs.map(doc => ConGame.fromMongoose(doc));
-    }
-} 
+  async findGamesByStatus(isActive: boolean): Promise<ConGame[]> {
+    const games = await prisma.conGame.findMany({
+      where: { isActive: isActive },
+    });
+
+    return games.map((game) =>
+      isActive ? ActiveConGame.fromPrisma(game) : ConGame.fromPrisma(game)
+    );
+  }
+}

@@ -1,8 +1,9 @@
 import express from 'express';
-import { ConGameModel } from '../models/ConGame/db-model';
+import { ConGameService } from '../models/ConGame/con-game.service';
 import { GameListing } from '@shared-types';
 
 const router = express.Router();
+const conGameService = new ConGameService();
 
 // GET /api/game-listings?isStarted=false
 router.get('/', async (req, res) => {
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
             query.isStarted = isStarted === 'true';
         }
     
-        const games = await ConGameModel.find(query);
+        const games = await conGameService.findAllActiveGames();
         const cleanedGames: GameListing[] = games.map((game) => {
             return {
                 id: game.id,

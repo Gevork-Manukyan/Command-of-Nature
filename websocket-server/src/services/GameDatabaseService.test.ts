@@ -22,7 +22,7 @@ describe('GameDatabaseService', () => {
         jest.clearAllMocks();
         
         // Create mock instances
-        conGameService = new ConGameService({} as any) as jest.Mocked<ConGameService>;
+        conGameService = new ConGameService() as jest.Mocked<ConGameService>;
         gameStateService = new GameStateService() as jest.Mocked<GameStateService>;
         
         // Create the service with mocked dependencies

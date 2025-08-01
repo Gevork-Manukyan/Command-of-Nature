@@ -1,4 +1,4 @@
-import { ConGameService, ConGame, ConGameModel } from '../models/ConGame';
+import { ConGameService, ConGame } from '../models/ConGame';
 import { GameStateService, GameState } from '../models/GameState';
 import { GameStateInfo } from '../types';
 
@@ -101,6 +101,6 @@ export class GameDatabaseService {
     }
 } 
 
-const conGameService = new ConGameService(ConGameModel);
+const conGameService = new ConGameService();
 const gameStateService = new GameStateService();
 export const gameDatabaseService = GameDatabaseService.getInstance(conGameService, gameStateService);

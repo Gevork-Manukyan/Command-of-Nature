@@ -11,7 +11,7 @@ import {
   SageUnavailableError,
   ShopFullError,
 } from "../../services";
-import { gameId, TeamOrder } from "../../types";
+import { gameId } from "../../types";
 import {
   Sage,
   ElementalCard,
@@ -24,9 +24,10 @@ import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
-import { IConGame, ConGameModel, ConGameService } from "./";
+import { ConGameService } from "./con-game.service";
 import { GameStateManager } from "../../services/GameStateManager";
 import { GameStateService } from "../GameState";
+import { ConGame as ConGamePrisma } from "@prisma/client";
 
 const {
   BambooBerserker,
@@ -80,33 +81,15 @@ const {
 
 type ShopIndex = 0 | 1 | 2;
 
-/**
- * Plain interfaces for data structure
- */
-type ConGameData = {
-  id: string;
-  gameName: string;
-  isPrivate: boolean;
-  password?: string;
-  isStarted: boolean;
-  hasFinishedSetup: boolean;
-  numPlayersTotal: 2 | 4;
-  numPlayersReady: number;
-  numPlayersFinishedSetup: number;
-  players: Player[];
-  team1: Team;
-  team2: Team;
-  teamOrder: TeamOrder;
-  creatureShop: ElementalCard[];
-  itemShop: ItemCard[];
-  currentCreatureShopCards: ElementalCard[];
-  currentItemShopCards: ItemCard[];
-};
+type TeamOrder = {
+  first: Team["teamNumber"];
+  second: Team["teamNumber"];
+}
 
 /**
  * Plain interfaces for active game data structure
  */
-type ActiveConGameData = ConGameData & {
+type PrismaActiveConGameData = ConGamePrisma & {
   activeTeam: "first" | "second";
   currentPhase: "phase1" | "phase2" | "phase3" | "phase4";
   actionPoints: number;
@@ -121,7 +104,7 @@ export class ConGame {
   id!: gameId;
   gameName: string;
   isPrivate: boolean;
-  password?: string;
+  password: string | null;
   isStarted: boolean = false;
   protected hasFinishedSetup: boolean = false;
   numPlayersTotal: 2 | 4;
@@ -148,7 +131,7 @@ export class ConGame {
     numPlayers: ConGame["numPlayersTotal"],
     gameName: ConGame["gameName"],
     isPrivate: ConGame["isPrivate"],
-    password?: ConGame["password"],
+    password: ConGame["password"] = null,
     id?: gameId
   ) {
     if (id) this.id = id;
@@ -695,46 +678,10 @@ export class ConGame {
     return new ActiveConGame(
       this,
       GameDatabaseService.getInstance(
-        new ConGameService(ConGameModel),
+        new ConGameService(),
         new GameStateService()
       )
     );
-  }
-
-  /**
-   * Gets the base data from Mongoose
-   * @param doc - The Mongoose document to get the base data from
-   * @returns The base data
-   */
-  protected static getBaseDataFromMongoose(doc: IConGame): ConGameData {
-    return {
-      id: doc._id.toString(),
-      gameName: doc.gameName,
-      isPrivate: doc.isPrivate,
-      password: doc.password || "",
-      isStarted: doc.isStarted,
-      hasFinishedSetup: doc.hasFinishedSetup,
-      numPlayersTotal: doc.numPlayersTotal,
-      numPlayersReady: doc.numPlayersReady,
-      numPlayersFinishedSetup: doc.numPlayersFinishedSetup,
-      players: doc.players.map((p) => Player.fromMongoose(p)),
-      team1: Team.fromMongoose(doc.team1),
-      team2: Team.fromMongoose(doc.team2),
-      teamOrder: doc.teamOrder,
-      creatureShop: doc.creatureShop,
-      itemShop: doc.itemShop,
-      currentCreatureShopCards: doc.currentCreatureShopCards,
-      currentItemShopCards: doc.currentItemShopCards,
-    };
-  }
-
-  /**
-   * Converts a Mongoose document to a ConGame instance
-   * @param doc - The Mongoose document to convert
-   * @returns A new ConGame instance
-   */
-  static fromMongoose(doc: IConGame): ConGame {
-    return ConGame.fromData(ConGame.getBaseDataFromMongoose(doc));
   }
 
   /**
@@ -742,25 +689,30 @@ export class ConGame {
    * @param data - The plain data to create the instance from
    * @returns A new ConGame instance
    */
-  static fromData(data: ConGameData): ConGame {
+  static fromPrisma(data: ConGamePrisma): ConGame {
+    const { numPlayersTotal, gameName, isPrivate, password, id } = data;
+
+    if (numPlayersTotal !== 2 && numPlayersTotal !== 4) {
+      throw new ValidationError(
+        `Invalid number of players: ${numPlayersTotal}`,
+        "numPlayersTotal"
+      );
+    }
+
     const game = new ConGame(
-      data.numPlayersTotal,
-      data.gameName,
-      data.isPrivate,
-      data.password,
-      data.id
+      numPlayersTotal,
+      gameName,
+      isPrivate,
+      password,
+      id
     );
 
     // Convert players to Player instances if they aren't already
-    const players = data.players.map((p) =>
-      p instanceof Player ? p : Player.fromMongoose(p)
-    );
+    const players = data.players.map((player) => Player.fromMongoose(player));
 
     // Convert teams to Team instances if they aren't already
-    const team1 =
-      data.team1 instanceof Team ? data.team1 : Team.fromMongoose(data.team1);
-    const team2 =
-      data.team2 instanceof Team ? data.team2 : Team.fromMongoose(data.team2);
+    const team1 = Team.fromMongoose(data.team1);
+    const team2 = Team.fromMongoose(data.team2);
 
     // Copy all properties
     Object.assign(game, {
@@ -785,7 +737,7 @@ export class ConGame {
    * Converts the runtime instance to a plain object for Mongoose
    * @returns A plain object representation of the ConGame instance
    */
-  toMongoose(): Omit<IConGame, "_id"> {
+  toPrismaObject(): ConGamePrisma {
     return {
       gameName: this.gameName,
       isPrivate: this.isPrivate,
@@ -795,16 +747,20 @@ export class ConGame {
       numPlayersTotal: this.numPlayersTotal,
       numPlayersReady: this.numPlayersReady,
       numPlayersFinishedSetup: this.numPlayersFinishedSetup,
-      players: this.players.map((p) => p.toMongoose()),
+      players: this.players.map((player) => player.toMongoose()),
       team1: this.team1.toMongoose(),
       team2: this.team2.toMongoose(),
       teamOrder: this.teamOrder,
+
+      // TODO: The following fields could have functions so we need to convert them to plain objects
       creatureShop: this.creatureShop,
       itemShop: this.itemShop,
       currentCreatureShopCards: this.currentCreatureShopCards,
       currentItemShopCards: this.currentItemShopCards,
+      // ----------------------------
+
       isActive: false,
-    } as Omit<IConGame, "_id">;
+    };
   }
 }
 
@@ -975,8 +931,8 @@ export class ActiveConGame extends ConGame {
       throw new Error("Document is not an active game");
     }
 
-    const data: ActiveConGameData = {
-      ...ConGame.getBaseDataFromMongoose(doc),
+    const data: PrismaActiveConGameData = {
+      ...ConGame.getBaseDataFromPrisma(doc),
       activeTeam: doc.activeTeam!,
       currentPhase: doc.currentPhase!,
       actionPoints: doc.actionPoints!,
@@ -987,9 +943,9 @@ export class ActiveConGame extends ConGame {
   }
 
   // Create instance from plain data
-  static fromData(data: ActiveConGameData): ActiveConGame {
+  static fromData(data: PrismaActiveConGameData): ActiveConGame {
     const game = new ActiveConGame(
-      ConGame.fromData(data),
+      ConGame.fromPrisma(data),
       GameDatabaseService.getInstance(
         new ConGameService(ConGameModel),
         new GameStateService()
