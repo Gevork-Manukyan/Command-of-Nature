@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum State {
     JOINING_GAME = "joining-game",
     JOINING_TEAMS = "joining-teams",
@@ -44,12 +46,19 @@ export enum TransitionEvent {
     WIN_GAME = "win-game",
 }
 
-export type Transition = {
-    currentStateValue: State;
-    possibleInputs: Input[];
-}
+const InputSchema = z.object({
+    acceptableEvents: z.array(z.nativeEnum(TransitionEvent)),
+    nextState: z.nativeEnum(State),
+})
+export type Input = z.infer<typeof InputSchema>;
 
-export type Input = {
-    acceptableEvents: TransitionEvent[];
-    nextState: State;
-}  
+const TransitionSchema = z.object({
+    currentStateValue: z.nativeEnum(State),
+    possibleInputs: z.array(InputSchema),
+})
+export type Transition = z.infer<typeof TransitionSchema>;
+
+export const GameStateSchema = z.object({
+    gameId: z.string(),
+    currentTransition: TransitionSchema,
+})

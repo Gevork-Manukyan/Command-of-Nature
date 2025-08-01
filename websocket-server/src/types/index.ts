@@ -1,2 +1,2 @@
-export * from './types';
-export * from './gamestate-types';
+export * from "./types";
+export * from "../models/GameState/gamestate-types";

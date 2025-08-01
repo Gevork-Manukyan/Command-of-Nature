@@ -26,7 +26,7 @@ import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
 import { IConGame, ConGameModel, ConGameService } from "./";
 import { GameStateManager } from "../../services/GameStateManager";
-import { GameStateService, GameStateModel } from "../GameState";
+import { GameStateService } from "../GameState";
 
 const {
   BambooBerserker,
@@ -139,6 +139,10 @@ export class ConGame {
   /**
    * Creates a new ConGame instance
    * @param {2 | 4} numPlayers - The total number of players in the game
+   * @param {string} gameName - The name of the game
+   * @param {boolean} isPrivate - Whether the game is private
+   * @param {string} password - The password for the game
+   * @param {gameId} id - The ID of the game
    */
   constructor(
     numPlayers: ConGame["numPlayersTotal"],
@@ -692,7 +696,7 @@ export class ConGame {
       this,
       GameDatabaseService.getInstance(
         new ConGameService(ConGameModel),
-        new GameStateService(GameStateModel)
+        new GameStateService()
       )
     );
   }
@@ -988,7 +992,7 @@ export class ActiveConGame extends ConGame {
       ConGame.fromData(data),
       GameDatabaseService.getInstance(
         new ConGameService(ConGameModel),
-        new GameStateService(GameStateModel)
+        new GameStateService()
       )
     );
 

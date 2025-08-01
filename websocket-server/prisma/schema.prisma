@@ -46,11 +46,11 @@ model ConGame {
 
 model GameState {
     id    String @id @default(auto()) @map("_id") @db.ObjectId
-    state Json // Game state data
+    currentTransition Json // Game state data @map("currentTransition")
 
     // Relations
-    conGameId String  @unique @db.ObjectId
-    conGame   ConGame @relation(fields: [conGameId], references: [id], onDelete: Cascade)
+    gameId String  @unique @db.ObjectId @map("gameId")
+    conGame   ConGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -1,90 +1,118 @@
-import { Model, Types } from 'mongoose';
-import { IGameState } from './db-model';
-import { GameState } from './GameState';
-import { NotFoundError } from '../../services/CustomError/BaseError';
-import { TransitionEvent } from '../../types/gamestate-types';
+import { GameState } from "./GameState";
+import { NotFoundError } from "../../services/CustomError/BaseError";
+import { TransitionEvent } from "./gamestate-types";
+import { prisma } from "../../lib/prisma";
 
 /**
  * Service class for managing GameState instances in the database
  * @class GameStateService
  */
 export class GameStateService {
-    private model: Model<IGameState>;
+  constructor() {}
 
-    /**
-     * Creates a new GameStateService instance
-     * @param {Model<IGameState>} model - The Mongoose model for GameState
-     */
-    constructor(model: Model<IGameState>) {
-        this.model = model;
+  async createGameState(gameId: string): Promise<GameState> {
+    const gameState = new GameState(gameId);
+    const doc = await prisma.gameState.create({
+      data: {
+        gameId: gameState.gameId,
+        currentTransition: gameState.getCurrentTransition(),
+      },
+    });
+    return GameState.fromPrisma(doc);
+  }
+
+  async findGameStateById(id: string): Promise<GameState> {
+    const doc = await prisma.gameState.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!doc) {
+      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
     }
 
-    async createGameState(gameId: string): Promise<GameState> {
-        const gameState = new GameState(gameId);
-        const doc = await this.model.create({
-            ...gameState.toMongoose(),
-            gameId: new Types.ObjectId(gameId)
-        });
-        return GameState.fromMongoose(doc);
+    return GameState.fromPrisma(doc);
+  }
+
+  async findGameStateByGameId(gameId: string): Promise<GameState> {
+    const doc = await prisma.gameState.findUnique({
+      where: {
+        gameId: gameId,
+      },
+    });
+
+    if (!doc) {
+      throw new NotFoundError(
+        "GameState",
+        `GameState for game ${gameId} not found`
+      );
     }
 
-    async findGameStateById(id: string): Promise<GameState> {
-        const doc = await this.model.findById(id);
-        if (!doc) {
-            throw new NotFoundError('GameState', `GameState with id ${id} not found`);
-        }
-        return GameState.fromMongoose(doc);
+    return GameState.fromPrisma(doc);
+  }
+
+  async updateGameState(
+    id: string,
+    updates: Partial<GameState>
+  ): Promise<GameState> {
+    const doc = await prisma.gameState.update({
+      where: { id: id },
+      data: updates,
+    });
+
+    if (!doc) {
+      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
     }
 
-    async findGameStateByGameId(gameId: string): Promise<GameState> {
-        const doc = await this.model.findOne({ gameId });
-        if (!doc) {
-            throw new NotFoundError('GameState', `GameState for game ${gameId} not found`);
-        }
-        return GameState.fromMongoose(doc);
-    }
+    return GameState.fromPrisma(doc);
+  }
 
-    async updateGameState(id: string, updates: Partial<GameState>): Promise<GameState> {
-        const doc = await this.model.findByIdAndUpdate(
-            id,
-            { $set: updates },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('GameState', `GameState with id ${id} not found`);
-        }
-        return GameState.fromMongoose(doc);
-    }
+  async updateGameStateByGameId(
+    gameId: string,
+    updates: Partial<GameState>
+  ): Promise<GameState> {
+    const doc = await prisma.gameState.update({
+      where: { gameId: gameId },
+      data: updates,
+    });
 
-    async updateGameStateByGameId(gameId: string, updates: Partial<GameState>): Promise<GameState> {
-        const doc = await this.model.findOneAndUpdate(
-            { gameId: new Types.ObjectId(gameId) },
-            { $set: updates },
-            { new: true }
-        );
-        if (!doc) {
-            throw new NotFoundError('GameState', `GameState for game ${gameId} not found`);
-        }
-        return GameState.fromMongoose(doc);
+    if (!doc) {
+      throw new NotFoundError(
+        "GameState",
+        `GameState for game ${gameId} not found`
+      );
     }
+    
+    return GameState.fromPrisma(doc);
+  }
 
-    async processGameStateEvent(id: string, event: TransitionEvent): Promise<GameState> {
-        const gameState = await this.findGameStateById(id);
-        gameState.processEvent(event);
-        return this.updateGameState(id, gameState);
-    }
+  async processGameStateEvent(
+    id: string,
+    event: TransitionEvent
+  ): Promise<GameState> {
+    const gameState = await this.findGameStateById(id);
+    gameState.processEvent(event);
+    return this.updateGameState(id, gameState);
+  }
 
-    async deleteGameState(id: string): Promise<void> {
-        const result = await this.model.findByIdAndDelete(id);
-        if (!result) {
-            throw new NotFoundError('GameState', `GameState with id ${id} not found`);
-        }
-    }
+  async deleteGameState(id: string): Promise<void> {
+    const result = await prisma.gameState.delete({
+      where: { id: id },
+    });
 
-    async deleteGameStateByGameId(gameId: string): Promise<void> {
-        const result = await this.model.deleteOne({ gameId: new Types.ObjectId(gameId) });
-        if (result.deletedCount === 0) {
-            throw new NotFoundError('GameState', `GameState for game ${gameId} not found`);
-        }
+    if (!result) {
+      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
     }
-} 
+  }
+
+  async deleteGameStateByGameId(gameId: string): Promise<void> {
+    const result = await prisma.gameState.delete({
+      where: { gameId: gameId },
+    });
+
+    if (!result) {
+      throw new NotFoundError("GameState", `GameState for game ${gameId} not found`);
+    }
+  }
+}
