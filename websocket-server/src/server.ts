@@ -1,13 +1,11 @@
 import { createServer } from "http"; 
 import { Server } from "socket.io";
-import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
-import { processEventMiddleware } from "./lib";
 import { GameEventEmitter, GameStateManager } from "./services";
-import { RegisterUserSocketEvent, RegisterUserData, SocketEventMap } from "@shared-types";
+import { RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
 import { errorHandler } from './middleware/errorHandler';
