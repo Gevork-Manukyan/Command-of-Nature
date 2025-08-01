@@ -14,7 +14,7 @@ model ConGame {
   password                  String?
   isStarted                 Boolean
   hasFinishedSetup          Boolean
-  numPlayersTotal           Int
+  numPlayersTotal           Int      // 2 or 4
   numPlayersReady           Int
   numPlayersFinishedSetup   Int
   teamOrder                 Json     // { first: Team, second: Team }
@@ -28,9 +28,9 @@ model ConGame {
   activeTeam                String?  // 'first' or 'second'
   currentPhase              String?  // 'phase1', 'phase2', 'phase3', 'phase4'
   actionPoints              Int?
-  maxActionPoints           Int?
+  maxActionPoints           Int?     // 3 or 6
   
-  // Embedded data (like your original design)
+  // Embedded data
   players                   Json[]   // Player[]
   team1                     Json     // Team with embedded Battlefield
   team2                     Json     // Team with embedded Battlefield
