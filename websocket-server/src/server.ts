@@ -12,6 +12,7 @@ import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
 import { errorHandler } from './middleware/errorHandler';
 import { env } from "./lib/env";
+import { prisma } from "./lib/prisma";
 
 const app = express();
 app.use(cors());
@@ -100,19 +101,37 @@ gameNamespace.on("connection", (socket) => {
   */
 });
 
-// Connect to MongoDB first
-mongoose.connect(env.DATABASE_URL)
-  .then(() => {
-    console.debug('Connected to MongoDB');
+// Start the server with Prisma
+async function startServer() {
+  try {
+    // Test Prisma connection
+    await prisma.$connect();
+    console.debug("Connected to database via Prisma");
+
     // Start the server after successful database connection
     server.listen(env.PORT, async () => {
       console.debug(`WebSocket server running on http://localhost:${env.PORT}`);
       await gameStateManager.loadExistingGames();
-    ""});
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
+    });
+  } catch (error) {
+    console.error("Database connection error:", error);
     process.exit(1);
-  });
+  }
+}
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("Shutting down gracefully...");
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+startServer();
 
 export { server, io };

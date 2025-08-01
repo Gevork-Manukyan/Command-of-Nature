@@ -1,0 +1,132 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("MONGODB_URI")
+}
+
+model User {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    username      String   @unique
+    password      String
+    gamesPlayed   Int      @default(0)
+    gamesWon      Int      @default(0)
+    isOnline      Boolean  @default(false)
+    activeGameIds String[]
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    @@map("users")
+}
+
+model ConGame {
+    id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+    gameName                 String
+    isPrivate                Boolean
+    password                 String?
+    isStarted                Boolean
+    hasFinishedSetup         Boolean
+    numPlayersTotal          Int // 2 or 4
+    numPlayersReady          Int
+    numPlayersFinishedSetup  Int
+    teamOrder                Json // { first: Team, second: Team }
+    creatureShop             Json[] // ElementalCard[]
+    itemShop                 Json[] // ItemCard[]
+    currentCreatureShopCards Json[] // ElementalCard[]
+    currentItemShopCards     Json[] // ItemCard[]
+
+    // Active game fields
+    isActive        Boolean @default(false)
+    activeTeam      String? // 'first' or 'second'
+    currentPhase    String? // 'phase1', 'phase2', 'phase3', 'phase4'
+    actionPoints    Int?
+    maxActionPoints Int? // 3 or 6
+
+    // Relations
+    players   Player[]
+    team1Id   String     @db.ObjectId
+    team2Id   String     @db.ObjectId
+    team1     Team       @relation("Team1", fields: [team1Id], references: [id])
+    team2     Team       @relation("Team2", fields: [team2Id], references: [id])
+    gameState GameState?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("congames")
+}
+
+model Player {
+    id                String  @id @default(auto()) @map("_id") @db.ObjectId
+    userId            String  @db.ObjectId
+    socketId          String  @unique
+    isReady           Boolean @default(false)
+    isSetup           Boolean @default(false)
+    hasChosenWarriors Boolean @default(false)
+    isGameHost        Boolean @default(false)
+    sage              Json? // Sage
+    decklist          Json? // Decklist
+    level             Int
+    hand              Json[] // Card[]
+    deck              Json[] // Card[]
+    discardPile       Json[] // Card[]
+
+    // Relations
+    conGameId String  @db.ObjectId
+    conGame   ConGame @relation(fields: [conGameId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("players")
+}
+
+model Team {
+    id           String   @id @default(auto()) @map("_id") @db.ObjectId
+    userIds      String[]
+    teamNumber   Int // 1 or 2
+    teamSize     Int // 1 or 2
+    gold         Int
+    maxGold      Int // 12 or 20
+    removedCards Json[] // Card[]
+
+    // Relations
+    battlefield     Battlefield?
+    conGamesAsTeam1 ConGame[]    @relation("Team1")
+    conGamesAsTeam2 ConGame[]    @relation("Team2")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("teams")
+}
+
+model Battlefield {
+    id     String @id @default(auto()) @map("_id") @db.ObjectId
+    spaces Json[] // BattlefieldSpace[]
+
+    // Relations
+    teamId String @unique @db.ObjectId
+    team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("battlefields")
+}
+
+model GameState {
+    id    String @id @default(auto()) @map("_id") @db.ObjectId
+    state Json // Game state data
+
+    // Relations
+    conGameId String  @unique @db.ObjectId
+    conGame   ConGame @relation(fields: [conGameId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("gamestates")
+}

@@ -11,7 +11,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "shared-types": "1.0.0"
+    "shared-types": "1.0.0",
+    "@prisma/client": "^6.13.0",
+    "prisma": "^6.13.0"
   },
   "devDependencies": {
     "tsx": "^4.7.0"

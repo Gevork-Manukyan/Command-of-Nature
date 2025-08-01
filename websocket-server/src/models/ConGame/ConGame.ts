@@ -1,21 +1,82 @@
 // Command of Nature (C.O.N)
 
-import { GameDatabaseService, NotFoundError, ValidationError } from "../../services";
-import { 
-  NotEnoughGoldError, PlayersNotReadyError, 
-  SageUnavailableError, ShopFullError 
+import {
+  GameDatabaseService,
+  NotFoundError,
+  ValidationError,
+} from "../../services";
+import {
+  NotEnoughGoldError,
+  PlayersNotReadyError,
+  SageUnavailableError,
+  ShopFullError,
 } from "../../services";
 import { gameId, TeamOrder } from "../../types";
-import { Sage, ElementalCard, ItemCard, SpaceOption, Decklist, SageSchema } from "@shared-types";
+import {
+  Sage,
+  ElementalCard,
+  ItemCard,
+  SpaceOption,
+  Decklist,
+  SageSchema,
+} from "@shared-types";
 import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
-import { IConGame, ConGameModel, ConGameService } from './';
-import { GameStateManager } from '../../services/GameStateManager';
-import { GameStateService, GameStateModel } from '../GameState';
+import { IConGame, ConGameModel, ConGameService } from "./";
+import { GameStateManager } from "../../services/GameStateManager";
+import { GameStateService, GameStateModel } from "../GameState";
 
-const { BambooBerserker, Bruce, CackleRipclaw, CamouChameleon, CurrentConjurer, Dewy, DistantDoubleStrike, ElementalIncantation, ElementalSwap, ExchangeOfNature, FarsightFrenzy, Flint, FocusedFury, ForageThumper, Herbert, HummingHerald, IguanaGuard, LumberClaw, MagicEtherStrike, MeleeShield, MossViper, Mush, NaturalDefense, NaturesWrath, OakLumbertron, Obliterate, PineSnapper, PrimitiveStrike, ProjectileBlast, RangedBarrier, Redstone, ReinforcedImpact, RoamingRazor, Rocco, RubyGuardian, RunePuma, ShrubBeetle, SplashBasilisk, SplinterStinger, StoneDefender, SurgesphereMonk, TerrainTumbler, TwineFeline, TyphoonFist, Wade, WhirlWhipper, Willow } = ALL_CARDS;
+const {
+  BambooBerserker,
+  Bruce,
+  CackleRipclaw,
+  CamouChameleon,
+  CurrentConjurer,
+  Dewy,
+  DistantDoubleStrike,
+  ElementalIncantation,
+  ElementalSwap,
+  ExchangeOfNature,
+  FarsightFrenzy,
+  Flint,
+  FocusedFury,
+  ForageThumper,
+  Herbert,
+  HummingHerald,
+  IguanaGuard,
+  LumberClaw,
+  MagicEtherStrike,
+  MeleeShield,
+  MossViper,
+  Mush,
+  NaturalDefense,
+  NaturesWrath,
+  OakLumbertron,
+  Obliterate,
+  PineSnapper,
+  PrimitiveStrike,
+  ProjectileBlast,
+  RangedBarrier,
+  Redstone,
+  ReinforcedImpact,
+  RoamingRazor,
+  Rocco,
+  RubyGuardian,
+  RunePuma,
+  ShrubBeetle,
+  SplashBasilisk,
+  SplinterStinger,
+  StoneDefender,
+  SurgesphereMonk,
+  TerrainTumbler,
+  TwineFeline,
+  TyphoonFist,
+  Wade,
+  WhirlWhipper,
+  Willow,
+} = ALL_CARDS;
 
 type ShopIndex = 0 | 1 | 2;
 
@@ -40,17 +101,17 @@ type ConGameData = {
   itemShop: ItemCard[];
   currentCreatureShopCards: ElementalCard[];
   currentItemShopCards: ItemCard[];
-}
+};
 
 /**
  * Plain interfaces for active game data structure
  */
 type ActiveConGameData = ConGameData & {
-  activeTeam: 'first' | 'second';
-  currentPhase: 'phase1' | 'phase2' | 'phase3' | 'phase4';
+  activeTeam: "first" | "second";
+  currentPhase: "phase1" | "phase2" | "phase3" | "phase4";
   actionPoints: number;
   maxActionPoints: 3 | 6;
-}
+};
 
 /**
  * Represents a Command of Nature (C.O.N) game instance
@@ -79,22 +140,29 @@ export class ConGame {
    * Creates a new ConGame instance
    * @param {2 | 4} numPlayers - The total number of players in the game
    */
-  constructor(numPlayers: ConGame['numPlayersTotal'], gameName: ConGame['gameName'], isPrivate: ConGame['isPrivate'], password?: ConGame['password'], id?: gameId) {
+  constructor(
+    numPlayers: ConGame["numPlayersTotal"],
+    gameName: ConGame["gameName"],
+    isPrivate: ConGame["isPrivate"],
+    password?: ConGame["password"],
+    id?: gameId
+  ) {
     if (id) this.id = id;
     this.numPlayersTotal = numPlayers;
     this.gameName = gameName;
     this.isPrivate = isPrivate;
     this.password = password || "";
-    
-    const teamSize = (numPlayers / 2) as Team['teamSize'];
-    this.team1 = new Team(teamSize, 1)
-    this.team2 = new Team(teamSize, 2)
 
-    const teamOrder = Math.random() > 0.5 ? [this.team1, this.team2] : [this.team2, this.team1];
+    const teamSize = (numPlayers / 2) as Team["teamSize"];
+    this.team1 = new Team(teamSize, 1);
+    this.team2 = new Team(teamSize, 2);
+
+    const teamOrder =
+      Math.random() > 0.5 ? [this.team1, this.team2] : [this.team2, this.team1];
     this.teamOrder = {
       first: teamOrder[0],
-      second: teamOrder[1]
-    }
+      second: teamOrder[1],
+    };
   }
 
   /**
@@ -136,7 +204,9 @@ export class ConGame {
   removePlayer(playerId: Player["socketId"]) {
     // If the host is leaving, set a new host
     if (this.getPlayer(playerId).isGameHost) {
-      const newHost = this.players.find(player => player.socketId !== playerId);
+      const newHost = this.players.find(
+        (player) => player.socketId !== playerId
+      );
       if (newHost) newHost.setIsGameHost(true);
     }
 
@@ -156,7 +226,7 @@ export class ConGame {
         "Player",
         `Player with socket ID ${playerId} not found in game ${this.id}`
       );
-      
+
     return player;
   }
 
@@ -165,9 +235,9 @@ export class ConGame {
    * @param userId - The user ID of the player to get
    * @returns The player
    */
-    getPlayerByUserId(userId: string): Player | null {
-      return this.players.find((item) => item.userId === userId) || null;
-    }
+  getPlayerByUserId(userId: string): Player | null {
+    return this.players.find((item) => item.userId === userId) || null;
+  }
 
   /**
    * Sets the sage for a player
@@ -175,10 +245,12 @@ export class ConGame {
    * @param sage - The sage to set
    */
   setPlayerSage(playerId: Player["socketId"], sage: Sage) {
-    const isSageAvailable = this.players.every(player => player.sage !== sage) 
+    const isSageAvailable = this.players.every(
+      (player) => player.sage !== sage
+    );
     if (!isSageAvailable) throw new SageUnavailableError(sage);
-    const player = this.getPlayer(playerId)
-    player.setSage(sage)
+    const player = this.getPlayer(playerId);
+    player.setSage(sage);
   }
 
   /**
@@ -186,7 +258,9 @@ export class ConGame {
    * @returns The available sages
    */
   getAvailableSages() {
-    const selectedSages = this.players.filter(player => player.sage !== null).map(player => player.sage);
+    const selectedSages = this.players
+      .filter((player) => player.sage !== null)
+      .map((player) => player.sage);
     return Object.values(SageSchema.enum).reduce((acc, sage) => {
       acc[sage] = !selectedSages.includes(sage);
       return acc;
@@ -198,8 +272,13 @@ export class ConGame {
    * @returns True if all players have selected a sage, false otherwise
    */
   validateAllPlayersSeclectedSage() {
-    if (this.players.length !== this.numPlayersTotal) throw new ValidationError(`Missing ${this.numPlayersTotal - this.players.length} players`, "players");
-    if (this.players.some(player => !player.sage)) throw new ValidationError("All players must select a sage", "sage");
+    if (this.players.length !== this.numPlayersTotal)
+      throw new ValidationError(
+        `Missing ${this.numPlayersTotal - this.players.length} players`,
+        "players"
+      );
+    if (this.players.some((player) => !player.sage))
+      throw new ValidationError("All players must select a sage", "sage");
   }
 
   /**
@@ -207,8 +286,20 @@ export class ConGame {
    * @returns True if all teams have joined, false otherwise
    */
   validateAllTeamsJoined() {
-    if (this.team1.getCurrentNumPlayers() !== this.numPlayersTotal / 2) throw new ValidationError(`Team 1 has ${this.numPlayersTotal / 2 - this.team1.getCurrentNumPlayers()} players`, "team1");
-    if (this.team2.getCurrentNumPlayers() !== this.numPlayersTotal / 2) throw new ValidationError(`Team 2 has ${this.numPlayersTotal / 2 - this.team2.getCurrentNumPlayers()} players`, "team2");
+    if (this.team1.getCurrentNumPlayers() !== this.numPlayersTotal / 2)
+      throw new ValidationError(
+        `Team 1 has ${
+          this.numPlayersTotal / 2 - this.team1.getCurrentNumPlayers()
+        } players`,
+        "team1"
+      );
+    if (this.team2.getCurrentNumPlayers() !== this.numPlayersTotal / 2)
+      throw new ValidationError(
+        `Team 2 has ${
+          this.numPlayersTotal / 2 - this.team2.getCurrentNumPlayers()
+        } players`,
+        "team2"
+      );
   }
 
   /**
@@ -218,11 +309,14 @@ export class ConGame {
    */
   getPlayerTeam(playerId: Player["socketId"]) {
     const player = this.getPlayer(playerId);
-    const playerTeam = 
-      this.team1.isPlayerOnTeam(player.userId) ? this.team1 : 
-      this.team2.isPlayerOnTeam(player.userId) ? this.team2 : null;
+    const playerTeam = this.team1.isPlayerOnTeam(player.userId)
+      ? this.team1
+      : this.team2.isPlayerOnTeam(player.userId)
+      ? this.team2
+      : null;
 
-    if (!playerTeam) throw new NotFoundError("Team", "Player does not have a team")
+    if (!playerTeam)
+      throw new NotFoundError("Team", "Player does not have a team");
     return playerTeam;
   }
 
@@ -327,20 +421,23 @@ export class ConGame {
    * @param shop - The shop to add the card to
    * @param currentShopCards - The current shop cards
    */
-  private addCardToShop<T extends ElementalCard | ItemCard>(shop: T[], currentShopCards: T[]) {
+  private addCardToShop<T extends ElementalCard | ItemCard>(
+    shop: T[],
+    currentShopCards: T[]
+  ) {
     const shopType = shop === this.creatureShop ? "creature" : "item";
     if (shop.length === 3) throw new ShopFullError(shopType);
-    
+
     const card = drawCardFromDeck(shop);
     currentShopCards.push(card);
   }
-  
+
   /**
    * Joins a player to a team
    * @param playerId - The socket ID of the player to join the team
    * @param teamNumber - The team number to join
    */
-  joinTeam(playerId: Player['socketId'], teamNumber: Team['teamNumber']) {
+  joinTeam(playerId: Player["socketId"], teamNumber: Team["teamNumber"]) {
     const teamSelected = teamNumber === 1 ? this.team1 : this.team2;
     const player = this.getPlayer(playerId);
     const playerUserId = player.userId;
@@ -359,8 +456,9 @@ export class ConGame {
    * @returns The number of players ready
    */
   incrementPlayersReady() {
-    this.numPlayersReady++
-    if (this.numPlayersReady > this.numPlayersTotal) this.numPlayersReady = this.numPlayersTotal
+    this.numPlayersReady++;
+    if (this.numPlayersReady > this.numPlayersTotal)
+      this.numPlayersReady = this.numPlayersTotal;
     return this.numPlayersReady;
   }
 
@@ -369,8 +467,8 @@ export class ConGame {
    * @returns The number of players ready
    */
   decrementPlayersReady() {
-    this.numPlayersReady--
-    if (this.numPlayersReady < 0) this.numPlayersReady = 0
+    this.numPlayersReady--;
+    if (this.numPlayersReady < 0) this.numPlayersReady = 0;
     return this.numPlayersReady;
   }
 
@@ -379,7 +477,11 @@ export class ConGame {
    * @returns True if all players have finished setup, false otherwise
    */
   validateAllPlayersReady() {
-    if (this.numPlayersReady !== this.numPlayersTotal) throw new PlayersNotReadyError(this.numPlayersReady, this.numPlayersTotal)
+    if (this.numPlayersReady !== this.numPlayersTotal)
+      throw new PlayersNotReadyError(
+        this.numPlayersReady,
+        this.numPlayersTotal
+      );
   }
 
   /**
@@ -387,8 +489,9 @@ export class ConGame {
    * @returns The number of players finished setup
    */
   incrementPlayersFinishedSetup() {
-    this.numPlayersFinishedSetup++
-    if (this.numPlayersFinishedSetup > this.numPlayersTotal) this.numPlayersFinishedSetup = this.numPlayersTotal
+    this.numPlayersFinishedSetup++;
+    if (this.numPlayersFinishedSetup > this.numPlayersTotal)
+      this.numPlayersFinishedSetup = this.numPlayersTotal;
     return this.numPlayersFinishedSetup;
   }
 
@@ -397,8 +500,8 @@ export class ConGame {
    * @returns The number of players finished setup
    */
   decrementPlayersFinishedSetup() {
-    this.numPlayersFinishedSetup--
-    if (this.numPlayersFinishedSetup < 0) this.numPlayersFinishedSetup = 0
+    this.numPlayersFinishedSetup--;
+    if (this.numPlayersFinishedSetup < 0) this.numPlayersFinishedSetup = 0;
     return this.numPlayersFinishedSetup;
   }
 
@@ -406,11 +509,11 @@ export class ConGame {
    * Clears the teams
    */
   clearTeams() {
-    this.team1.resetTeam()
-    this.team2.resetTeam()
+    this.team1.resetTeam();
+    this.team2.resetTeam();
     this.numPlayersReady = 0;
-    this.numPlayersFinishedSetup = 0
-    this.players.forEach(player => player.setIsReady(false))
+    this.numPlayersFinishedSetup = 0;
+    this.players.forEach((player) => player.setIsReady(false));
   }
 
   /**
@@ -425,44 +528,51 @@ export class ConGame {
     this.initPlayerFields();
     this.initCreatureShop();
     this.initItemShop();
-    
-    this.setStarted(true)
+
+    this.setStarted(true);
   }
 
   /**
    * Initializes the player decks
    */
   initPlayerDecks() {
-    this.players.forEach(player => player.initDeck())
+    this.players.forEach((player) => player.initDeck());
   }
 
   /**
    * Initializes the player hands
    */
   initPlayerHands() {
-    this.players.forEach(player => player.initHand())
+    this.players.forEach((player) => player.initHand());
   }
 
   /**
    * Initializes the player fields
    */
   initPlayerFields() {
-    const team1Decklists = this.getTeamDecklists(this.team1)
-    const team2Decklists = this.getTeamDecklists(this.team2)
+    const team1Decklists = this.getTeamDecklists(this.team1);
+    const team2Decklists = this.getTeamDecklists(this.team2);
 
-    this.team1.initBattlefield(team1Decklists)
-    this.team2.initBattlefield(team2Decklists)
+    this.team1.initBattlefield(team1Decklists);
+    this.team2.initBattlefield(team2Decklists);
   }
 
   getTeamDecklists(team: Team) {
-    const teamPlayers = this.players.filter(player => team.isPlayerOnTeam(player.userId))
-    const decklists = teamPlayers.map(player => player.decklist)
+    const teamPlayers = this.players.filter((player) =>
+      team.isPlayerOnTeam(player.userId)
+    );
+    const decklists = teamPlayers.map((player) => player.decklist);
 
     // Filter out null values and ensure we have valid decklists
-    const validDecklists = decklists.filter((decklist): decklist is Decklist => decklist !== null);
-    
+    const validDecklists = decklists.filter(
+      (decklist): decklist is Decklist => decklist !== null
+    );
+
     if (validDecklists.length !== teamPlayers.length) {
-      throw new ValidationError(`Not all players in team have decklists set`, "decklists");
+      throw new ValidationError(
+        `Not all players in team have decklists set`,
+        "decklists"
+      );
     }
 
     return validDecklists;
@@ -512,8 +622,8 @@ export class ConGame {
       TyphoonFist,
       WhirlWhipper,
       SurgesphereMonk,
-      SplashBasilisk
-    ]
+      SplashBasilisk,
+    ];
 
     this.addCardToCreatureShop();
     this.addCardToCreatureShop();
@@ -565,7 +675,7 @@ export class ConGame {
       MeleeShield,
       MeleeShield,
       MeleeShield,
-    ]
+    ];
 
     this.addCardToItemShop();
     this.addCardToItemShop();
@@ -578,7 +688,13 @@ export class ConGame {
    */
   finishedSetup(): ActiveConGame {
     this.hasFinishedSetup = true;
-    return new ActiveConGame(this, GameDatabaseService.getInstance(new ConGameService(ConGameModel), new GameStateService(GameStateModel)));
+    return new ActiveConGame(
+      this,
+      GameDatabaseService.getInstance(
+        new ConGameService(ConGameModel),
+        new GameStateService(GameStateModel)
+      )
+    );
   }
 
   /**
@@ -597,14 +713,14 @@ export class ConGame {
       numPlayersTotal: doc.numPlayersTotal,
       numPlayersReady: doc.numPlayersReady,
       numPlayersFinishedSetup: doc.numPlayersFinishedSetup,
-      players: doc.players.map(p => Player.fromMongoose(p)),
+      players: doc.players.map((p) => Player.fromMongoose(p)),
       team1: Team.fromMongoose(doc.team1),
       team2: Team.fromMongoose(doc.team2),
       teamOrder: doc.teamOrder,
       creatureShop: doc.creatureShop,
       itemShop: doc.itemShop,
       currentCreatureShopCards: doc.currentCreatureShopCards,
-      currentItemShopCards: doc.currentItemShopCards
+      currentItemShopCards: doc.currentItemShopCards,
     };
   }
 
@@ -623,15 +739,25 @@ export class ConGame {
    * @returns A new ConGame instance
    */
   static fromData(data: ConGameData): ConGame {
-    const game = new ConGame(data.numPlayersTotal, data.gameName, data.isPrivate, data.password, data.id);
-    
+    const game = new ConGame(
+      data.numPlayersTotal,
+      data.gameName,
+      data.isPrivate,
+      data.password,
+      data.id
+    );
+
     // Convert players to Player instances if they aren't already
-    const players = data.players.map(p => p instanceof Player ? p : Player.fromMongoose(p));
-    
+    const players = data.players.map((p) =>
+      p instanceof Player ? p : Player.fromMongoose(p)
+    );
+
     // Convert teams to Team instances if they aren't already
-    const team1 = data.team1 instanceof Team ? data.team1 : Team.fromMongoose(data.team1);
-    const team2 = data.team2 instanceof Team ? data.team2 : Team.fromMongoose(data.team2);
-    
+    const team1 =
+      data.team1 instanceof Team ? data.team1 : Team.fromMongoose(data.team1);
+    const team2 =
+      data.team2 instanceof Team ? data.team2 : Team.fromMongoose(data.team2);
+
     // Copy all properties
     Object.assign(game, {
       isStarted: data.isStarted,
@@ -645,7 +771,7 @@ export class ConGame {
       creatureShop: data.creatureShop,
       itemShop: data.itemShop,
       currentCreatureShopCards: data.currentCreatureShopCards,
-      currentItemShopCards: data.currentItemShopCards
+      currentItemShopCards: data.currentItemShopCards,
     });
 
     return game;
@@ -655,7 +781,7 @@ export class ConGame {
    * Converts the runtime instance to a plain object for Mongoose
    * @returns A plain object representation of the ConGame instance
    */
-  toMongoose(): Omit<IConGame, '_id'> {
+  toMongoose(): Omit<IConGame, "_id"> {
     return {
       gameName: this.gameName,
       isPrivate: this.isPrivate,
@@ -665,7 +791,7 @@ export class ConGame {
       numPlayersTotal: this.numPlayersTotal,
       numPlayersReady: this.numPlayersReady,
       numPlayersFinishedSetup: this.numPlayersFinishedSetup,
-      players: this.players.map(p => p.toMongoose()),
+      players: this.players.map((p) => p.toMongoose()),
       team1: this.team1.toMongoose(),
       team2: this.team2.toMongoose(),
       teamOrder: this.teamOrder,
@@ -673,12 +799,10 @@ export class ConGame {
       itemShop: this.itemShop,
       currentCreatureShopCards: this.currentCreatureShopCards,
       currentItemShopCards: this.currentItemShopCards,
-      isActive: false
-    } as Omit<IConGame, '_id'>;
+      isActive: false,
+    } as Omit<IConGame, "_id">;
   }
-
 }
-
 
 /* ------------ Active ConGame ------------ */
 /**
@@ -694,7 +818,12 @@ export class ActiveConGame extends ConGame {
   private gameDatabaseService: GameDatabaseService;
 
   constructor(conGame: ConGame, gameDatabaseService: GameDatabaseService) {
-    super(conGame.numPlayersTotal, conGame.gameName, conGame.isPrivate, conGame.password);
+    super(
+      conGame.numPlayersTotal,
+      conGame.gameName,
+      conGame.isPrivate,
+      conGame.password
+    );
     this.gameDatabaseService = gameDatabaseService;
 
     this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
@@ -714,11 +843,15 @@ export class ActiveConGame extends ConGame {
   }
 
   getActiveTeamPlayers(): Player[] {
-    return this.players.filter(player => this.getActiveTeam().isPlayerOnTeam(player.userId));
+    return this.players.filter((player) =>
+      this.getActiveTeam().isPlayerOnTeam(player.userId)
+    );
   }
 
   getWaitingTeamPlayers(): Player[] {
-    return this.players.filter(player => this.getWaitingTeam().isPlayerOnTeam(player.userId));
+    return this.players.filter((player) =>
+      this.getWaitingTeam().isPlayerOnTeam(player.userId)
+    );
   }
 
   toggleActiveTeam() {
@@ -779,34 +912,46 @@ export class ActiveConGame extends ConGame {
   }
 
   decrementActionPoints() {
-    if (this.actionPoints === 0) throw new ValidationError("Team has no action points left", "actionPoints");
+    if (this.actionPoints === 0)
+      throw new ValidationError(
+        "Team has no action points left",
+        "actionPoints"
+      );
     this.actionPoints -= 1;
   }
 
-  getDayBreakCards(playerId: Player['socketId']): SpaceOption[] {
+  getDayBreakCards(playerId: Player["socketId"]): SpaceOption[] {
     return this.getPlayerTeam(playerId).getDayBreakCards();
   }
 
   /**
    * Activates the daybreak ability the player chooses
    * @param playerId
-   * @param spaceOption 
+   * @param spaceOption
    */
-  activateDayBreak(playerId: Player['socketId'], spaceOption: SpaceOption) {
-    const abilityResult = this.getPlayerTeam(playerId).activateDayBreak(spaceOption);
-    processAbility(this, abilityResult)
+  activateDayBreak(playerId: Player["socketId"], spaceOption: SpaceOption) {
+    const abilityResult =
+      this.getPlayerTeam(playerId).activateDayBreak(spaceOption);
+    processAbility(this, abilityResult);
   }
 
-  buyCreature(playerId: Player['socketId'], creatureShopIndex: ShopIndex) {
+  buyCreature(playerId: Player["socketId"], creatureShopIndex: ShopIndex) {
     this.buyCard(playerId, creatureShopIndex, this.creatureShop);
   }
 
-  buyItem(playerId: Player['socketId'], itemShopIndex: ShopIndex) {
+  buyItem(playerId: Player["socketId"], itemShopIndex: ShopIndex) {
     this.buyCard(playerId, itemShopIndex, this.itemShop);
   }
 
-  private buyCard(playerId: Player['socketId'], shopIndex: ShopIndex, shop: ElementalCard[] | ItemCard[]) {
-    const currentShopCards = shop === this.creatureShop ? this.currentCreatureShopCards : this.currentItemShopCards;
+  private buyCard(
+    playerId: Player["socketId"],
+    shopIndex: ShopIndex,
+    shop: ElementalCard[] | ItemCard[]
+  ) {
+    const currentShopCards =
+      shop === this.creatureShop
+        ? this.currentCreatureShopCards
+        : this.currentItemShopCards;
     const player = this.getPlayer(playerId);
     const playerTeam = this.getPlayerTeam(playerId);
     const card = currentShopCards[shopIndex];
@@ -823,7 +968,7 @@ export class ActiveConGame extends ConGame {
   // Convert from Mongoose document to runtime instance
   static fromMongoose(doc: IConGame): ActiveConGame {
     if (!doc.isActive) {
-      throw new Error('Document is not an active game');
+      throw new Error("Document is not an active game");
     }
 
     const data: ActiveConGameData = {
@@ -831,7 +976,7 @@ export class ActiveConGame extends ConGame {
       activeTeam: doc.activeTeam!,
       currentPhase: doc.currentPhase!,
       actionPoints: doc.actionPoints!,
-      maxActionPoints: doc.maxActionPoints!
+      maxActionPoints: doc.maxActionPoints!,
     };
 
     return ActiveConGame.fromData(data);
@@ -839,28 +984,34 @@ export class ActiveConGame extends ConGame {
 
   // Create instance from plain data
   static fromData(data: ActiveConGameData): ActiveConGame {
-    const game = new ActiveConGame(ConGame.fromData(data), GameDatabaseService.getInstance(new ConGameService(ConGameModel), new GameStateService(GameStateModel)));
-    
+    const game = new ActiveConGame(
+      ConGame.fromData(data),
+      GameDatabaseService.getInstance(
+        new ConGameService(ConGameModel),
+        new GameStateService(GameStateModel)
+      )
+    );
+
     // Copy active game properties
     Object.assign(game, {
       activeTeam: data.activeTeam,
       currentPhase: data.currentPhase,
       actionPoints: data.actionPoints,
-      maxActionPoints: data.maxActionPoints
+      maxActionPoints: data.maxActionPoints,
     });
 
     return game;
   }
 
   // Convert runtime instance to plain object for Mongoose
-  toMongoose(): Omit<IConGame, '_id'> {
+  toMongoose(): Omit<IConGame, "_id"> {
     return {
       ...super.toMongoose(),
       isActive: true,
       activeTeam: this.activeTeam,
       currentPhase: this.currentPhase,
       actionPoints: this.actionPoints,
-      maxActionPoints: this.maxActionPoints
+      maxActionPoints: this.maxActionPoints,
     };
   }
 }
