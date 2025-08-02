@@ -14,32 +14,25 @@ export const ElementalCardSchema = CardSchema.extend({
 type ElementalCardType = z.infer<typeof ElementalCardSchema>;
 
 export class ElementalCard extends Card {
-    constructor(
-        name: Card['name'],
-        price: Card['price'],
-        img: Card['img'],
-        public element: ElementalCardType['element'],
-        public attack: ElementalCardType['attack'],
-        public health: ElementalCardType['health'],
-        public shieldCount: ElementalCardType['shieldCount'],
-        public boostCount: ElementalCardType['boostCount'],
-        public damageCount: ElementalCardType['damageCount']
-    ) {
-        super(name, price, img);
+    element: ElementalCardType['element'];
+    attack: ElementalCardType['attack'];
+    health: ElementalCardType['health'];
+    shieldCount: ElementalCardType['shieldCount'];
+    boostCount: ElementalCardType['boostCount'];
+    damageCount: ElementalCardType['damageCount'];
+
+    constructor(params: ElementalCardType) {
+        super(params);
+        this.element = params.element;
+        this.attack = params.attack;
+        this.health = params.health;
+        this.shieldCount = params.shieldCount;
+        this.boostCount = params.boostCount;
+        this.damageCount = params.damageCount;
     }
 
     static from(data: unknown): ElementalCard {
         const parsed = ElementalCardSchema.parse(data);
-        return new ElementalCard(
-            parsed.name,
-            parsed.price,
-            parsed.img,
-            parsed.element,
-            parsed.attack,
-            parsed.health,
-            parsed.shieldCount,
-            parsed.boostCount,
-            parsed.damageCount
-        );
+        return new ElementalCard(parsed);
     }
 }

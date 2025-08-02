@@ -8,10 +8,16 @@ export const AbilityCardSchema = z.object({
 type AbilityCardType = z.infer<typeof AbilityCardSchema>;
 
 export class AbilityCard {
-    constructor(public ability: AbilityCardType['ability'], public rowRequirement: AbilityCardType['rowRequirement']) {}
+    ability: AbilityCardType['ability'];
+    rowRequirement: AbilityCardType['rowRequirement'];
+
+    constructor(params: AbilityCardType) {
+        this.ability = params.ability;
+        this.rowRequirement = params.rowRequirement;
+    }
 
     static from(data: unknown): AbilityCard {
         const parsed = AbilityCardSchema.parse(data);
-        return new AbilityCard(parsed.ability, parsed.rowRequirement);
+        return new AbilityCard(parsed);
     }
 }
