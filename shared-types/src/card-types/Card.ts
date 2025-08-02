@@ -5,9 +5,10 @@ export const CardSchema = z.object({
     price: z.number(),
     img: z.string(),
 });
-  
+type CardType = z.infer<typeof CardSchema>;
+
 export class Card {
-    constructor(public name: string, public price: number, public img: string) {}
+    constructor(public name: CardType['name'], public price: CardType['price'], public img: CardType['img']) {}
 
     static from(data: unknown): Card {
         const parsed = CardSchema.parse(data);
