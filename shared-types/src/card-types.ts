@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { AbilityResultSchema } from "./ability-types";
 
 export const ElementSchema = z.enum(["twig", "pebble", "leaf", "droplet"]);
 export const SageSchema = z.enum(["Cedar", "Gravel", "Porella", "Torrent"]);
 export type Element = z.infer<typeof ElementSchema>;
 export type Sage = z.infer<typeof SageSchema>;
 
+/*
 export const CardSchema = z.object({
   name: z.string(),
   price: z.number(),
@@ -69,32 +69,4 @@ export const InstantCardSchema = ItemCardSchema;
 export const InstantStarterCardSchema = InstantCardSchema.extend({
   price: z.literal(1),
 });
-
-export const DecklistSchema = z.object({
-  sage: ElementalSageSchema,
-  champions: z.object({
-    level4: ElementalChampionSchema,
-    level6: ElementalChampionSchema,
-    level8: ElementalChampionSchema,
-  }),
-  warriors: z.array(ElementalWarriorCardSchema),
-  basic: ElementalStarterCardSchema,
-  items: z.array(ItemCardSchema),
-})
-
-export type Card = z.infer<typeof CardSchema>;
-export type StarterCard = z.infer<typeof StarterCardSchema>;
-export type AbilityCard = z.infer<typeof AbilityCardSchema>;
-export type ElementalCard = z.infer<typeof ElementalCardSchema>;
-export type ElementalStarterCard = z.infer<typeof ElementalStarterCardSchema>;
-export type ElementalWarriorCard = z.infer<typeof ElementalWarriorCardSchema>;
-export type ElementalWarriorStarterCard = z.infer<typeof ElementalWarriorStarterCardSchema>;
-export type ElementalChampion = z.infer<typeof ElementalChampionSchema>;
-export type ElementalSage = z.infer<typeof ElementalSageSchema>;
-export type ItemCard = z.infer<typeof ItemCardSchema>;
-export type AttackCard = z.infer<typeof AttackCardSchema>;
-export type AttackStarterCard = z.infer<typeof AttackStarterCardSchema>;
-export type UtilityCard = z.infer<typeof UtilityCardSchema>;
-export type InstantCard = z.infer<typeof InstantCardSchema>;
-export type InstantStarterCard = z.infer<typeof InstantStarterCardSchema>;
-export type Decklist = z.infer<typeof DecklistSchema>;
+*/

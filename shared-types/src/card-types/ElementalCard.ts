@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { CardSchema, ElementSchema } from "../card-types";
-import { Card } from "./Card";
+import { Card, CardSchema } from "./Card";
+import { ElementSchema } from "../card-types";
 
 export const ElementalCardSchema = CardSchema.extend({
     element: ElementSchema,
