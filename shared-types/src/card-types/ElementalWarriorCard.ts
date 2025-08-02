@@ -1,17 +1,17 @@
 import { z } from "zod";
-import { AbilityCardSchema } from "./AbilityCard";
-import { ElementalCard, ElementalCardSchema } from "./ElementalCard";
+import {
+    ElementalAbilityCard,
+    ElementalAbilityCardSchema,
+} from "./ElementalAbilityCard";
 
-export const ElementalWarriorCardSchema = ElementalCardSchema.merge(
-    AbilityCardSchema
-).extend({
+export const ElementalWarriorCardSchema = ElementalAbilityCardSchema.extend({
     isDayBreak: z.boolean().default(false),
 });
 
 type ElementalWarriorCardType = z.infer<typeof ElementalWarriorCardSchema>;
 
-export class ElementalWarriorCard extends ElementalCard {
-    isDayBreak: ElementalWarriorCardType['isDayBreak'];
+export class ElementalWarriorCard extends ElementalAbilityCard {
+    isDayBreak: ElementalWarriorCardType["isDayBreak"];
 
     constructor(params: ElementalWarriorCardType) {
         super(params);
