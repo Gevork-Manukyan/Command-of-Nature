@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { ItemCard, ItemCardSchema } from "./ItemCard";
+import { RowRequirementSchema } from "../card-types";
 
 export const ItemAttackCardSchema = ItemCardSchema.extend({
-    rowRequirement: z.array(z.union([z.literal(1), z.literal(2), z.literal(3)]))
+    rowRequirement: RowRequirementSchema
 });
 
 type ItemAttackCardType = z.infer<typeof ItemAttackCardSchema>;

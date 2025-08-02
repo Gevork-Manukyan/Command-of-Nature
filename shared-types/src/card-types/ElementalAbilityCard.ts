@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { ElementalCard, ElementalCardSchema } from "./ElementalCard";
-import { AbilityResultSchema } from "../ability-types";
+import { AbilitySchema, RowRequirementSchema } from "../card-types";
 
 export const ElementalAbilityCardSchema = ElementalCardSchema.extend({
-    ability: z.function().args().returns(z.array(AbilityResultSchema)),
-    rowRequirement: z.array(z.union([z.literal(1), z.literal(2), z.literal(3)])),
+    ability: AbilitySchema,
+    rowRequirement: RowRequirementSchema,
 });
 
 type ElementalAbilityCardType = z.infer<typeof ElementalAbilityCardSchema>;

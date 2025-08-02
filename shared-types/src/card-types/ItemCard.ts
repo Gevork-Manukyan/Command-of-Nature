@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { Card, CardSchema } from "./Card";
-import { AbilityResultSchema } from "../ability-types";
+import { AbilitySchema } from "../card-types";
 
 export const ItemCardSchema = CardSchema.extend({
-    ability: z.function().args().returns(z.array(AbilityResultSchema)),
+    ability: AbilitySchema,
 })
 
 type ItemCardType = z.infer<typeof ItemCardSchema>;
