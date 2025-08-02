@@ -6,18 +6,6 @@ export const SageSchema = z.enum(["Cedar", "Gravel", "Porella", "Torrent"]);
 export type Element = z.infer<typeof ElementSchema>;
 export type Sage = z.infer<typeof SageSchema>;
 
-export type Decklist = {
-  sage: ElementalSage;
-  champions: {
-    level4: ElementalChampion;
-    level6: ElementalChampion;
-    level8: ElementalChampion;
-  },
-  warriors: ElementalWarriorCard[];
-  basic: ElementalStarterCard;
-  items: ItemCard[];
-}
-
 export const CardSchema = z.object({
   name: z.string(),
   price: z.number(),
@@ -82,6 +70,17 @@ export const InstantStarterCardSchema = InstantCardSchema.extend({
   price: z.literal(1),
 });
 
+export const DecklistSchema = z.object({
+  sage: ElementalSageSchema,
+  champions: z.object({
+    level4: ElementalChampionSchema,
+    level6: ElementalChampionSchema,
+    level8: ElementalChampionSchema,
+  }),
+  warriors: z.array(ElementalWarriorCardSchema),
+  basic: ElementalStarterCardSchema,
+  items: z.array(ItemCardSchema),
+})
 
 export type Card = z.infer<typeof CardSchema>;
 export type StarterCard = z.infer<typeof StarterCardSchema>;
@@ -98,3 +97,4 @@ export type AttackStarterCard = z.infer<typeof AttackStarterCardSchema>;
 export type UtilityCard = z.infer<typeof UtilityCardSchema>;
 export type InstantCard = z.infer<typeof InstantCardSchema>;
 export type InstantStarterCard = z.infer<typeof InstantStarterCardSchema>;
+export type Decklist = z.infer<typeof DecklistSchema>;

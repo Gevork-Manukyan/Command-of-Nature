@@ -2,8 +2,6 @@ import { CustomError } from "../../services";
 import { UserSocketManager } from "../../services/UserSocketManager";
 import { NotFoundError } from "../../services/CustomError/BaseError";
 
-const userSocketManager = UserSocketManager.getInstance();
-
 /**
  * Converts an unknown error to a CustomError
  * @param error - The error to convert
@@ -26,6 +24,7 @@ export function convertToCustomError(error: unknown): CustomError {
  * @throws NotFoundError if the socket ID is not found
  */
 export function getSocketId(userId: string): string {
+  const userSocketManager = UserSocketManager.getInstance();
   const socketId = userSocketManager.getSocketId(userId);
   if (!socketId) {
     throw new NotFoundError("Socket ID not found");

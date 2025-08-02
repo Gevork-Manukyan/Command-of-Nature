@@ -10,8 +10,8 @@ import {
   IPlayerData,
 } from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib";
-import { IPlayer } from "./db-model";
-import { Types } from "mongoose";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { PlayerSchema } from "../validation";
 
 /**
  * Represents a player in the Command of Nature game
@@ -200,32 +200,46 @@ export class Player implements IPlayerMethods, IPlayerData {
     this.addCardToHand(drawnCard);
   }
 
-  // Convert from Mongoose document to runtime instance
-  static fromMongoose(doc: Omit<IPlayer, "_id"> | IPlayer): Player {
-    const player = new Player(
-      doc.userId.toString(),
-      doc.socketId,
-      doc.isGameHost
-    );
+  // Convert from Prisma JSON to runtime instance
+  static fromPrisma(playerJson: JsonValue): Player {
+    const validatedPlayer = PlayerSchema.parse(playerJson);
+    const {
+      userId,
+      socketId,
+      isGameHost,
+      isReady,
+      isSetup,
+      hasChosenWarriors,
+      sage,
+      decklist,
+      level,
+      hand,
+      deck,
+      discardPile,
+    } = validatedPlayer;
+
+    const player = new Player(userId, socketId, isGameHost);
 
     // Set up properties
-    player.isReady = doc.isReady;
-    player.isSetup = doc.isSetup;
-    player.hasChosenWarriors = doc.hasChosenWarriors;
-    player.sage = doc.sage;
-    player.decklist = doc.decklist;
-    player.level = doc.level;
-    player.hand = doc.hand;
-    player.deck = doc.deck;
-    player.discardPile = doc.discardPile;
+    Object.assign(player, {
+      isReady,
+      isSetup,
+      hasChosenWarriors,
+      sage,
+      decklist,
+      level,
+      hand,
+      deck,
+      discardPile,
+    });
 
     return player;
   }
 
-  // Convert runtime instance to plain object for Mongoose
-  toMongoose(): Omit<IPlayer, "_id"> {
+  // Convert runtime instance to plain object for Prisma
+  toPrismaObject(): JsonValue {
     return {
-      userId: new Types.ObjectId(this.userId),
+      userId: this.userId,
       socketId: this.socketId,
       isReady: this.isReady,
       isSetup: this.isSetup,
@@ -237,7 +251,7 @@ export class Player implements IPlayerMethods, IPlayerData {
       hand: this.hand,
       deck: this.deck,
       discardPile: this.discardPile,
-    } as Omit<IPlayer, "_id">;
+    };
   }
 
   // Static utility methods

@@ -1,5 +1,4 @@
-import { Team } from "../models/Team/Team";
-import { ConGame, GameState } from "../models";
+import { ConGame, GameState } from "./models";
 
 export type gameId = string;
 

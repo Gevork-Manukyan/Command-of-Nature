@@ -84,7 +84,7 @@ type ShopIndex = 0 | 1 | 2;
 type TeamOrder = {
   first: Team["teamNumber"];
   second: Team["teamNumber"];
-}
+};
 
 /**
  * Plain interfaces for active game data structure
@@ -708,7 +708,7 @@ export class ConGame {
     );
 
     // Convert players to Player instances if they aren't already
-    const players = data.players.map((player) => Player.fromMongoose(player));
+    const players = data.players.map((player) => Player.fromPrisma(player));
 
     // Convert teams to Team instances if they aren't already
     const team1 = Team.fromMongoose(data.team1);
@@ -747,7 +747,7 @@ export class ConGame {
       numPlayersTotal: this.numPlayersTotal,
       numPlayersReady: this.numPlayersReady,
       numPlayersFinishedSetup: this.numPlayersFinishedSetup,
-      players: this.players.map((player) => player.toMongoose()),
+      players: this.players.map((player) => player.toPrismaObject()),
       team1: this.team1.toMongoose(),
       team2: this.team2.toMongoose(),
       teamOrder: this.teamOrder,
