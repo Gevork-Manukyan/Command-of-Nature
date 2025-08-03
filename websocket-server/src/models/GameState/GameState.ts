@@ -1,6 +1,12 @@
 import { GameStateError } from "../../services/CustomError/GameError";
-import { gameId, Input, Transition } from "../../types";
-import { GameStateSchema, State, TransitionEvent } from "./gamestate-types";
+import { gameId } from "../../types";
+import {
+  GameStateSchema,
+  Input,
+  State,
+  Transition,
+  TransitionEvent,
+} from "./gamestate-types";
 import { GameState as GameStatePrisma } from "@prisma/client";
 
 export class GameState {
