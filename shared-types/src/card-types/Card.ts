@@ -12,7 +12,7 @@ export class Card {
     price: number;
     img: string;
 
-    constructor(params: CardType) {
+    protected constructor(params: CardType) {
         this.name = params.name;
         this.price = params.price;
         this.img = params.img;

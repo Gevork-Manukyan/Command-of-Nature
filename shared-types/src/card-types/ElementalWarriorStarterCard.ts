@@ -11,7 +11,7 @@ export const ElementalWarriorStarterCardSchema = ElementalWarriorCardSchema.exte
 type ElementalWarriorStarterCardType = z.infer<typeof ElementalWarriorStarterCardSchema>;
 
 export class ElementalWarriorStarterCard extends ElementalWarriorCard {
-    constructor(params: ElementalWarriorStarterCardType) {
+    protected constructor(params: ElementalWarriorStarterCardType) {
         super(params);
     }
 

@@ -14,7 +14,7 @@ import {
 export const ALL_CARDS = {
 
   // ------------ SAGES ------------
-  Cedar: () => new ElementalSageCard({
+  Cedar: () => ElementalSageCard.from({
     name: "Cedar",
     sage: "Cedar",
     img: "",
@@ -27,7 +27,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Gravel: () => new ElementalSageCard({
+  Gravel: () => ElementalSageCard.from({
     name: "Gravel",
     sage: "Gravel",
     img: "",
@@ -40,7 +40,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Porella: () => new ElementalSageCard({
+  Porella: () => ElementalSageCard.from({
     name: "Porella",
     sage: "Porella",
     img: "",
@@ -53,7 +53,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Torrent: () => new ElementalSageCard({
+  Torrent: () => ElementalSageCard.from({
     name: "Torrent",
     sage: "Torrent",
     img: "",
@@ -68,7 +68,7 @@ export const ALL_CARDS = {
 
   // ------------ CHAMPIONS ------------
   // *** Twigs ***
-  VixVanguard: () => new ElementalChampionCard({
+  VixVanguard: () => ElementalChampionCard.from({
     name: "Vix Vanguard",
     price: 1,
     img: "",
@@ -81,7 +81,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  HornedHollow: () => new ElementalChampionCard({
+  HornedHollow: () => ElementalChampionCard.from({
     name: "Horned Hollow",
     price: 1,
     img: "",
@@ -93,7 +93,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  CalamityLeopard: () => new ElementalChampionCard({
+  CalamityLeopard: () => ElementalChampionCard.from({
     name: "Calamity Leopard",
     price: 1,
     img: "",
@@ -106,7 +106,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  JadeTitan: () => new ElementalChampionCard({
+  JadeTitan: () => ElementalChampionCard.from({
     name: "Jade Titan",
     price: 1,
     img: "",
@@ -118,7 +118,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  BoulderhideBrute: () => new ElementalChampionCard({
+  BoulderhideBrute: () => ElementalChampionCard.from({
     name: "Boulderhide Brute",
     price: 1,
     img: "",
@@ -130,7 +130,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  OxenAvenger: () => new ElementalChampionCard({
+  OxenAvenger: () => ElementalChampionCard.from({
     name: "Oxen Avenger",
     price: 1,
     img: "",
@@ -143,7 +143,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  AgileAssailant: () => new ElementalChampionCard({
+  AgileAssailant: () => ElementalChampionCard.from({
     name: "Agile Assailant",
     price: 1,
     img: "",
@@ -155,7 +155,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  BogBlight: () => new ElementalChampionCard({
+  BogBlight: () => ElementalChampionCard.from({
     name: "Bog Blight",
     price: 1,
     img: "",
@@ -168,7 +168,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  KomodoKin: () => new ElementalChampionCard({
+  KomodoKin: () => ElementalChampionCard.from({
     name: "Komodo Kin",
     price: 1,
     img: "",
@@ -181,7 +181,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  TideTurner: () => new ElementalChampionCard({
+  TideTurner: () => ElementalChampionCard.from({
     name: "Tide Turner",
     price: 1,
     img: "",
@@ -193,7 +193,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  KingCrustacean: () => new ElementalChampionCard({
+  KingCrustacean: () => ElementalChampionCard.from({
     name: "King Crustacean",
     price: 1,
     img: "",
@@ -205,7 +205,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  FrostfallEmperor: () => new ElementalChampionCard({
+  FrostfallEmperor: () => ElementalChampionCard.from({
     name: "Frostfall Emperor",
     price: 1,
     img: "",
@@ -219,7 +219,7 @@ export const ALL_CARDS = {
 
   // ------------ BASICS ------------
   // *** Twigs ***
-  Timber: () => new ElementalStarterCard({
+  Timber: () => ElementalStarterCard.from({
     name: "Timber",
     price: 1,
     element: "twig",
@@ -228,7 +228,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Bruce: () => new ElementalCard({
+  Bruce: () => ElementalCard.from({
     name: "Bruce",
     price: 2,
     element: "twig",
@@ -237,7 +237,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Willow: () => new ElementalCard({
+  Willow: () => ElementalCard.from({
     name: "Willow",
     price: 1,
     element: "twig",
@@ -247,7 +247,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  Cobble: () => new ElementalStarterCard({
+  Cobble: () => ElementalStarterCard.from({
     name: "Cobble",
     price: 1,
     element: "pebble",
@@ -256,7 +256,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Flint: () => new ElementalCard({
+  Flint: () => ElementalCard.from({
     name: "Flint",
     price: 1,
     element: "pebble",
@@ -265,7 +265,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Rocco: () => new ElementalCard({
+  Rocco: () => ElementalCard.from({
     name: "Rocco",
     price: 2,
     element: "pebble",
@@ -275,7 +275,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  Sprout: () => new ElementalStarterCard({
+  Sprout: () => ElementalStarterCard.from({
     name: "Sprout",
     price: 1,
     element: "leaf",
@@ -284,7 +284,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Herbert: () => new ElementalCard({
+  Herbert: () => ElementalCard.from({
     name: "Herbert",
     price: 2,
     element: "leaf",
@@ -293,7 +293,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Mush: () => new ElementalCard({
+  Mush: () => ElementalCard.from({
     name: "Mush",
     price: 1,
     element: "leaf",
@@ -303,7 +303,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  Dribble: () => new ElementalStarterCard({
+  Dribble: () => ElementalStarterCard.from({
     name: "Dribble",
     price: 1,
     element: "droplet",
@@ -312,7 +312,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Dewy: () => new ElementalCard({
+  Dewy: () => ElementalCard.from({
     name: "Dewy",
     price: 2,
     element: "droplet",
@@ -321,7 +321,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Wade: () => new ElementalCard({
+  Wade: () => ElementalCard.from({
     name: "Wade",
     img: "",
     price: 1,
@@ -332,7 +332,7 @@ export const ALL_CARDS = {
 
   // ------------ WARRIORS ------------
   // *** Twigs ***
-  AcornSquire: () => new ElementalWarriorStarterCard({
+  AcornSquire: () => ElementalWarriorStarterCard.from({
     name: "Acorn Squire",
     img: "",
     price: 1,
@@ -343,7 +343,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  QuillThornback: () => new ElementalWarriorStarterCard({
+  QuillThornback: () => ElementalWarriorStarterCard.from({
     name: "Quill Thornback",
     img: "",
     price: 1,
@@ -354,7 +354,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  SlumberJack: () => new ElementalWarriorStarterCard({
+  SlumberJack: () => ElementalWarriorStarterCard.from({
     name: "Slumber Jack",
     img: "",
     price: 1,
@@ -366,7 +366,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CamouChameleon: () => new ElementalWarriorCard({
+  CamouChameleon: () => ElementalWarriorCard.from({
     name: "Camou Chameleon",
     img: "",
     price: 7,
@@ -378,7 +378,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  LumberClaw: () => new ElementalWarriorCard({
+  LumberClaw: () => ElementalWarriorCard.from({
     name: "Lumber Claw",
     img: "",
     price: 4,
@@ -389,7 +389,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  PineSnapper: () => new ElementalWarriorCard({
+  PineSnapper: () => ElementalWarriorCard.from({
     name: "Pine Snapper",
     img: "",
     price: 3,
@@ -400,7 +400,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  SplinterStinger: () => new ElementalWarriorCard({
+  SplinterStinger: () => ElementalWarriorCard.from({
     name: "Splinter Stinger",
     img: "",
     price: 5,
@@ -411,7 +411,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  TwineFeline: () => new ElementalWarriorCard({
+  TwineFeline: () => ElementalWarriorCard.from({
     name: "TwineFeline",
     img: "",
     price: 5,
@@ -423,7 +423,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  OakLumbertron: () => new ElementalWarriorCard({
+  OakLumbertron: () => ElementalWarriorCard.from({
     name: "Oak Lumbertron",
     img: "",
     price: 9,
@@ -436,7 +436,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  GeoWeasel: () => new ElementalWarriorStarterCard({
+  GeoWeasel: () => ElementalWarriorStarterCard.from({
     name: "Geo Weasel",
     img: "",
     price: 1,
@@ -447,7 +447,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  GraniteRampart: () => new ElementalWarriorStarterCard({
+  GraniteRampart: () => ElementalWarriorStarterCard.from({
     name: "Granite Rampart",
     img: "",
     price: 1,
@@ -459,7 +459,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  OnyxBearer: () => new ElementalWarriorStarterCard({
+  OnyxBearer: () => ElementalWarriorStarterCard.from({
     name: "Onyx Bearer",
     img: "",
     price: 1,
@@ -471,7 +471,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CackleRipclaw: () => new ElementalWarriorCard({
+  CackleRipclaw: () => ElementalWarriorCard.from({
     name: "Cackle Ripclaw",
     img: "",
     price: 4,
@@ -482,7 +482,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  Redstone: () => new ElementalWarriorCard({
+  Redstone: () => ElementalWarriorCard.from({
     name: "Redstone",
     img: "",
     price: 4,
@@ -494,7 +494,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  RubyGuardian: () => new ElementalWarriorCard({
+  RubyGuardian: () => ElementalWarriorCard.from({
     name: "Ruby Guardian",
     img: "",
     price: 3,
@@ -506,7 +506,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  RunePuma: () => new ElementalWarriorCard({
+  RunePuma: () => ElementalWarriorCard.from({
     name: "Rune Puma",
     img: "",
     price: 5,
@@ -517,7 +517,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  StoneDefender: () => new ElementalWarriorCard({
+  StoneDefender: () => ElementalWarriorCard.from({
     name: "Stone Defender",
     img: "",
     price: 8,
@@ -529,7 +529,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  TerrainTumbler: () => new ElementalWarriorCard({
+  TerrainTumbler: () => ElementalWarriorCard.from({
     name: "Terrain Tumbler",
     img: "",
     price: 5,
@@ -541,7 +541,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  BotanicFangs: () => new ElementalWarriorStarterCard({
+  BotanicFangs: () => ElementalWarriorStarterCard.from({
     name: "Botanic Fangs",
     img: "",
     price: 1,
@@ -552,7 +552,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  PetalMage: () => new ElementalWarriorStarterCard({
+  PetalMage: () => ElementalWarriorStarterCard.from({
     name: "Petal Mage",
     img: "",
     price: 1,
@@ -563,7 +563,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  ThornFencer: () => new ElementalWarriorStarterCard({
+  ThornFencer: () => ElementalWarriorStarterCard.from({
     name: "Thorn Fencer",
     img: "",
     price: 1,
@@ -575,7 +575,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  BambooBerserker: () => new ElementalWarriorCard({
+  BambooBerserker: () => ElementalWarriorCard.from({
     name: "Bamboo Berserker",
     img: "",
     price: 9,
@@ -587,7 +587,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  ForageThumper: () => new ElementalWarriorCard({
+  ForageThumper: () => ElementalWarriorCard.from({
     name: "Forage Thumper",
     img: "",
     price: 5,
@@ -599,7 +599,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  HummingHerald: () => new ElementalWarriorCard({
+  HummingHerald: () => ElementalWarriorCard.from({
     name: "Humming Herald",
     img: "",
     price: 5,
@@ -610,7 +610,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  IguanaGuard: () => new ElementalWarriorCard({
+  IguanaGuard: () => ElementalWarriorCard.from({
     name: "Iguana Guard",
     img: "",
     price: 5,
@@ -621,7 +621,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  MossViper: () => new ElementalWarriorCard({
+  MossViper: () => ElementalWarriorCard.from({
     name: "Moss Viper",
     img: "",
     price: 5,
@@ -632,7 +632,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  ShrubBeetle: () => new ElementalWarriorCard({
+  ShrubBeetle: () => ElementalWarriorCard.from({
     name: "Shrub Beetle",
     img: "",
     price: 3,
@@ -644,7 +644,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  CoastalCoyote: () => new ElementalWarriorStarterCard({
+  CoastalCoyote: () => ElementalWarriorStarterCard.from({
     name: "Coastal Coyote",
     img: "",
     price: 1,
@@ -655,7 +655,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  RiptideTiger: () => new ElementalWarriorStarterCard({
+  RiptideTiger: () => ElementalWarriorStarterCard.from({
     name: "Riptide Tiger",
     img: "",
     price: 1,
@@ -666,7 +666,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  RiverRogue: () => new ElementalWarriorStarterCard({
+  RiverRogue: () => ElementalWarriorStarterCard.from({
     name: "River Rogue",
     img: "",
     price: 1,
@@ -678,7 +678,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CurrentConjurer: () => new ElementalWarriorCard({
+  CurrentConjurer: () => ElementalWarriorCard.from({
     name: "Current Conjurer",
     img: "",
     price: 3,
@@ -689,7 +689,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  RoamingRazor: () => new ElementalWarriorCard({
+  RoamingRazor: () => ElementalWarriorCard.from({
     name: "Roaming Razor",
     img: "",
     price: 8,
@@ -700,7 +700,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  SplashBasilisk: () => new ElementalWarriorCard({
+  SplashBasilisk: () => ElementalWarriorCard.from({
     name: "Splash Basilisk",
     img: "",
     price: 5,
@@ -711,7 +711,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  SurgesphereMonk: () => new ElementalWarriorCard({
+  SurgesphereMonk: () => ElementalWarriorCard.from({
     name: "Surgesphere Monk",
     img: "",
     price: 3,
@@ -722,7 +722,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  TyphoonFist: () => new ElementalWarriorCard({
+  TyphoonFist: () => ElementalWarriorCard.from({
     name: "Typhoon Fist",
     img: "",
     price: 4,
@@ -733,7 +733,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  WhirlWhipper: () => new ElementalWarriorCard({
+  WhirlWhipper: () => ElementalWarriorCard.from({
     name: "Whirl Whipper",
     img: "",
     price: 4,
@@ -746,7 +746,7 @@ export const ALL_CARDS = {
   }),
 
   // ------------ ATTACKS ------------
-  CloseStrike: () => new ItemAttackStarterCard({
+  CloseStrike: () => ItemAttackStarterCard.from({
     name: "Close Strike",
     img: "",
     price: 1,
@@ -755,7 +755,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  FarStrike: () => new ItemAttackStarterCard({
+  FarStrike: () => ItemAttackStarterCard.from({
     name: "Far Strike",
     img: "",
     price: 1,
@@ -764,7 +764,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  DistantDoubleStrike: () => new ItemAttackCard({
+  DistantDoubleStrike: () => ItemAttackCard.from({
     name: "Distant Double Strike",
     img: "",
     price: 3,
@@ -773,7 +773,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  FarsightFrenzy: () => new ItemAttackCard({
+  FarsightFrenzy: () => ItemAttackCard.from({
     name: "Farsight Frenzy",
     img: "",
     price: 3,
@@ -782,7 +782,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2, 3],
   }),
 
-  FocusedFury: () => new ItemAttackCard({
+  FocusedFury: () => ItemAttackCard.from({
     name: "Focused Fury",
     img: "",
     price: 2,
@@ -791,7 +791,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  MagicEtherStrike: () => new ItemAttackCard({
+  MagicEtherStrike: () => ItemAttackCard.from({
     name: "Magic Ether Strike",
     img: "",
     price: 5,
@@ -800,7 +800,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  NaturesWrath: () => new ItemAttackCard({
+  NaturesWrath: () => ItemAttackCard.from({
     name: "Nature's Wrath",
     img: "",
     price: 2,
@@ -809,7 +809,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  PrimitiveStrike: () => new ItemAttackCard({
+  PrimitiveStrike: () => ItemAttackCard.from({
     name: "Primitive Strike",
     img: "",
     price: 3,
@@ -818,7 +818,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  ProjectileBlast: () => new ItemAttackCard({
+  ProjectileBlast: () => ItemAttackCard.from({
     name: "Projectile Blast",
     img: "",
     price: 2,
@@ -827,7 +827,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  ReinforcedImpact: () => new ItemAttackCard({
+  ReinforcedImpact: () => ItemAttackCard.from({
     name: "Reinforced Impact",
     img: "",
     price: 2,
@@ -837,7 +837,7 @@ export const ALL_CARDS = {
   }),
 
   // ------------ INSTANTS ------------
-  DropletCharm: () => new ItemStarterCard({
+  DropletCharm: () => ItemStarterCard.from({
     name: "Droplet Charm",
     img: "",
     price: 1,
@@ -845,7 +845,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  LeafCharm: () => new ItemStarterCard({
+  LeafCharm: () => ItemStarterCard.from({
     name: "Leaf Charm",
     img: "",
     price: 1,
@@ -853,7 +853,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  PebbleCharm: () => new ItemStarterCard({
+  PebbleCharm: () => ItemStarterCard.from({
     name: "Pebble Charm",
     img: "",
     price: 1,
@@ -861,7 +861,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  TwigCharm: () => new ItemStarterCard({
+  TwigCharm: () => ItemStarterCard.from({
     name: "Twig Charm",
     img: "",
     price: 1,
@@ -869,7 +869,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  NaturalRestoration: () => new ItemStarterCard({
+  NaturalRestoration: () => ItemStarterCard.from({
     name: "Natural Restoration",
     img: "",
     price: 1,
@@ -877,7 +877,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  MeleeShield: () => new ItemCard({
+  MeleeShield: () => ItemCard.from({
     name: "Melee Shield",
     img: "",
     price: 3,
@@ -885,7 +885,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  NaturalDefense: () => new ItemCard({
+  NaturalDefense: () => ItemCard.from({
     name: "Natural Defense",
     img: "",
     price: 3,
@@ -893,7 +893,7 @@ export const ALL_CARDS = {
     itemType: "instant",
   }),
 
-  RangedBarrier: () => new ItemCard({
+  RangedBarrier: () => ItemCard.from({
     name: "Ranged Barrier",
     img: "",
     price: 3,
@@ -902,7 +902,7 @@ export const ALL_CARDS = {
   }),
 
   // ------------ UTILITIES ------------
-  ElementalIncantation: () => new ItemCard({
+  ElementalIncantation: () => ItemCard.from({
     name: "Elemental Incantation",
     img: "",
     price: 5,
@@ -910,7 +910,7 @@ export const ALL_CARDS = {
     itemType: "utility",
   }),
 
-  ElementalSwap: () => new ItemCard({
+  ElementalSwap: () => ItemCard.from({
     name: "Elemental Swap",
     img: "",
     price: 2,
@@ -918,7 +918,7 @@ export const ALL_CARDS = {
     itemType: "utility",
   }),
 
-  ExchangeOfNature: () => new ItemCard({
+  ExchangeOfNature: () => ItemCard.from({
     name: "Exchange of Nature",
     img: "",
     price: 2,
@@ -926,7 +926,7 @@ export const ALL_CARDS = {
     itemType: "utility",
   }),
 
-  Obliterate: () => new ItemCard({
+  Obliterate: () => ItemCard.from({
     name: "Obliterate",
     img: "",
     price: 5,

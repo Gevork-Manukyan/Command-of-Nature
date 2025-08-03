@@ -13,7 +13,7 @@ export class ElementalAbilityCard extends ElementalCard {
     ability: ElementalAbilityCardType['ability'];
     rowRequirement: ElementalAbilityCardType['rowRequirement'];
 
-    constructor(params: ElementalAbilityCardType) {
+    protected constructor(params: ElementalAbilityCardType) {
         super(params);
         this.ability = params.ability;
         this.rowRequirement = params.rowRequirement;

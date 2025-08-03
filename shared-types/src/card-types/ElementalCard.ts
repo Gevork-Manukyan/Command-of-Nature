@@ -21,7 +21,7 @@ export class ElementalCard extends Card {
     boostCount: ElementalCardType["boostCount"];
     damageCount: ElementalCardType["damageCount"];
 
-    constructor(params: ElementalCardType) {
+    protected constructor(params: ElementalCardType) {
         super(params);
         this.element = params.element;
         this.attack = params.attack;

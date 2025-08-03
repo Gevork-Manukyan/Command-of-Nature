@@ -11,7 +11,7 @@ type ElementalSageCardType = z.infer<typeof ElementalSageCardSchema>;
 export class ElementalSageCard extends ElementalWarriorStarterCard {
     sage: ElementalSageCardType["sage"];
 
-    constructor(params: ElementalSageCardType) {
+    protected constructor(params: ElementalSageCardType) {
         super(params);
         this.sage = params.sage;
     }

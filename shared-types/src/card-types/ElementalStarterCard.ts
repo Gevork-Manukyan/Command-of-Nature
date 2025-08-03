@@ -8,7 +8,7 @@ export const ElementalStarterCardSchema = ElementalCardSchema.extend({
 type ElementalStarterCardType = z.infer<typeof ElementalStarterCardSchema>;
 
 export class ElementalStarterCard extends ElementalCard {
-    constructor(params: ElementalStarterCardType) {
+    protected constructor(params: ElementalStarterCardType) {
         super(params);
     }
 

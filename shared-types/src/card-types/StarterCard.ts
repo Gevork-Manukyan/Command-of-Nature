@@ -7,7 +7,7 @@ export const StarterCardSchema = CardSchema.extend({
 type StarterCardType = z.infer<typeof StarterCardSchema>;
 
 export class StarterCard extends Card {
-    constructor(params: StarterCardType) {
+    protected constructor(params: StarterCardType) {
         super(params);
     }
 

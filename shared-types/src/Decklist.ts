@@ -26,7 +26,7 @@ export class Decklist {
     basic: DecklistType['basic'];
     items: DecklistType['items'];
 
-    constructor(params: DecklistType) {
+    protected constructor(params: DecklistType) {
         this.sage = params.sage;
         this.champions = params.champions;
         this.warriors = params.warriors;

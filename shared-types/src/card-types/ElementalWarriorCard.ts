@@ -13,7 +13,7 @@ type ElementalWarriorCardType = z.infer<typeof ElementalWarriorCardSchema>;
 export class ElementalWarriorCard extends ElementalAbilityCard {
     isDayBreak: ElementalWarriorCardType["isDayBreak"];
 
-    constructor(params: ElementalWarriorCardType) {
+    protected constructor(params: ElementalWarriorCardType) {
         super(params);
         this.isDayBreak = params.isDayBreak;
     }

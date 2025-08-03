@@ -13,7 +13,7 @@ type ElementalChampionCardType = z.infer<typeof ElementalChampionCardSchema>;
 export class ElementalChampionCard extends ElementalWarriorStarterCard {
     levelRequirement: ElementalChampionCardType["levelRequirement"];
 
-    constructor(params: ElementalChampionCardType) {
+    protected constructor(params: ElementalChampionCardType) {
         super(params);
         this.levelRequirement = params.levelRequirement;
     }
