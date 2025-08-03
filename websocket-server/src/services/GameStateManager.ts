@@ -1,10 +1,11 @@
 import { Sage } from "@shared-types";
 import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
-import { gameId, GameStateInfo, TransitionEvent } from "../types";
+import { gameId, GameStateInfo } from "../types";
 import { ValidationError } from "./CustomError/BaseError";
 import { GameConflictError } from "./CustomError/GameError";
 import { gameDatabaseService } from "./GameDatabaseService";
 import { Types } from 'mongoose';
+import { TransitionEvent } from "../models/GameState/gamestate-types";
 
 export class GameStateManager {
     private static instance: GameStateManager;
