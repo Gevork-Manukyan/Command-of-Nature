@@ -751,12 +751,10 @@ export class ConGame {
       team1: this.team1.toMongoose(),
       team2: this.team2.toMongoose(),
       teamOrder: this.teamOrder,
-
-      // TODO: The following fields could have functions so we need to convert them to plain objects
-      creatureShop: this.creatureShop,
-      itemShop: this.itemShop,
-      currentCreatureShopCards: this.currentCreatureShopCards,
-      currentItemShopCards: this.currentItemShopCards,
+      creatureShop: this.creatureShop.map((card) => card.getData()),
+      itemShop: this.itemShop.map((card) => card.getData()),
+      currentCreatureShopCards: this.currentCreatureShopCards.map((card) => card.getData()),
+      currentItemShopCards: this.currentItemShopCards.map((card) => card.getData()),
       // ----------------------------
 
       isActive: false,
