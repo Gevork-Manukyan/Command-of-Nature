@@ -1,4 +1,4 @@
-import { Decklist, DecklistType } from "@shared-types";
+import { Decklist } from "@shared-types";
 import { ALL_CARDS } from "./cards";
 const {
     AcornSquire,
@@ -42,7 +42,7 @@ const {
     TwigCharm,
 } = ALL_CARDS;
 
-export const TwigDeck: DecklistType = {
+export const TwigDeck = Decklist.from({
     sage: Cedar(),
     champions: {
         level4: VixVanguard(),
@@ -58,9 +58,9 @@ export const TwigDeck: DecklistType = {
         NaturalRestoration(),
         TwigCharm(),
     ],
-};
+});
 
-export const PebbleDeck: DecklistType = {
+export const PebbleDeck = Decklist.from({
     sage: Gravel(),
     champions: {
         level4: JadeTitan(),
@@ -76,9 +76,9 @@ export const PebbleDeck: DecklistType = {
         NaturalRestoration(),
         PebbleCharm(),
     ],
-};
+});
 
-export const LeafDeck: DecklistType = {
+export const LeafDeck = Decklist.from({
     sage: Porella(),
     champions: {
         level4: AgileAssailant(),
@@ -94,9 +94,9 @@ export const LeafDeck: DecklistType = {
         NaturalRestoration(),
         LeafCharm(),
     ],
-};
+});
 
-export const DropletDeck: DecklistType = {
+export const DropletDeck = Decklist.from({
     sage: Torrent(),
     champions: {
         level4: TideTurner(),
@@ -112,4 +112,4 @@ export const DropletDeck: DecklistType = {
         NaturalRestoration(),
         DropletCharm(),
     ],
-};
+});

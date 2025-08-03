@@ -159,9 +159,8 @@ export class Player implements IPlayerMethods, IPlayerData {
         "Cannot initialize the deck. Player is not ready",
         "isReady"
       );
-    this.setDecklist(getSageDecklist(this.sage));
 
-    const decklist = this.decklist!;
+    const decklist = getSageDecklist(this.sage);
     const basicStarter = decklist.basic;
     this.addCardsToDeck([basicStarter, ...decklist.items]);
   }
@@ -246,11 +245,11 @@ export class Player implements IPlayerMethods, IPlayerData {
       hasChosenWarriors: this.hasChosenWarriors,
       isGameHost: this.isGameHost,
       sage: this.sage,
-      decklist: this.decklist ? this.decklist : undefined,
+      decklist: this.decklist ? this.decklist.getData() : undefined,
       level: this.level,
-      hand: this.hand,
-      deck: this.deck,
-      discardPile: this.discardPile,
+      hand: this.hand.map((card) => card.getData()),
+      deck: this.deck.map((card) => card.getData()),
+      discardPile: this.discardPile.map((card) => card.getData()),
     };
   }
 
