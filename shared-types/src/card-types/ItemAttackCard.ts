@@ -3,7 +3,8 @@ import { ItemCard, ItemCardSchema } from "./ItemCard";
 import { RowRequirementSchema } from "../card-types";
 
 export const ItemAttackCardSchema = ItemCardSchema.extend({
-    rowRequirement: RowRequirementSchema
+    rowRequirement: RowRequirementSchema,
+    itemType: z.literal("attack"),
 });
 
 type ItemAttackCardType = z.infer<typeof ItemAttackCardSchema>;

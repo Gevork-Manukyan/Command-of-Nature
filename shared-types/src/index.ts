@@ -1,20 +1,21 @@
 // Game State Types
-export * from './player-types';
+export * from "./player-types";
 
 // Game Setup Types
-export * from './game-types';
+export * from "./game-types";
 
 // Space Options
-export * from './space-options';
+export * from "./space-options";
 
 // Game Events
-export * from './game-events';
+export * from "./game-events";
 
 // Ability Types
-export * from './ability-types';
+export * from "./ability-types";
 
 // Card Types
-export * from './card-types';
+export * from "./card-types";
+export * from "./card-types/index";
 
 // Server Types
-export * from './server-types';
+export * from "./server-types";

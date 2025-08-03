@@ -1,21 +1,20 @@
 import {
-  AttackCardSchema,
-  AttackStarterCardSchema,
-  ElementalCardSchema,
-  ElementalChampionSchema,
-  ElementalSageSchema,
-  ElementalStarterCardSchema,
-  ElementalWarriorCardSchema,
-  ElementalWarriorStarterCardSchema,
-  InstantCardSchema,
-  InstantStarterCardSchema,
-  UtilityCardSchema,
+  ElementalCard,
+  ElementalChampionCard,
+  ElementalSageCard,
+  ElementalStarterCard,
+  ElementalWarriorCard,
+  ElementalWarriorStarterCard,
+  ItemAttackCard,
+  ItemAttackStarterCard,
+  ItemCard,
+  ItemStarterCard,
 } from "@shared-types";
 
 export const ALL_CARDS = {
 
   // ------------ SAGES ------------
-  Cedar: ElementalSageSchema.parse({
+  Cedar: () => new ElementalSageCard({
     name: "Cedar",
     sage: "Cedar",
     img: "",
@@ -28,7 +27,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Gravel: ElementalSageSchema.parse({
+  Gravel: () => new ElementalSageCard({
     name: "Gravel",
     sage: "Gravel",
     img: "",
@@ -41,7 +40,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Porella: ElementalSageSchema.parse({
+  Porella: () => new ElementalSageCard({
     name: "Porella",
     sage: "Porella",
     img: "",
@@ -54,7 +53,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  Torrent: ElementalSageSchema.parse({
+  Torrent: () => new ElementalSageCard({
     name: "Torrent",
     sage: "Torrent",
     img: "",
@@ -69,7 +68,7 @@ export const ALL_CARDS = {
 
   // ------------ CHAMPIONS ------------
   // *** Twigs ***
-  VixVanguard: ElementalChampionSchema.parse({
+  VixVanguard: () => new ElementalChampionCard({
     name: "Vix Vanguard",
     price: 1,
     img: "",
@@ -82,7 +81,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  HornedHollow: ElementalChampionSchema.parse({
+  HornedHollow: () => new ElementalChampionCard({
     name: "Horned Hollow",
     price: 1,
     img: "",
@@ -94,7 +93,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  CalamityLeopard: ElementalChampionSchema.parse({
+  CalamityLeopard: () => new ElementalChampionCard({
     name: "Calamity Leopard",
     price: 1,
     img: "",
@@ -107,7 +106,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  JadeTitan: ElementalChampionSchema.parse({
+  JadeTitan: () => new ElementalChampionCard({
     name: "Jade Titan",
     price: 1,
     img: "",
@@ -119,7 +118,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  BoulderhideBrute: ElementalChampionSchema.parse({
+  BoulderhideBrute: () => new ElementalChampionCard({
     name: "Boulderhide Brute",
     price: 1,
     img: "",
@@ -131,7 +130,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  OxenAvenger: ElementalChampionSchema.parse({
+  OxenAvenger: () => new ElementalChampionCard({
     name: "Oxen Avenger",
     price: 1,
     img: "",
@@ -144,7 +143,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  AgileAssailant: ElementalChampionSchema.parse({
+  AgileAssailant: () => new ElementalChampionCard({
     name: "Agile Assailant",
     price: 1,
     img: "",
@@ -156,7 +155,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  BogBlight: ElementalChampionSchema.parse({
+  BogBlight: () => new ElementalChampionCard({
     name: "Bog Blight",
     price: 1,
     img: "",
@@ -169,7 +168,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  KomodoKin: ElementalChampionSchema.parse({
+  KomodoKin: () => new ElementalChampionCard({
     name: "Komodo Kin",
     price: 1,
     img: "",
@@ -182,7 +181,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  TideTurner: ElementalChampionSchema.parse({
+  TideTurner: () => new ElementalChampionCard({
     name: "Tide Turner",
     price: 1,
     img: "",
@@ -194,7 +193,7 @@ export const ALL_CARDS = {
     levelRequirement: 4,
   }),
 
-  KingCrustacean: ElementalChampionSchema.parse({
+  KingCrustacean: () => new ElementalChampionCard({
     name: "King Crustacean",
     price: 1,
     img: "",
@@ -206,7 +205,7 @@ export const ALL_CARDS = {
     levelRequirement: 6,
   }),
 
-  FrostfallEmperor: ElementalChampionSchema.parse({
+  FrostfallEmperor: () => new ElementalChampionCard({
     name: "Frostfall Emperor",
     price: 1,
     img: "",
@@ -220,7 +219,7 @@ export const ALL_CARDS = {
 
   // ------------ BASICS ------------
   // *** Twigs ***
-  Timber: ElementalStarterCardSchema.parse({
+  Timber: () => new ElementalStarterCard({
     name: "Timber",
     price: 1,
     element: "twig",
@@ -229,7 +228,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Bruce: ElementalCardSchema.parse({
+  Bruce: () => new ElementalCard({
     name: "Bruce",
     price: 2,
     element: "twig",
@@ -238,7 +237,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Willow: ElementalCardSchema.parse({
+  Willow: () => new ElementalCard({
     name: "Willow",
     price: 1,
     element: "twig",
@@ -248,7 +247,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  Cobble: ElementalStarterCardSchema.parse({
+  Cobble: () => new ElementalStarterCard({
     name: "Cobble",
     price: 1,
     element: "pebble",
@@ -257,7 +256,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Flint: ElementalCardSchema.parse({
+  Flint: () => new ElementalCard({
     name: "Flint",
     price: 1,
     element: "pebble",
@@ -266,7 +265,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Rocco: ElementalCardSchema.parse({
+  Rocco: () => new ElementalCard({
     name: "Rocco",
     price: 2,
     element: "pebble",
@@ -276,7 +275,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  Sprout: ElementalStarterCardSchema.parse({
+  Sprout: () => new ElementalStarterCard({
     name: "Sprout",
     price: 1,
     element: "leaf",
@@ -285,7 +284,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Herbert: ElementalCardSchema.parse({
+  Herbert: () => new ElementalCard({
     name: "Herbert",
     price: 2,
     element: "leaf",
@@ -294,7 +293,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Mush: ElementalCardSchema.parse({
+  Mush: () => new ElementalCard({
     name: "Mush",
     price: 1,
     element: "leaf",
@@ -304,7 +303,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  Dribble: ElementalStarterCardSchema.parse({
+  Dribble: () => new ElementalStarterCard({
     name: "Dribble",
     price: 1,
     element: "droplet",
@@ -313,7 +312,7 @@ export const ALL_CARDS = {
     health: 2,
   }),
 
-  Dewy: ElementalCardSchema.parse({
+  Dewy: () => new ElementalCard({
     name: "Dewy",
     price: 2,
     element: "droplet",
@@ -322,7 +321,7 @@ export const ALL_CARDS = {
     health: 3,
   }),
 
-  Wade: ElementalCardSchema.parse({
+  Wade: () => new ElementalCard({
     name: "Wade",
     img: "",
     price: 1,
@@ -333,7 +332,7 @@ export const ALL_CARDS = {
 
   // ------------ WARRIORS ------------
   // *** Twigs ***
-  AcornSquire: ElementalWarriorStarterCardSchema.parse({
+  AcornSquire: () => new ElementalWarriorStarterCard({
     name: "Acorn Squire",
     img: "",
     price: 1,
@@ -344,7 +343,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  QuillThornback: ElementalWarriorStarterCardSchema.parse({
+  QuillThornback: () => new ElementalWarriorStarterCard({
     name: "Quill Thornback",
     img: "",
     price: 1,
@@ -355,7 +354,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  SlumberJack: ElementalWarriorStarterCardSchema.parse({
+  SlumberJack: () => new ElementalWarriorStarterCard({
     name: "Slumber Jack",
     img: "",
     price: 1,
@@ -367,7 +366,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CamouChameleon: ElementalWarriorCardSchema.parse({
+  CamouChameleon: () => new ElementalWarriorCard({
     name: "Camou Chameleon",
     img: "",
     price: 7,
@@ -379,7 +378,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  LumberClaw: ElementalWarriorCardSchema.parse({
+  LumberClaw: () => new ElementalWarriorCard({
     name: "Lumber Claw",
     img: "",
     price: 4,
@@ -390,7 +389,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  PineSnapper: ElementalWarriorCardSchema.parse({
+  PineSnapper: () => new ElementalWarriorCard({
     name: "Pine Snapper",
     img: "",
     price: 3,
@@ -401,7 +400,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  SplinterStinger: ElementalWarriorCardSchema.parse({
+  SplinterStinger: () => new ElementalWarriorCard({
     name: "Splinter Stinger",
     img: "",
     price: 5,
@@ -412,7 +411,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  TwineFeline: ElementalWarriorCardSchema.parse({
+  TwineFeline: () => new ElementalWarriorCard({
     name: "TwineFeline",
     img: "",
     price: 5,
@@ -424,7 +423,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  OakLumbertron: ElementalWarriorCardSchema.parse({
+  OakLumbertron: () => new ElementalWarriorCard({
     name: "Oak Lumbertron",
     img: "",
     price: 9,
@@ -437,7 +436,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Pebbles ***
-  GeoWeasel: ElementalWarriorStarterCardSchema.parse({
+  GeoWeasel: () => new ElementalWarriorStarterCard({
     name: "Geo Weasel",
     img: "",
     price: 1,
@@ -448,7 +447,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  GraniteRampart: ElementalWarriorStarterCardSchema.parse({
+  GraniteRampart: () => new ElementalWarriorStarterCard({
     name: "Granite Rampart",
     img: "",
     price: 1,
@@ -460,7 +459,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  OnyxBearer: ElementalWarriorStarterCardSchema.parse({
+  OnyxBearer: () => new ElementalWarriorStarterCard({
     name: "Onyx Bearer",
     img: "",
     price: 1,
@@ -472,7 +471,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CackleRipclaw: ElementalWarriorCardSchema.parse({
+  CackleRipclaw: () => new ElementalWarriorCard({
     name: "Cackle Ripclaw",
     img: "",
     price: 4,
@@ -483,7 +482,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  Redstone: ElementalWarriorCardSchema.parse({
+  Redstone: () => new ElementalWarriorCard({
     name: "Redstone",
     img: "",
     price: 4,
@@ -495,7 +494,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  RubyGuardian: ElementalWarriorCardSchema.parse({
+  RubyGuardian: () => new ElementalWarriorCard({
     name: "Ruby Guardian",
     img: "",
     price: 3,
@@ -507,7 +506,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  RunePuma: ElementalWarriorCardSchema.parse({
+  RunePuma: () => new ElementalWarriorCard({
     name: "Rune Puma",
     img: "",
     price: 5,
@@ -518,7 +517,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  StoneDefender: ElementalWarriorCardSchema.parse({
+  StoneDefender: () => new ElementalWarriorCard({
     name: "Stone Defender",
     img: "",
     price: 8,
@@ -530,7 +529,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  TerrainTumbler: ElementalWarriorCardSchema.parse({
+  TerrainTumbler: () => new ElementalWarriorCard({
     name: "Terrain Tumbler",
     img: "",
     price: 5,
@@ -542,7 +541,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Leafs ***
-  BotanicFangs: ElementalWarriorStarterCardSchema.parse({
+  BotanicFangs: () => new ElementalWarriorStarterCard({
     name: "Botanic Fangs",
     img: "",
     price: 1,
@@ -553,7 +552,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  PetalMage: ElementalWarriorStarterCardSchema.parse({
+  PetalMage: () => new ElementalWarriorStarterCard({
     name: "Petal Mage",
     img: "",
     price: 1,
@@ -564,7 +563,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  ThornFencer: ElementalWarriorStarterCardSchema.parse({
+  ThornFencer: () => new ElementalWarriorStarterCard({
     name: "Thorn Fencer",
     img: "",
     price: 1,
@@ -576,7 +575,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  BambooBerserker: ElementalWarriorCardSchema.parse({
+  BambooBerserker: () => new ElementalWarriorCard({
     name: "Bamboo Berserker",
     img: "",
     price: 9,
@@ -588,7 +587,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  ForageThumper: ElementalWarriorCardSchema.parse({
+  ForageThumper: () => new ElementalWarriorCard({
     name: "Forage Thumper",
     img: "",
     price: 5,
@@ -600,7 +599,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  HummingHerald: ElementalWarriorCardSchema.parse({
+  HummingHerald: () => new ElementalWarriorCard({
     name: "Humming Herald",
     img: "",
     price: 5,
@@ -611,7 +610,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  IguanaGuard: ElementalWarriorCardSchema.parse({
+  IguanaGuard: () => new ElementalWarriorCard({
     name: "Iguana Guard",
     img: "",
     price: 5,
@@ -622,7 +621,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  MossViper: ElementalWarriorCardSchema.parse({
+  MossViper: () => new ElementalWarriorCard({
     name: "Moss Viper",
     img: "",
     price: 5,
@@ -633,7 +632,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  ShrubBeetle: ElementalWarriorCardSchema.parse({
+  ShrubBeetle: () => new ElementalWarriorCard({
     name: "Shrub Beetle",
     img: "",
     price: 3,
@@ -645,7 +644,7 @@ export const ALL_CARDS = {
   }),
 
   // *** Droplets ***
-  CoastalCoyote: ElementalWarriorStarterCardSchema.parse({
+  CoastalCoyote: () => new ElementalWarriorStarterCard({
     name: "Coastal Coyote",
     img: "",
     price: 1,
@@ -656,7 +655,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  RiptideTiger: ElementalWarriorStarterCardSchema.parse({
+  RiptideTiger: () => new ElementalWarriorStarterCard({
     name: "Riptide Tiger",
     img: "",
     price: 1,
@@ -667,7 +666,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  RiverRogue: ElementalWarriorStarterCardSchema.parse({
+  RiverRogue: () => new ElementalWarriorStarterCard({
     name: "River Rogue",
     img: "",
     price: 1,
@@ -679,7 +678,7 @@ export const ALL_CARDS = {
     isDayBreak: true,
   }),
 
-  CurrentConjurer: ElementalWarriorCardSchema.parse({
+  CurrentConjurer: () => new ElementalWarriorCard({
     name: "Current Conjurer",
     img: "",
     price: 3,
@@ -690,7 +689,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  RoamingRazor: ElementalWarriorCardSchema.parse({
+  RoamingRazor: () => new ElementalWarriorCard({
     name: "Roaming Razor",
     img: "",
     price: 8,
@@ -701,7 +700,7 @@ export const ALL_CARDS = {
     rowRequirement: [1, 2],
   }),
 
-  SplashBasilisk: ElementalWarriorCardSchema.parse({
+  SplashBasilisk: () => new ElementalWarriorCard({
     name: "Splash Basilisk",
     img: "",
     price: 5,
@@ -712,7 +711,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  SurgesphereMonk: ElementalWarriorCardSchema.parse({
+  SurgesphereMonk: () => new ElementalWarriorCard({
     name: "Surgesphere Monk",
     img: "",
     price: 3,
@@ -723,7 +722,7 @@ export const ALL_CARDS = {
     rowRequirement: [2],
   }),
 
-  TyphoonFist: ElementalWarriorCardSchema.parse({
+  TyphoonFist: () => new ElementalWarriorCard({
     name: "Typhoon Fist",
     img: "",
     price: 4,
@@ -734,7 +733,7 @@ export const ALL_CARDS = {
     rowRequirement: [1],
   }),
 
-  WhirlWhipper: ElementalWarriorCardSchema.parse({
+  WhirlWhipper: () => new ElementalWarriorCard({
     name: "Whirl Whipper",
     img: "",
     price: 4,
@@ -747,169 +746,191 @@ export const ALL_CARDS = {
   }),
 
   // ------------ ATTACKS ------------
-  CloseStrike: AttackStarterCardSchema.parse({
+  CloseStrike: () => new ItemAttackStarterCard({
     name: "Close Strike",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1],
   }),
 
-  FarStrike: AttackStarterCardSchema.parse({
+  FarStrike: () => new ItemAttackStarterCard({
     name: "Far Strike",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1, 2],
   }),
 
-  DistantDoubleStrike: AttackCardSchema.parse({
+  DistantDoubleStrike: () => new ItemAttackCard({
     name: "Distant Double Strike",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1, 2],
   }),
 
-  FarsightFrenzy: AttackCardSchema.parse({
+  FarsightFrenzy: () => new ItemAttackCard({
     name: "Farsight Frenzy",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1, 2, 3],
   }),
 
-  FocusedFury: AttackCardSchema.parse({
+  FocusedFury: () => new ItemAttackCard({
     name: "Focused Fury",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1],
   }),
 
-  MagicEtherStrike: AttackCardSchema.parse({
+  MagicEtherStrike: () => new ItemAttackCard({
     name: "Magic Ether Strike",
     img: "",
     price: 5,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1],
   }),
 
-  NaturesWrath: AttackCardSchema.parse({
+  NaturesWrath: () => new ItemAttackCard({
     name: "Nature's Wrath",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1],
   }),
 
-  PrimitiveStrike: AttackCardSchema.parse({
+  PrimitiveStrike: () => new ItemAttackCard({
     name: "Primitive Strike",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1, 2],
   }),
 
-  ProjectileBlast: AttackCardSchema.parse({
+  ProjectileBlast: () => new ItemAttackCard({
     name: "Projectile Blast",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1, 2],
   }),
 
-  ReinforcedImpact: AttackCardSchema.parse({
+  ReinforcedImpact: () => new ItemAttackCard({
     name: "Reinforced Impact",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "attack",
     rowRequirement: [1],
   }),
 
   // ------------ INSTANTS ------------
-  DropletCharm: InstantStarterCardSchema.parse({
+  DropletCharm: () => new ItemStarterCard({
     name: "Droplet Charm",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  LeafCharm: InstantStarterCardSchema.parse({
+  LeafCharm: () => new ItemStarterCard({
     name: "Leaf Charm",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  PebbleCharm: InstantStarterCardSchema.parse({
+  PebbleCharm: () => new ItemStarterCard({
     name: "Pebble Charm",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  TwigCharm: InstantStarterCardSchema.parse({
+  TwigCharm: () => new ItemStarterCard({
     name: "Twig Charm",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  NaturalRestoration: InstantStarterCardSchema.parse({
+  NaturalRestoration: () => new ItemStarterCard({
     name: "Natural Restoration",
     img: "",
     price: 1,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  MeleeShield: InstantCardSchema.parse({
+  MeleeShield: () => new ItemCard({
     name: "Melee Shield",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  NaturalDefense: InstantCardSchema.parse({
+  NaturalDefense: () => new ItemCard({
     name: "Natural Defense",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "instant",
   }),
 
-  RangedBarrier: InstantCardSchema.parse({
+  RangedBarrier: () => new ItemCard({
     name: "Ranged Barrier",
     img: "",
     price: 3,
     ability: () => {},
+    itemType: "instant",
   }),
 
   // ------------ UTILITIES ------------
-  ElementalIncantation: UtilityCardSchema.parse({
+  ElementalIncantation: () => new ItemCard({
     name: "Elemental Incantation",
     img: "",
     price: 5,
     ability: () => {},
+    itemType: "utility",
   }),
 
-  ElementalSwap: UtilityCardSchema.parse({
+  ElementalSwap: () => new ItemCard({
     name: "Elemental Swap",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "utility",
   }),
 
-  ExchangeOfNature: UtilityCardSchema.parse({
+  ExchangeOfNature: () => new ItemCard({
     name: "Exchange of Nature",
     img: "",
     price: 2,
     ability: () => {},
+    itemType: "utility",
   }),
 
-  Obliterate: UtilityCardSchema.parse({
+  Obliterate: () => new ItemCard({
     name: "Obliterate",
     img: "",
     price: 5,
     ability: () => {},
+    itemType: "utility",
   }),
 }
