@@ -15,7 +15,7 @@ export * from "./ability-types";
 
 // Card Types
 export * from "./card-types";
-export * from "./card-types/index";
+export * from "./card-classes/index";
 
 // Server Types
 export * from "./server-types";

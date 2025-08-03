@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { AvailableSagesSchema } from "./game-types";
 import { AllSpaceOptionsSchema } from "./space-options";
-import { ElementalWarriorStarterCardSchema, SageSchema } from "./card-types";
 import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent, ReadyStatusToggledEvent, TeamJoinedEvent, SageSelectedEvent, PlayerRejoinedEvent, PlayerJoinedEvent, PlayerLeftEvent } from "./game-events";
+import { ElementalWarriorStarterCardSchema } from "./card-classes";
+import { SageSchema } from "./card-types";
 
 export const registerUserSocketSchema = z.object({
   userId: z.string(),

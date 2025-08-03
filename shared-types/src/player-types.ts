@@ -1,4 +1,6 @@
-import { Card, Decklist, Sage } from './card-types';
+import { Card } from './card-classes';
+import { Sage } from './card-types';
+import { Decklist } from './Decklist';
 
 export interface IPlayerData {
     userId: string;
