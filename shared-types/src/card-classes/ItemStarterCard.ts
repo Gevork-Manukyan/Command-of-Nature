@@ -8,8 +8,11 @@ export const ItemStarterCardSchema = ItemCardSchema.extend({
 type ItemStarterCardType = z.infer<typeof ItemStarterCardSchema>;
 
 export class ItemStarterCard extends ItemCard {
+    price: ItemStarterCardType["price"];
+
     protected constructor(params: ItemStarterCardType) {
         super(params);
+        this.price = params.price;
     }
 
     static from(data: unknown): ItemStarterCard {

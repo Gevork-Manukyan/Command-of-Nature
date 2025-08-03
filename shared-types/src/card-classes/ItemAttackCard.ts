@@ -11,10 +11,12 @@ type ItemAttackCardType = z.infer<typeof ItemAttackCardSchema>;
 
 export class ItemAttackCard extends ItemCard {
     rowRequirement: ItemAttackCardType['rowRequirement'];
+    itemType: ItemAttackCardType['itemType'];
 
     protected constructor(params: ItemAttackCardType) {
         super(params);
         this.rowRequirement = params.rowRequirement;
+        this.itemType = params.itemType;
     }
 
     static from(data: unknown): ItemAttackCard {

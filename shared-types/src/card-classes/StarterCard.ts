@@ -7,8 +7,11 @@ export const StarterCardSchema = CardSchema.extend({
 type StarterCardType = z.infer<typeof StarterCardSchema>;
 
 export class StarterCard extends Card {
+    price: StarterCardType["price"];
+
     protected constructor(params: StarterCardType) {
         super(params);
+        this.price = params.price;
     }
 
     static from(data: unknown): StarterCard {

@@ -19,3 +19,6 @@ export * from "./card-classes/index";
 
 // Server Types
 export * from "./server-types";
+
+// Decklist
+export * from "./Decklist";
