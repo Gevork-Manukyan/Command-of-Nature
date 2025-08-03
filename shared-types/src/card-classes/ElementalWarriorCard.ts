@@ -22,4 +22,15 @@ export class ElementalWarriorCard extends ElementalAbilityCard {
         const parsed = ElementalWarriorCardSchema.parse(data);
         return new ElementalWarriorCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            isDayBreak: this.isDayBreak,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

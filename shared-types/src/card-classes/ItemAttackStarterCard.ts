@@ -19,4 +19,15 @@ export class ItemAttackStarterCard extends ItemAttackCard {
         const parsed = ItemAttackStarterCardSchema.parse(data);
         return new ItemAttackStarterCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            price: this.price,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

@@ -246,7 +246,7 @@ export class Player implements IPlayerMethods, IPlayerData {
       hasChosenWarriors: this.hasChosenWarriors,
       isGameHost: this.isGameHost,
       sage: this.sage,
-      decklist: this.decklist,
+      decklist: this.decklist ? this.decklist : undefined,
       level: this.level,
       hand: this.hand,
       deck: this.deck,

@@ -20,4 +20,15 @@ export class ElementalSageCard extends ElementalWarriorStarterCard {
         const parsed = ElementalSageCardSchema.parse(data);
         return new ElementalSageCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            sage: this.sage,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

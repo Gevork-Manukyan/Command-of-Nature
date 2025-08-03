@@ -22,4 +22,15 @@ export class ElementalChampionCard extends ElementalWarriorStarterCard {
         const parsed = ElementalChampionCardSchema.parse(data);
         return new ElementalChampionCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            levelRequirement: this.levelRequirement,
+        };
+    }
+
+    toJSON() {
+        return this.getData();
+    }
 }

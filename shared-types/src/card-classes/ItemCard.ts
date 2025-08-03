@@ -23,4 +23,15 @@ export class ItemCard extends Card {
         const parsed = ItemCardSchema.parse(data);
         return new ItemCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            itemType: this.itemType,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

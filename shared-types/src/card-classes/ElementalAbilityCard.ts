@@ -23,4 +23,15 @@ export class ElementalAbilityCard extends ElementalCard {
         const parsed = ElementalAbilityCardSchema.parse(data);
         return new ElementalAbilityCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            rowRequirement: this.rowRequirement,
+        };
+    }
+
+    toJSON() {
+        return this.getData();
+    }
 }

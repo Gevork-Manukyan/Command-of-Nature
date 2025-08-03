@@ -18,4 +18,15 @@ export class StarterCard extends Card {
         const parsed = StarterCardSchema.parse(data);
         return new StarterCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            price: this.price,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

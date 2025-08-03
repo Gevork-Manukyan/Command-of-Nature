@@ -60,7 +60,7 @@ export const TwigDeck: DecklistType = {
     ],
 };
 
-export const PebbleDeck: Decklist = {
+export const PebbleDeck: DecklistType = {
     sage: Gravel(),
     champions: {
         level4: JadeTitan(),
@@ -78,7 +78,7 @@ export const PebbleDeck: Decklist = {
     ],
 };
 
-export const LeafDeck: Decklist = {
+export const LeafDeck: DecklistType = {
     sage: Porella(),
     champions: {
         level4: AgileAssailant(),
@@ -96,7 +96,7 @@ export const LeafDeck: Decklist = {
     ],
 };
 
-export const DropletDeck: Decklist = {
+export const DropletDeck: DecklistType = {
     sage: Torrent(),
     champions: {
         level4: TideTurner(),

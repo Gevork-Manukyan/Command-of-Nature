@@ -35,4 +35,20 @@ export class ElementalCard extends Card {
         const parsed = ElementalCardSchema.parse(data);
         return new ElementalCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            element: this.element,
+            attack: this.attack,
+            health: this.health,
+            shieldCount: this.shieldCount,
+            boostCount: this.boostCount,
+            damageCount: this.damageCount,
+        };
+    }
+
+    toJSON() {
+        return this.getData();
+    }
 }

@@ -19,4 +19,15 @@ export class ElementalStarterCard extends ElementalCard {
         const parsed = ElementalStarterCardSchema.parse(data);
         return new ElementalStarterCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            price: this.price,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

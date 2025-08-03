@@ -23,4 +23,16 @@ export class ItemAttackCard extends ItemCard {
         const parsed = ItemAttackCardSchema.parse(data);
         return new ItemAttackCard(parsed);
     }
+
+    getData() {
+        return {
+            ...super.getData(),
+            rowRequirement: this.rowRequirement,
+            itemType: this.itemType,
+        };
+    }
+    
+    toJSON() {
+        return this.getData();
+    }
 }

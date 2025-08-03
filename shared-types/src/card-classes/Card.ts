@@ -22,4 +22,16 @@ export class Card {
         const parsed = CardSchema.parse(data);
         return new Card(parsed);
     }
+
+    getData() {
+        return {
+            name: this.name,
+            price: this.price,
+            img: this.img,
+        };
+    }
+
+    toJSON() {
+        return this.getData();
+    }
 }
