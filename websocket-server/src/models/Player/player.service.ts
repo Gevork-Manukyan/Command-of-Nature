@@ -1,22 +1,13 @@
-import { Model } from "mongoose";
-import { IPlayer } from "./db-model";
 import { Player } from "./Player";
 import { NotFoundError } from "../../services/CustomError/BaseError";
+import { prisma } from "../../lib/prisma";
 
 /**
  * Service class for managing Player instances in the database
  * @class PlayerService
  */
 export class PlayerService {
-  private model: Model<IPlayer>;
-
-  /**
-   * Creates a new PlayerService instance
-   * @param {Model<IPlayer>} model - The Mongoose model for Player
-   */
-  constructor(model: Model<IPlayer>) {
-    this.model = model;
-  }
+  constructor() {}
 
   async createPlayer(
     userId: string,
@@ -24,7 +15,9 @@ export class PlayerService {
     isGameHost: boolean = false
   ): Promise<Player> {
     const player = new Player(userId, socketId, isGameHost);
-    const doc = await this.model.create(player.toPrismaObject());
+    const doc = await prisma.player.create({
+      data: player.toPrismaObject(),
+    });
     return Player.fromPrisma(doc);
   }
 

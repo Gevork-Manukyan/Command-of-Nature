@@ -42,24 +42,24 @@ describe("level getter and setters", () => {
 describe("hand getter and setters", () => {
     test("should correctly set the player's hand", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToHand(Cedar);
-        expect(player.hand).toContainEqual(Cedar);
+        player.addCardToHand(Cedar());
+        expect(player.hand).toContainEqual(Cedar());
     });
 });
 
 describe("deck getter and setters", () => {
     test("should correctly set the player's deck", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToDeck(Cedar);
-        expect(player.deck).toContainEqual(Cedar);
+        player.addCardToDeck(Cedar());
+        expect(player.deck).toContainEqual(Cedar());
     });
 });
 
 describe("discard pile getter and setters", () => {
     test("should correctly set the player's discard pile", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToDiscardPile(Cedar);
-        expect(player.discardPile).toContainEqual(Cedar);
+        player.addCardToDiscardPile(Cedar());
+        expect(player.discardPile).toContainEqual(Cedar());
     });
 });
 
@@ -107,23 +107,23 @@ describe("toggleReady method", () => {
 describe("addCardsToDeck", () => {
     test("should add a single card (using addCardToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardToDeck(Cedar)
-        expect(player.deck).toStrictEqual([Cedar])
+        player.addCardToDeck(Cedar())
+        expect(player.deck).toStrictEqual([Cedar()])
         done()
     })
 
     test("should add a single card (using addCardsToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardsToDeck([Cedar])
-        expect(player.deck).toContain(Cedar)
+        player.addCardsToDeck([Cedar()])
+        expect(player.deck).toContain(Cedar())
         done()
     })
 
     test("should add a multiple cards", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardsToDeck([Cedar, Gravel])
-        expect(player.deck).toContainEqual(Cedar)
-        expect(player.deck).toContainEqual(Gravel)
+        player.addCardsToDeck([Cedar(), Gravel()])
+        expect(player.deck).toContainEqual(Cedar())
+        expect(player.deck).toContainEqual(Gravel())
         done()
     })
 })
