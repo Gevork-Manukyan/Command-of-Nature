@@ -6,9 +6,9 @@ export const ElementalCardSchema = CardSchema.extend({
     element: ElementSchema,
     attack: z.number(),
     health: z.number(),
-    shieldCount: z.number().optional(),
-    boostCount: z.number().optional(),
-    damageCount: z.number().optional(),
+    shieldCount: z.number(),
+    boostCount: z.number(),
+    damageCount: z.number(),
 });
 
 type ElementalCardType = z.infer<typeof ElementalCardSchema>;

@@ -16,7 +16,12 @@ export const PlayerSchema = z.object({
   discardPile: z.array(CardSchema),
 });
 
-export const BattlefieldSchema = z.object({})
+export const BattlefieldSpaceSchema = z.object({})
+
+export const BattlefieldSchema = z.object({
+  fieldArray: z.array(BattlefieldSpaceSchema),
+  numPlayersOnTeam: z.literal(1).or(z.literal(2)),
+})
 
 export const TeamSchema = z.object({
   userIds: z.array(z.string()),
