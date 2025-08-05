@@ -6,7 +6,8 @@ import {
   SpaceOption,
   ElementalWarriorCard,
 } from "@shared-types";
-import { IBattlefieldSpace } from "./db-model";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { BattlefieldSpaceSchema } from "../validation";
 
 export type Direction = "TL" | "T" | "TR" | "L" | "R" | "BL" | "B" | "BR";
 
@@ -14,14 +15,14 @@ export class BattlefieldSpace {
   spaceNumber: SpaceOption;
   value: ElementalCard | null;
   connections: {
-    TL?: BattlefieldSpace | null;
-    T?: BattlefieldSpace | null;
-    TR?: BattlefieldSpace | null;
-    L?: BattlefieldSpace | null;
-    R?: BattlefieldSpace | null;
-    BL?: BattlefieldSpace | null;
-    B?: BattlefieldSpace | null;
-    BR?: BattlefieldSpace | null;
+    TL: BattlefieldSpace['spaceNumber'] | null;
+    T: BattlefieldSpace['spaceNumber'] | null;
+    TR: BattlefieldSpace['spaceNumber'] | null;
+    L: BattlefieldSpace['spaceNumber'] | null;
+    R: BattlefieldSpace['spaceNumber'] | null;
+    BL: BattlefieldSpace['spaceNumber'] | null;
+    B: BattlefieldSpace['spaceNumber'] | null;
+    BR: BattlefieldSpace['spaceNumber'] | null;
   };
 
   constructor(
@@ -94,24 +95,27 @@ export class BattlefieldSpace {
     return true;
   }
 
-  // Convert from Mongoose document to runtime instance
-  static fromMongoose(doc: IBattlefieldSpace): BattlefieldSpace {
-    const space = new BattlefieldSpace(doc.spaceNumber, doc.value);
-    // Connections will be set up by the Battlefield class
-    return space;
+  /**
+   * Converts a Prisma document to a BattlefieldSpace instance
+   * @param doc - The Prisma document to convert
+   * @returns The BattlefieldSpace instance
+   */
+  static fromPrisma(battlefieldSpaceJson: JsonValue): BattlefieldSpace {
+    const { spaceNumber, value, connections } = BattlefieldSpaceSchema.parse(battlefieldSpaceJson);
+    const newSpace = new BattlefieldSpace(spaceNumber, value);
+    newSpace.connections = connections;
+    return newSpace;
   }
 
-  // Convert runtime instance to plain object for Mongoose
-  toMongoose(): Omit<IBattlefieldSpace, "_id"> {
+  /**
+   * Converts the runtime instance to a plain object for Prisma
+   * @returns A plain object representation of the BattlefieldSpace instance
+   */
+  toPrismaObject(): JsonValue {
     return {
       spaceNumber: this.spaceNumber,
-      value: this.value,
-      connections: Object.fromEntries(
-        Object.entries(this.connections).map(([key, value]) => [
-          key,
-          value?.spaceNumber ?? null,
-        ])
-      ),
-    } as Omit<IBattlefieldSpace, "_id">;
+      value: this.value ? this.value.getData() : null,
+      connections: this.connections,
+    };
   }
 }
