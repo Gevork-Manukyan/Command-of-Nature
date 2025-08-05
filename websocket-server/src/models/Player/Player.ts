@@ -199,7 +199,11 @@ export class Player implements IPlayerMethods, IPlayerData {
     this.addCardToHand(drawnCard);
   }
 
-  // Convert from Prisma JSON to runtime instance
+  /**
+   * Converts a Prisma document to a Player instance
+   * @param doc - The Prisma document to convert
+   * @returns The Player instance
+   */
   static fromPrisma(playerJson: JsonValue): Player {
     const validatedPlayer = PlayerSchema.parse(playerJson);
     const {
@@ -235,7 +239,10 @@ export class Player implements IPlayerMethods, IPlayerData {
     return player;
   }
 
-  // Convert runtime instance to plain object for Prisma
+  /**
+   * Converts the runtime instance to a plain object for Prisma
+   * @returns A plain object representation of the Player instance
+   */
   toPrismaObject(): JsonValue {
     return {
       userId: this.userId,

@@ -155,7 +155,7 @@ describe("Team", () => {
                 userId: testUserId
             };
             mockTeam.addPlayerToTeam(testUserId);
-            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire, QuillThornback]);
+            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire(), QuillThornback()]);
 
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(AcornSquire, 4);
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(QuillThornback, 6);
@@ -178,7 +178,7 @@ describe("Team", () => {
                 .mockImplementation((position) => (position === 8 ? Cedar : null));
 
             mockTeam.addPlayerToTeam(testUserId);
-            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire, QuillThornback]);
+            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire(), QuillThornback()]);
 
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(AcornSquire, 7);
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(QuillThornback, 9);
@@ -201,7 +201,7 @@ describe("Team", () => {
                 .mockImplementation((position) => (position === 11 ? Cedar : null));
 
             mockTeam.addPlayerToTeam(testUserId);
-            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire, QuillThornback]);
+            mockTeam.chooseWarriors(mockPlayer as unknown as Player, [AcornSquire(), QuillThornback()]);
 
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(AcornSquire, 10);
             expect(mockTeam.getBattlefield().addCard).toHaveBeenCalledWith(QuillThornback, 12);
@@ -223,7 +223,7 @@ describe("Team", () => {
         test("should swap warriors for the left-side player in a two-player team", () => {
             mockTeam = new Team(2, 1);
             const mockPlayer = {
-                getElement: jest.fn().mockReturnValue(Cedar.element),
+                getElement: jest.fn().mockReturnValue(Cedar().element),
                 userId: testUserId
             };
             mockTeam.getBattlefield().getCard = jest.fn().mockReturnValue(Cedar);
@@ -237,7 +237,7 @@ describe("Team", () => {
         test("should swap warriors for the right-side player in a two-player team", () => {
             mockTeam = new Team(2, 1);
             const mockPlayer = {
-                getElement: jest.fn().mockReturnValue(Cedar.element),
+                getElement: jest.fn().mockReturnValue(Cedar().element),
                 userId: testUserId
             };
             mockTeam.getBattlefield().getCard = jest.fn().mockReturnValue(Cedar);

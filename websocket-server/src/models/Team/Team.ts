@@ -6,8 +6,9 @@ import {
   SpaceOption,
 } from "@shared-types";
 import { Battlefield } from "../Battlefield/Battlefield";
-import { ITeam } from "./db-model";
 import { Player } from "../Player";
+import { JsonValue } from "@prisma/client/runtime/library";
+import { TeamSchema } from "../validation";
 
 /**
  * Represents a team in the Command of Nature game
@@ -368,27 +369,35 @@ export class Team {
     return this.userIds.find((id) => id !== userId);
   }
 
-  // Convert from Mongoose document to runtime instance
-  static fromMongoose(doc: ITeam | Omit<ITeam, "_id">): Team {
-    const team = new Team(doc.teamSize, doc.teamNumber);
-    team.userIds = doc.userIds;
-    team.gold = doc.gold;
-    team.maxGold = doc.maxGold;
-    team.removedCards = doc.removedCards;
-    team.battlefield = Battlefield.fromMongoose(doc.battlefield);
+  /**
+   * Converts a Prisma document to a Team instance
+   * @param doc - The Prisma document to convert
+   * @returns The Team instance
+   */
+  static fromPrisma(teamJson: JsonValue): Team {
+    const { userIds, teamNumber, teamSize, gold, maxGold, removedCards, battlefield } = TeamSchema.parse(teamJson);
+    const team = new Team(teamSize, teamNumber);
+    team.userIds = userIds;
+    team.gold = gold;
+    team.maxGold = maxGold;
+    team.removedCards = removedCards.map((card) => Card.from(card));
+    team.battlefield = Battlefield.fromPrisma(battlefield);
     return team;
   }
 
-  // Convert runtime instance to plain object for Mongoose
-  toMongoose(): Omit<ITeam, "_id"> {
+  /**
+   * Converts the runtime instance to a plain object for Prisma
+   * @returns A plain object representation of the Team instance
+   */
+  toPrismaObject(): JsonValue {
     return {
       userIds: this.userIds,
       teamNumber: this.teamNumber,
       teamSize: this.teamSize,
       gold: this.gold,
       maxGold: this.maxGold,
-      removedCards: this.removedCards,
-      battlefield: this.battlefield.toMongoose(),
-    } as Omit<ITeam, "_id">;
+      removedCards: this.removedCards.map((card) => card.getData()),
+      battlefield: this.battlefield.toPrismaObject(),
+    };
   }
 }

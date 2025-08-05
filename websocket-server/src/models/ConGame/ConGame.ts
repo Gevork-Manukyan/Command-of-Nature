@@ -711,8 +711,8 @@ export class ConGame {
     const players = data.players.map((player) => Player.fromPrisma(player));
 
     // Convert teams to Team instances if they aren't already
-    const team1 = Team.fromMongoose(data.team1);
-    const team2 = Team.fromMongoose(data.team2);
+    const team1 = Team.fromPrisma(data.team1);
+    const team2 = Team.fromPrisma(data.team2);
 
     // Copy all properties
     Object.assign(game, {
@@ -734,7 +734,7 @@ export class ConGame {
   }
 
   /**
-   * Converts the runtime instance to a plain object for Mongoose
+   * Converts the runtime instance to a plain object for Prisma
    * @returns A plain object representation of the ConGame instance
    */
   toPrismaObject(): ConGamePrisma {
@@ -748,15 +748,13 @@ export class ConGame {
       numPlayersReady: this.numPlayersReady,
       numPlayersFinishedSetup: this.numPlayersFinishedSetup,
       players: this.players.map((player) => player.toPrismaObject()),
-      team1: this.team1.toMongoose(),
-      team2: this.team2.toMongoose(),
+      team1: this.team1.toPrismaObject(),
+      team2: this.team2.toPrismaObject(),
       teamOrder: this.teamOrder,
       creatureShop: this.creatureShop.map((card) => card.getData()),
       itemShop: this.itemShop.map((card) => card.getData()),
       currentCreatureShopCards: this.currentCreatureShopCards.map((card) => card.getData()),
       currentItemShopCards: this.currentItemShopCards.map((card) => card.getData()),
-      // ----------------------------
-
       isActive: false,
     };
   }

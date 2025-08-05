@@ -15,3 +15,15 @@ export const PlayerSchema = z.object({
   deck: z.array(CardSchema),
   discardPile: z.array(CardSchema),
 });
+
+export const BattlefieldSchema = z.object({})
+
+export const TeamSchema = z.object({
+  userIds: z.array(z.string()),
+  battlefield: BattlefieldSchema,
+  teamNumber: z.literal(1).or(z.literal(2)),
+  teamSize: z.literal(1).or(z.literal(2)),
+  gold: z.number().default(0),
+  maxGold: z.literal(12).or(z.literal(20)),
+  removedCards: z.array(CardSchema),
+})
