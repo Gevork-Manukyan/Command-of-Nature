@@ -11,19 +11,20 @@ describe("BattlefieldSpace class", () => {
 
     test("should set and get value correctly", () => {
         const space = new BattlefieldSpace(1, null);
-        space.setValue(Timber);
+        space.setValue(Timber());
         expect(space.value).toBe(Timber);
     });
 
     test("should retrieve connections correctly", () => {
         const space1 = new BattlefieldSpace(1, null);
-        const space2 = new BattlefieldSpace(2, null, { L: space1 });
+        const space2 = new BattlefieldSpace(2, null);
+        space2.setConnections({ L: space1.spaceNumber });
         expect(space2.getDirection("L")).toBe(space1);
         expect(space2.getDirection("R")).toBe(null);
     });
 
     test("should get battlefield space state correctly", () => {
-        const space = new BattlefieldSpace(1, Timber);
+        const space = new BattlefieldSpace(1, Timber());
         const state = space.getBattlefieldSpaceState();
         expect(state).toEqual({
             spaceNumber: 1,

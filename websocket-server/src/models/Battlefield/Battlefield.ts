@@ -29,48 +29,55 @@ export class Battlefield {
      * Initializes the battlefield for a one player game
      */
     private initOnePlayerBattlefield() {
-        let row_1_1, row_2_1, row_2_2, row_3_1, row_3_2, row_3_3;
+        const space_1_1 = new BattlefieldSpace(1, null);
+        const space_2_1 = new BattlefieldSpace(3, null);
+        const space_2_2 = new BattlefieldSpace(4, null);
+        const space_3_1 = new BattlefieldSpace(6, null);
+        const space_3_2 = new BattlefieldSpace(7, null);
+        const space_3_3 = new BattlefieldSpace(8, null);
 
-        row_3_3 = new BattlefieldSpace(8, null, {
-            TL: row_2_2,
-            L: row_3_2,
-        });
-        row_3_2 = new BattlefieldSpace(7, null, {
-            TL: row_2_1,
-            TR: row_2_2,
-            L: row_3_1,
-            R: row_3_3,
-        });
-        row_3_1 = new BattlefieldSpace(6, null, {
-            TR: row_2_1,
-            R: row_3_2,
+        space_3_3.setConnections({
+            TL: space_2_2.spaceNumber,
+            L: space_3_2.spaceNumber,
         });
 
-        row_2_2 = new BattlefieldSpace(4, null, {
-            TL: row_1_1,
-            L: row_2_1,
-            BL: row_3_2,
-            BR: row_3_3,
+        space_3_2.setConnections({
+            TL: space_2_1.spaceNumber,
+            TR: space_2_2.spaceNumber,
+            L: space_3_1.spaceNumber,
+            R: space_3_3.spaceNumber,
         });
-        row_2_1 = new BattlefieldSpace(3, null, {
-            TR: row_1_1,
-            R: row_2_2,
-            BL: row_3_1,
-            BR: row_3_2,
+        space_3_1.setConnections({
+            TR: space_2_1.spaceNumber,
+            R: space_3_2.spaceNumber,
         });
 
-        row_1_1 = new BattlefieldSpace(1, null, {
-            BL: row_2_1,
-            BR: row_2_2,
+        space_2_2.setConnections({
+            TL: space_1_1.spaceNumber,
+            L: space_2_1.spaceNumber,
+            BL: space_3_2.spaceNumber,
+            BR: space_3_3.spaceNumber,
+        });
+
+        space_2_1.setConnections({
+            TR: space_1_1.spaceNumber,
+            R: space_2_2.spaceNumber,
+            BL: space_3_1.spaceNumber,
+            BR: space_3_2.spaceNumber,
+        });
+
+        space_1_1.setConnections({
+            BL: space_2_1.spaceNumber,
+            BR: space_2_2.spaceNumber,
         });
 
         this.fieldArray = [
-            row_1_1,
-            row_2_1,
-            row_2_2,
-            row_3_1,
-            row_3_2,
-            row_3_3,
+            space_1_1,
+            space_2_1,
+            space_2_2,
+            space_3_1,
+            space_3_2,
+            space_3_3,
         ];
     }
 
@@ -78,113 +85,113 @@ export class Battlefield {
      * Initializes the battlefield for a two player game
      */
     private initTwoPlayerBattlefield() {
-        let row_1_1,
-            row_1_2,
-            row_2_1,
-            row_2_2,
-            row_2_3,
-            row_2_4,
-            row_3_1,
-            row_3_2,
-            row_3_3,
-            row_3_4,
-            row_3_5,
-            row_3_6;
+        const space_1_1 = new BattlefieldSpace(1, null);
+        const space_1_2 = new BattlefieldSpace(2, null);
+        const space_2_1 = new BattlefieldSpace(3, null);
+        const space_2_2 = new BattlefieldSpace(4, null);
+        const space_2_3 = new BattlefieldSpace(5, null);
+        const space_2_4 = new BattlefieldSpace(6, null);
+        const space_3_1 = new BattlefieldSpace(7, null);
+        const space_3_2 = new BattlefieldSpace(8, null);
+        const space_3_3 = new BattlefieldSpace(9, null);
+        const space_3_4 = new BattlefieldSpace(10, null);
+        const space_3_5 = new BattlefieldSpace(11, null);
+        const space_3_6 = new BattlefieldSpace(12, null);
 
-        row_3_6 = new BattlefieldSpace(9, null, {
-            TL: row_2_4,
-            L: row_3_5,
+        space_3_6.setConnections({
+            TL: space_2_4.spaceNumber,
+            L: space_3_5.spaceNumber,
         });
-        row_3_5 = new BattlefieldSpace(9, null, {
-            TL: row_2_3,
-            T: row_2_4,
-            L: row_3_4,
-            R: row_3_6,
+        space_3_5.setConnections({
+            TL: space_2_3.spaceNumber,
+            T: space_2_4.spaceNumber,
+            L: space_3_4.spaceNumber,
+            R: space_3_6.spaceNumber,
         });
-        row_3_4 = new BattlefieldSpace(9, null, {
-            TL: row_2_2,
-            T: row_2_3,
-            TR: row_2_4,
-            L: row_3_3,
-            R: row_3_5,
+        space_3_4.setConnections({
+            TL: space_2_2.spaceNumber,
+            T: space_2_3.spaceNumber,
+            TR: space_2_4.spaceNumber,
+            L: space_3_3.spaceNumber,
+            R: space_3_5.spaceNumber,
         });
-        row_3_3 = new BattlefieldSpace(8, null, {
-            TL: row_2_1,
-            T: row_2_2,
-            TR: row_2_3,
-            L: row_3_2,
-            R: row_3_4,
+        space_3_3.setConnections({
+            TL: space_2_1.spaceNumber,
+            T: space_2_2.spaceNumber,
+            TR: space_2_3.spaceNumber,
+            L: space_3_2.spaceNumber,
+            R: space_3_4.spaceNumber,
         });
-        row_3_2 = new BattlefieldSpace(7, null, {
-            T: row_2_1,
-            TR: row_2_2,
-            L: row_3_1,
-            R: row_3_3,
+        space_3_2.setConnections({
+            T: space_2_1.spaceNumber,
+            TR: space_2_2.spaceNumber,
+            L: space_3_1.spaceNumber,
+            R: space_3_3.spaceNumber,
         });
-        row_3_1 = new BattlefieldSpace(6, null, {
-            TR: row_2_1,
-            R: row_3_2,
-        });
-
-        row_2_4 = new BattlefieldSpace(5, null, {
-            TR: row_1_2,
-            L: row_2_3,
-            BL: row_3_4,
-            B: row_3_5,
-            BR: row_3_6,
-        });
-        row_2_3 = new BattlefieldSpace(5, null, {
-            TL: row_1_1,
-            T: row_1_2,
-            L: row_2_2,
-            R: row_2_4,
-            BL: row_3_3,
-            B: row_3_4,
-            BR: row_3_5,
-        });
-        row_2_2 = new BattlefieldSpace(4, null, {
-            T: row_1_1,
-            TR: row_1_2,
-            L: row_2_1,
-            R: row_2_3,
-            BL: row_3_2,
-            B: row_3_3,
-            BR: row_3_4,
-        });
-        row_2_1 = new BattlefieldSpace(3, null, {
-            TR: row_1_1,
-            R: row_2_2,
-            BL: row_3_1,
-            B: row_3_2,
-            BR: row_3_3,
+        space_3_1.setConnections({
+            TR: space_2_1.spaceNumber,
+            R: space_3_2.spaceNumber,
         });
 
-        row_1_2 = new BattlefieldSpace(2, null, {
-            L: row_1_1,
-            BL: row_2_2,
-            B: row_2_3,
-            BR: row_2_4,
+        space_2_4.setConnections({
+            TR: space_1_2.spaceNumber,
+            L: space_2_3.spaceNumber,
+            BL: space_3_4.spaceNumber,
+            B: space_3_5.spaceNumber,
+            BR: space_3_6.spaceNumber,
         });
-        row_1_1 = new BattlefieldSpace(1, null, {
-            R: row_1_2,
-            BL: row_2_1,
-            B: row_2_2,
-            BR: row_2_3,
+        space_2_3.setConnections({
+            TL: space_1_1.spaceNumber,
+            T: space_1_2.spaceNumber,
+            L: space_2_2.spaceNumber,
+            R: space_2_4.spaceNumber,
+            BL: space_3_3.spaceNumber,
+            B: space_3_4.spaceNumber,
+            BR: space_3_5.spaceNumber,
+        });
+        space_2_2.setConnections({
+            T: space_1_1.spaceNumber,
+            TR: space_1_2.spaceNumber,
+            L: space_2_1.spaceNumber,
+            R: space_2_3.spaceNumber,
+            BL: space_3_2.spaceNumber,
+            B: space_3_3.spaceNumber,
+            BR: space_3_4.spaceNumber,
+        });
+        space_2_1.setConnections({
+            TR: space_1_1.spaceNumber,
+            R: space_2_2.spaceNumber,
+            BL: space_3_1.spaceNumber,
+            B: space_3_2.spaceNumber,
+            BR: space_3_3.spaceNumber,
+        });
+
+        space_1_2.setConnections({
+            L: space_1_1.spaceNumber,
+            BL: space_2_2.spaceNumber,
+            B: space_2_3.spaceNumber,
+            BR: space_2_4.spaceNumber,
+        });
+        space_1_1.setConnections({
+            R: space_1_2.spaceNumber,
+            BL: space_2_1.spaceNumber,
+            B: space_2_2.spaceNumber,
+            BR: space_2_3.spaceNumber,
         });
 
         this.fieldArray = [
-            row_1_1,
-            row_1_2,
-            row_2_1,
-            row_2_2,
-            row_2_3,
-            row_2_4,
-            row_3_1,
-            row_3_2,
-            row_3_3,
-            row_3_4,
-            row_3_5,
-            row_3_6,
+            space_1_1,
+            space_1_2,
+            space_2_1,
+            space_2_2,
+            space_2_3,
+            space_2_4,
+            space_3_1,
+            space_3_2,
+            space_3_3,
+            space_3_4,
+            space_3_5,
+            space_3_6,
         ];
     }
 
@@ -399,28 +406,9 @@ export class Battlefield {
         const { fieldArray, numPlayersOnTeam } = BattlefieldSchema.parse(battlefieldJson);
         const battlefield = new Battlefield(numPlayersOnTeam);
 
-        // Set up spaces and their connections
         battlefield.fieldArray = fieldArray.map((space) =>
             BattlefieldSpace.fromPrisma(space)
         );
-
-        // Set up connections between spaces
-        battlefield.fieldArray.forEach((space) => {
-            Object.entries(space.connections).forEach(
-                ([direction, targetSpaceNumber]) => {
-                    if (typeof targetSpaceNumber === "number") {
-                        const targetSpace = battlefield.fieldArray.find(
-                            (s) => s.spaceNumber === targetSpaceNumber
-                        );
-                        if (targetSpace) {
-                            space.connections[
-                                direction as keyof typeof space.connections
-                            ] = targetSpace;
-                        }
-                    }
-                }
-            );
-        });
 
         return battlefield;
     }
@@ -431,9 +419,7 @@ export class Battlefield {
      */
     toPrismaObject(): JsonValue {
         return {
-            fieldArray: this.fieldArray.map((space) =>
-                space.toPrismaObject()
-            ),
+            fieldArray: this.fieldArray.map((space) => space.toPrismaObject()),
             numPlayersOnTeam: this.numPlayersOnTeam,
         };
     }

@@ -26,14 +26,14 @@ export const BattlefieldSpaceSchema = z.lazy((): z.ZodType<any> => z.object({
       spaceNumber: SpaceOptionsSchema,
       value: ElementalCardSchema.nullable(),
       connections: z.object({
-          TL: BattlefieldSpaceSchema.nullable(),
-          T: BattlefieldSpaceSchema.nullable(),
-          TR: BattlefieldSpaceSchema.nullable(),
-          L: BattlefieldSpaceSchema.nullable(),
-          R: BattlefieldSpaceSchema.nullable(),
-          BL: BattlefieldSpaceSchema.nullable(),
-          B: BattlefieldSpaceSchema.nullable(),
-          BR: BattlefieldSpaceSchema.nullable(),
+          TL: SpaceOptionsSchema.nullable(),
+          T: SpaceOptionsSchema.nullable(),
+          TR: SpaceOptionsSchema.nullable(),
+          L: SpaceOptionsSchema.nullable(),
+          R: SpaceOptionsSchema.nullable(),
+          BL: SpaceOptionsSchema.nullable(),
+          B: SpaceOptionsSchema.nullable(),
+          BR: SpaceOptionsSchema.nullable(),
       }),
   })
 );
