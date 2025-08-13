@@ -7,7 +7,7 @@ import {
 } from "@shared-types";
 import { Battlefield } from "../Battlefield/Battlefield";
 import { Player } from "../Player";
-import { JsonValue } from "@prisma/client/runtime/library";
+import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { TeamSchema } from "../validation";
 
 /**
@@ -389,7 +389,7 @@ export class Team {
    * Converts the runtime instance to a plain object for Prisma
    * @returns A plain object representation of the Team instance
    */
-  toPrismaObject(): JsonValue {
+  toPrismaObject(): InputJsonValue {
     return {
       userIds: this.userIds,
       teamNumber: this.teamNumber,

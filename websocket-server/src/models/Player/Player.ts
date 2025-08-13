@@ -10,7 +10,7 @@ import {
   IPlayerData,
 } from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib";
-import { JsonValue } from "@prisma/client/runtime/library";
+import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { PlayerSchema } from "../validation";
 
 /**
@@ -243,7 +243,7 @@ export class Player implements IPlayerMethods, IPlayerData {
    * Converts the runtime instance to a plain object for Prisma
    * @returns A plain object representation of the Player instance
    */
-  toPrismaObject(): JsonValue {
+  toPrismaObject(): InputJsonValue {
     return {
       userId: this.userId,
       socketId: this.socketId,
@@ -252,7 +252,7 @@ export class Player implements IPlayerMethods, IPlayerData {
       hasChosenWarriors: this.hasChosenWarriors,
       isGameHost: this.isGameHost,
       sage: this.sage,
-      decklist: this.decklist ? this.decklist.getData() : undefined,
+      decklist: this.decklist ? this.decklist.getData() : null,
       level: this.level,
       hand: this.hand.map((card) => card.getData()),
       deck: this.deck.map((card) => card.getData()),

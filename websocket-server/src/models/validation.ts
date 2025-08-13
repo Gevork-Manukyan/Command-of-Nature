@@ -2,6 +2,7 @@ import {
     CardSchema,
     DecklistSchema,
     ElementalCardSchema,
+    ItemCardSchema,
     SageSchema,
     SpaceOptionsSchema,
 } from "@shared-types";
@@ -51,4 +52,34 @@ export const TeamSchema = z.object({
     gold: z.number().default(0),
     maxGold: z.literal(12).or(z.literal(20)),
     removedCards: z.array(CardSchema),
+});
+
+export const ConGameSchema = z.object({
+    id: z.string(),
+    gameName: z.string(),
+    isPrivate: z.boolean(),
+    password: z.string().nullable(),
+    isStarted: z.boolean(),
+    hasFinishedSetup: z.boolean(),
+    numPlayersTotal: z.literal(2).or(z.literal(4)),
+    numPlayersReady: z.number(),
+    numPlayersFinishedSetup: z.number(),
+    players: z.array(PlayerSchema),
+    team1: TeamSchema,
+    team2: TeamSchema,
+    teamOrder: z.object({
+        first: z.number(),
+        second: z.number(),
+    }),
+    creatureShop: z.array(ElementalCardSchema),
+    itemShop: z.array(ItemCardSchema),
+});
+
+export const ActiveConGameSchema = z.object({
+    id: z.string(),
+    gameName: z.string(),
+    isPrivate: z.boolean(),
+    password: z.string().nullable(),
+    isStarted: z.boolean(),
+    hasFinishedSetup: z.boolean(),
 });

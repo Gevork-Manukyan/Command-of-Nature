@@ -22,18 +22,17 @@ model ConGame {
   itemShop                  Json[]   // ItemCard[]
   currentCreatureShopCards  Json[]   // ElementalCard[]
   currentItemShopCards      Json[]   // ItemCard[]
+
+  players                   Json[]   // Player[]
+  team1                     Json     // Team with embedded Battlefield
+  team2                     Json     // Team with embedded Battlefield
   
   // Active game fields
   isActive                  Boolean  @default(false)
   activeTeam                String?  // 'first' or 'second'
   currentPhase              String?  // 'phase1', 'phase2', 'phase3', 'phase4'
-  actionPoints              Int?
+  actionPoints              Int?     
   maxActionPoints           Int?     // 3 or 6
-  
-  // Embedded data
-  players                   Json[]   // Player[]
-  team1                     Json     // Team with embedded Battlefield
-  team2                     Json     // Team with embedded Battlefield
 
   // Relations
   gameState                 GameState?
