@@ -1,6 +1,3 @@
-// Game State Types
-export * from "./player-types";
-
 // Game Setup Types
 export * from "./game-types";
 

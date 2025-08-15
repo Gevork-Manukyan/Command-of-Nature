@@ -5,9 +5,7 @@ import {
 import {
   Card,
   Sage,
-  Decklist,
-  IPlayerMethods,
-  IPlayerData,
+  Decklist
 } from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
@@ -17,7 +15,7 @@ import { PlayerSchema } from "../validation";
  * Represents a player in the Command of Nature game
  * @class Player
  */
-export class Player implements IPlayerMethods, IPlayerData {
+export class Player {
   userId: string; // User ID (persistent)
   socketId: string; // Current socket ID (temporary)
   isReady: boolean = false;
@@ -31,7 +29,7 @@ export class Player implements IPlayerMethods, IPlayerData {
   deck: Card[] = [];
   discardPile: Card[] = [];
 
-  // Getters to satisfy IPlayerData interface
+  // Getters
   getIsReady() {
     return this.isReady;
   }
