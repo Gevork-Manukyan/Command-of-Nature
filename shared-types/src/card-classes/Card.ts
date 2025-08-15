@@ -18,7 +18,7 @@ export class Card {
         this.img = params.img;
     }
 
-    static from(data: unknown): Card {
+    static from(data: CardType): Card {
         const parsed = CardSchema.parse(data);
         return new Card(parsed);
     }

@@ -15,7 +15,7 @@ export class ItemAttackStarterCard extends ItemAttackCard {
         this.price = params.price;
     }
 
-    static from(data: unknown): ItemAttackStarterCard {
+    static from(data: ItemAttackStarterCardType): ItemAttackStarterCard {
         const parsed = ItemAttackStarterCardSchema.parse(data);
         return new ItemAttackStarterCard(parsed);
     }

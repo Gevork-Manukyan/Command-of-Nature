@@ -31,7 +31,7 @@ export class ElementalCard extends Card {
         this.damageCount = params.damageCount ?? 0;
     }
 
-    static from(data: unknown): ElementalCard {
+    static from(data: ElementalCardType): ElementalCard {
         const parsed = ElementalCardSchema.parse(data);
         return new ElementalCard(parsed);
     }

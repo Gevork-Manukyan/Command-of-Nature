@@ -18,7 +18,7 @@ export class ElementalWarriorStarterCard extends ElementalWarriorCard {
         this.price = params.price;
     }
 
-    static from(data: unknown): ElementalWarriorStarterCard {
+    static from(data: ElementalWarriorStarterCardType): ElementalWarriorStarterCard {
         const parsed = ElementalWarriorStarterCardSchema.parse(data);
         return new ElementalWarriorStarterCard(parsed);
     }

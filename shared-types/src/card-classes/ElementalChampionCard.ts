@@ -18,7 +18,7 @@ export class ElementalChampionCard extends ElementalWarriorStarterCard {
         this.levelRequirement = params.levelRequirement;
     }
 
-    static from(data: unknown): ElementalChampionCard {
+    static from(data: ElementalChampionCardType): ElementalChampionCard {
         const parsed = ElementalChampionCardSchema.parse(data);
         return new ElementalChampionCard(parsed);
     }

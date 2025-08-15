@@ -19,7 +19,7 @@ export class ItemAttackCard extends ItemCard {
         this.itemType = params.itemType;
     }
 
-    static from(data: unknown): ItemAttackCard {
+    static from(data: ItemAttackCardType): ItemAttackCard {
         const parsed = ItemAttackCardSchema.parse(data);
         return new ItemAttackCard(parsed);
     }

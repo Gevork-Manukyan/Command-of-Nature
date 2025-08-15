@@ -16,7 +16,7 @@ export class ElementalSageCard extends ElementalWarriorStarterCard {
         this.sage = params.sage;
     }
 
-    static from(data: unknown): ElementalSageCard {
+    static from(data: ElementalSageCardType): ElementalSageCard {
         const parsed = ElementalSageCardSchema.parse(data);
         return new ElementalSageCard(parsed);
     }

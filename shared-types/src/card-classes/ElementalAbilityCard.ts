@@ -19,7 +19,7 @@ export class ElementalAbilityCard extends ElementalCard {
         this.rowRequirement = params.rowRequirement;
     }
 
-    static from(data: unknown): ElementalAbilityCard {
+    static from(data: ElementalAbilityCardType): ElementalAbilityCard {
         const parsed = ElementalAbilityCardSchema.parse(data);
         return new ElementalAbilityCard(parsed);
     }

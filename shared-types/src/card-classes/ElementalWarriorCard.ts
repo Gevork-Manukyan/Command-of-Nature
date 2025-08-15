@@ -18,7 +18,7 @@ export class ElementalWarriorCard extends ElementalAbilityCard {
         this.isDayBreak = params.isDayBreak ?? false;
     }
 
-    static from(data: unknown): ElementalWarriorCard {
+    static from(data: ElementalWarriorCardType): ElementalWarriorCard {
         const parsed = ElementalWarriorCardSchema.parse(data);
         return new ElementalWarriorCard(parsed);
     }
