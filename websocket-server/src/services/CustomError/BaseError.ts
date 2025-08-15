@@ -14,9 +14,9 @@ export class CustomError extends Error {
  * @example throw new ValidationError("Invalid sage name", "sage");
  */
 export class ValidationError extends CustomError {
-    field;
+    field?: string;
 
-    constructor(message: string, field: string) {
+    constructor(message: string, field?: string) {
         super(message, "VALIDATION_ERROR", 422);
         this.field = field; // Name of the invalid field, if applicable
     }

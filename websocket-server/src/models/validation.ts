@@ -75,7 +75,7 @@ export const ConGameSchema = z.object({
     itemShop: z.array(ItemCardSchema),
 });
 
-export const ActiveConGameSchema = z.object({
+export const ActiveConGameSchema = ConGameSchema.extend({
     id: z.string(),
     gameName: z.string(),
     isPrivate: z.boolean(),

@@ -1,63 +1,68 @@
-import express, { Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
+import express, { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
+import { ActiveConGame } from "src/models";
+import { ActiveConGameSchema } from "src/models/validation";
 
 const router = express.Router();
 
 // GET endpoint to retrieve user's active games
-router.get('/:userId/games', async (req: Request, res: Response) => {
+router.get("/:userId/games", async (req: Request, res: Response) => {
     const { userId } = req.params;
 
     try {
-        const games = await prisma.conGame.findMany({
-            where: {
-                players: {
-                    some: {
-                        userId: userId
-                    }
+        const rawGames = await prisma.conGame.aggregateRaw({
+            pipeline: [
+              {
+                $match: {
+                  players: { $elemMatch: { userId } },
+                  isActive: true
                 }
-            }
+              }
+            ]
         });
 
-        const activeGames = games.map(game => ({
-            gameId: game.id,
-            gameName: game.gameName,
-            isPrivate: game.isPrivate,
-            isStarted: game.isStarted,
-            numPlayersTotal: game.numPlayersTotal,
-            currentPlayers: game.players.length
+        if (!rawGames || !(rawGames instanceof Array)) {
+            res.status(404).json({ error: "No active games found" });
+            return;
+        }
+
+        const parsedGames = rawGames.map((game) => ActiveConGameSchema.parse(game));
+
+        const activeGames = parsedGames.map((parsedGames) => ({
+            gameId: parsedGames.id,
+            gameName: parsedGames.gameName,
+            isPrivate: parsedGames.isPrivate,
+            isStarted: parsedGames.isStarted,
+            numPlayersTotal: parsedGames.numPlayersTotal,
+            currentPlayers: parsedGames.players.length,
         }));
 
         res.json({ activeGames });
-
     } catch (error) {
-        console.error('Error fetching user games:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error("Error fetching user games:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
 // POST endpoint to join or leave a game
-router.post('/:userId/games', async (req: Request, res: Response) => {
+router.post("/:userId/games", async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { gameId, action } = req.body;
 
     if (!gameId || !action) {
-        res.status(400).json({ error: 'Missing gameId or action' });
+        res.status(400).json({ error: "Missing gameId or action" });
         return;
     }
 
-    const validActions = ['create', 'join', 'leave'];
+    const validActions = ["create", "join", "leave"];
     if (!validActions.includes(action)) {
         res.status(400).json({ error: `Invalid action: ${action}` });
         return;
     }
 
-    if (action === 'join') {
-
+    if (action === "join") {
+    } else if (action === "leave") {
     }
-    else if (action === 'leave') {
-
-    }
-    
 });
 
 export default router;

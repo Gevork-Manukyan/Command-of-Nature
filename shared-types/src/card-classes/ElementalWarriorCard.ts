@@ -5,7 +5,7 @@ import {
 } from "./ElementalAbilityCard";
 
 export const ElementalWarriorCardSchema = ElementalAbilityCardSchema.extend({
-    isDayBreak: z.boolean().default(false),
+    isDayBreak: z.boolean(),
 });
 
 type ElementalWarriorCardType = z.infer<typeof ElementalWarriorCardSchema>;
@@ -15,7 +15,7 @@ export class ElementalWarriorCard extends ElementalAbilityCard {
 
     protected constructor(params: ElementalWarriorCardType) {
         super(params);
-        this.isDayBreak = params.isDayBreak;
+        this.isDayBreak = params.isDayBreak ?? false;
     }
 
     static from(data: unknown): ElementalWarriorCard {

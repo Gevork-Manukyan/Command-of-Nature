@@ -1,11 +1,12 @@
 import express from 'express';
 import { GameEventEmitter, GameStateManager, InvalidSpaceError, NotFoundError } from '../../services';
-import { ActivateDayBreakData, AllSpaceOptionsSchema, ExitGameData, ExitGameEvent, GetDayBreakCardsData, GetDayBreakCardsEvent, LeaveGameData, PlayerLeftData, PlayerLeftEvent } from '@shared-types';
+import { ActivateDayBreakData, activateDayBreakSchema, AllSpaceOptionsSchema, ExitGameData, ExitGameEvent, exitGameSchema, GetDayBreakCardsData, GetDayBreakCardsEvent, getDayBreakCardsSchema, LeaveGameData, leaveGameSchema, PlayerLeftData, PlayerLeftEvent } from '@shared-types';
 import { UserSocketManager } from 'src/services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { getSocketId } from '../../lib/utilities/common';
 import { Request, Response } from 'express';
 import { requireHostForGameExit } from 'src/middleware/hostOnly';
+import { validateRequestBody } from 'src/lib/utilities/routes';
 
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
@@ -17,7 +18,7 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
   // Exits the game for everyone. Only the host can exit the game.
   // POST /api/games/gameplay/:gameId/exit
   router.post('/:gameId/exit', requireHostForGameExit, asyncHandler(async (req: Request, res: Response) => {
-    const { userId }: ExitGameData = req.body;
+    const { userId } = validateRequestBody<ExitGameData>(exitGameSchema, req);
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
 
@@ -29,7 +30,7 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
   // TODO: implement on client side
   // POST /api/games/gameplay/:gameId/leave
   router.post('/:gameId/leave', asyncHandler(async (req: Request, res: Response) => {
-    const { userId }: LeaveGameData = req.body;
+    const { userId } = validateRequestBody<LeaveGameData>(leaveGameSchema, req);
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
 
@@ -41,7 +42,7 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
 
   // POST /api/games/gameplay/:gameId/day-break-cards
   router.post('/:gameId/day-break-cards', async (req, res) => {
-    const { userId }: GetDayBreakCardsData = req.body;
+    const { userId } = validateRequestBody<GetDayBreakCardsData>(getDayBreakCardsSchema, req);
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
 
@@ -55,7 +56,7 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
 
   // POST /api/games/gameplay/:gameId/activate-day-break
   router.post('/:gameId/activate-day-break', async (req, res) => {
-    const { userId, spaceOption }: ActivateDayBreakData = req.body;
+    const { userId, spaceOption } = validateRequestBody<ActivateDayBreakData>(activateDayBreakSchema, req);
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
     
