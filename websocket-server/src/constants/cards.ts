@@ -25,6 +25,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2, 3],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Gravel: () =>
@@ -39,6 +42,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2, 3],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Porella: () =>
@@ -53,6 +59,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2, 3],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Torrent: () =>
@@ -67,6 +76,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2, 3],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // ------------ CHAMPIONS ------------
@@ -83,6 +95,9 @@ export const ALL_CARDS = {
             rowRequirement: [1],
             levelRequirement: 4,
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     HornedHollow: () =>
@@ -96,6 +111,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 6,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     CalamityLeopard: () =>
@@ -109,6 +128,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 8,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // *** Pebbles ***
@@ -123,6 +146,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1],
             levelRequirement: 4,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     BoulderhideBrute: () =>
@@ -136,6 +163,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 6,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     OxenAvenger: () =>
@@ -149,6 +180,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 8,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // *** Leafs ***
@@ -163,6 +198,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [2],
             levelRequirement: 4,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     BogBlight: () =>
@@ -177,6 +216,9 @@ export const ALL_CARDS = {
             rowRequirement: [1],
             levelRequirement: 6,
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     KomodoKin: () =>
@@ -190,6 +232,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 8,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // *** Droplets ***
@@ -204,6 +250,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 4,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     KingCrustacean: () =>
@@ -217,6 +267,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             levelRequirement: 6,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     FrostfallEmperor: () =>
@@ -230,6 +284,10 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1],
             levelRequirement: 8,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // ------------ BASICS ------------
@@ -242,6 +300,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 2,
             health: 2,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Bruce: () =>
@@ -252,6 +313,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 3,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Willow: () =>
@@ -262,6 +326,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 1,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // *** Pebbles ***
@@ -273,6 +340,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 2,
             health: 2,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Flint: () =>
@@ -283,6 +353,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 1,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Rocco: () =>
@@ -293,6 +366,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 3,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // *** Leafs ***
@@ -304,6 +380,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 2,
             health: 2,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Herbert: () =>
@@ -314,6 +393,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 3,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Mush: () =>
@@ -324,6 +406,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 1,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // *** Droplets ***
@@ -335,6 +420,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 2,
             health: 2,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Dewy: () =>
@@ -345,6 +433,9 @@ export const ALL_CARDS = {
             img: "",
             attack: 3,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     Wade: () =>
@@ -355,6 +446,9 @@ export const ALL_CARDS = {
             element: "droplet",
             attack: 1,
             health: 3,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // ------------ WARRIORS ------------
@@ -369,6 +463,10 @@ export const ALL_CARDS = {
             health: 3,
             ability: () => [],
             rowRequirement: [1, 2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     QuillThornback: () =>
@@ -381,6 +479,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     SlumberJack: () =>
@@ -394,6 +496,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     CamouChameleon: () =>
@@ -407,6 +512,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     LumberClaw: () =>
@@ -419,6 +527,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     PineSnapper: () =>
@@ -431,6 +543,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     SplinterStinger: () =>
@@ -443,6 +559,10 @@ export const ALL_CARDS = {
             health: 5,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     TwineFeline: () =>
@@ -456,6 +576,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     OakLumbertron: () =>
@@ -469,6 +592,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // *** Pebbles ***
@@ -482,6 +608,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     GraniteRampart: () =>
@@ -495,6 +625,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     OnyxBearer: () =>
@@ -508,6 +641,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     CackleRipclaw: () =>
@@ -520,6 +656,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     Redstone: () =>
@@ -533,6 +673,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     RubyGuardian: () =>
@@ -546,6 +689,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     RunePuma: () =>
@@ -558,6 +704,10 @@ export const ALL_CARDS = {
             health: 3,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     StoneDefender: () =>
@@ -571,6 +721,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     TerrainTumbler: () =>
@@ -583,6 +736,10 @@ export const ALL_CARDS = {
             health: 6,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // *** Leafs ***
@@ -596,6 +753,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1, 2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     PetalMage: () =>
@@ -608,6 +769,10 @@ export const ALL_CARDS = {
             health: 3,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     ThornFencer: () =>
@@ -621,6 +786,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     BambooBerserker: () =>
@@ -634,6 +802,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     ForageThumper: () =>
@@ -647,6 +818,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     HummingHerald: () =>
@@ -659,6 +833,10 @@ export const ALL_CARDS = {
             health: 3,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     IguanaGuard: () =>
@@ -671,6 +849,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     MossViper: () =>
@@ -683,6 +865,10 @@ export const ALL_CARDS = {
             health: 2,
             ability: () => [],
             rowRequirement: [1, 2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     ShrubBeetle: () =>
@@ -695,6 +881,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     // *** Droplets ***
@@ -708,6 +898,10 @@ export const ALL_CARDS = {
             health: 3,
             ability: () => [],
             rowRequirement: [1, 2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     RiptideTiger: () =>
@@ -720,6 +914,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     RiverRogue: () =>
@@ -733,6 +931,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     CurrentConjurer: () =>
@@ -745,6 +946,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     RoamingRazor: () =>
@@ -757,6 +962,10 @@ export const ALL_CARDS = {
             health: 8,
             ability: () => [],
             rowRequirement: [1, 2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     SplashBasilisk: () =>
@@ -769,6 +978,10 @@ export const ALL_CARDS = {
             health: 5,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     SurgesphereMonk: () =>
@@ -781,6 +994,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [2],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     TyphoonFist: () =>
@@ -793,6 +1010,10 @@ export const ALL_CARDS = {
             health: 4,
             ability: () => [],
             rowRequirement: [1],
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
+            isDayBreak: false,
         }),
 
     WhirlWhipper: () =>
@@ -806,6 +1027,9 @@ export const ALL_CARDS = {
             ability: () => [],
             rowRequirement: [1, 2],
             isDayBreak: true,
+            shieldCount: 0,
+            boostCount: 0,
+            damageCount: 0,
         }),
 
     // ------------ ATTACKS ------------
