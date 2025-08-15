@@ -40,22 +40,6 @@ export function errorHandler(err: ApiError, req: Request, res: Response, next: N
     });
   }
 
-  // Handle mongoose validation errors
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({
-      error: 'Validation Error',
-      message: err.message
-    });
-  }
-
-  // Handle mongoose cast errors (invalid ObjectId)
-  if (err.name === 'CastError') {
-    return res.status(400).json({
-      error: 'Invalid ID',
-      message: 'The provided ID is invalid'
-    });
-  }
-
   // Default error
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';

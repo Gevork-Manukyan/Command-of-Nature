@@ -4,7 +4,6 @@ import { gameId, GameStateInfo } from "../types";
 import { ValidationError } from "./CustomError/BaseError";
 import { GameConflictError } from "./CustomError/GameError";
 import { gameDatabaseService } from "./GameDatabaseService";
-import { Types } from 'mongoose';
 import { TransitionEvent } from "../models/GameState/gamestate-types";
 
 export class GameStateManager {
@@ -71,7 +70,7 @@ export class GameStateManager {
             throw new ValidationError("Cannot add more players", "players");
         }
         
-        const player = new Player(new Types.ObjectId(userId).toString(), socketId, isHost);
+        const player = new Player(userId, socketId, isHost);
         game.addPlayer(player);
         await this.saveGame(game);
     }
