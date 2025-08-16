@@ -126,5 +126,3 @@ export class GameDatabaseService {
         ]);
     }
 }
-
-export const gameDatabaseService = GameDatabaseService.getInstance();

@@ -2,7 +2,7 @@ import { Sage } from "@shared-types";
 import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo } from "../types";
 import { ValidationError, GameConflictError } from "../custom-errors";
-import { gameDatabaseService } from "./GameDatabaseService";
+import { GameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../models/GameState/gamestate-types";
 
 export class GameStateManager {
@@ -10,6 +10,7 @@ export class GameStateManager {
     private currentGames: {
         [key: gameId]: GameStateInfo;
     } = {};
+    private gameDatabaseService = GameDatabaseService.getInstance();
 
     private constructor() {}
 
@@ -21,7 +22,7 @@ export class GameStateManager {
     }
 
     private async saveGame(game: ConGame): Promise<void> {
-        const savedGame = await gameDatabaseService.saveGame(game);
+        const savedGame = await this.gameDatabaseService.saveGame(game);
         this.setGame(game.id, savedGame);
     }
 
@@ -36,7 +37,7 @@ export class GameStateManager {
         isPrivate: ConGame["isPrivate"],
         password: ConGame["password"]
     ): Promise<GameStateInfo> {
-        const { game, state } = await gameDatabaseService.saveNewGame(
+        const { game, state } = await this.gameDatabaseService.saveNewGame(
             numPlayersTotal,
             gameName,
             isPrivate,
@@ -131,7 +132,7 @@ export class GameStateManager {
 
         // If there are no players left, delete the game and its state
         if (game.players.length === 0) {
-            await gameDatabaseService.deleteGameAndState(gameId);
+            await this.gameDatabaseService.deleteGameAndState(gameId);
             this.deleteGame(gameId);
             return;
         }
@@ -223,13 +224,13 @@ export class GameStateManager {
     async loadExistingGames(): Promise<void> {
         try {
             // Find all games
-            const games = await gameDatabaseService.findAllGames();
+            const games = await this.gameDatabaseService.findAllGames();
 
             // For each game, load its state and add it to the GameStateManager
             for (const game of games) {
                 try {
                     const gameState =
-                        await gameDatabaseService.findGameStateByGameId(
+                        await this.gameDatabaseService.findGameStateByGameId(
                             game.id
                         );
                     this.addGameAndState(game.id, game, gameState);
@@ -370,7 +371,7 @@ export class GameStateManager {
         const savedGameState = await this.getGameState(gameId).processEvent(
             event
         );
-        await gameDatabaseService.saveGameState(gameId, savedGameState);
+        await this.gameDatabaseService.saveGameState(gameId, savedGameState);
         this.setGameState(gameId, savedGameState);
     }
 
