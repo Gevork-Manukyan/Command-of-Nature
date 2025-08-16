@@ -1,6 +1,6 @@
 import { ConGameService } from "./con-game.service";
 import { ConGame } from "./ConGame";
-import { NotFoundError } from "../../services/CustomError/BaseError";
+import { NotFoundError } from "../../custom-errors";
 
 // Mock the Prisma client
 jest.mock("../../lib/prisma", () => ({

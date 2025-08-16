@@ -1,6 +1,5 @@
-import { CustomError } from "../../services";
+import { CustomError, NotFoundError } from "../../custom-errors";
 import { UserSocketManager } from "../../services/UserSocketManager";
-import { NotFoundError } from "../../services/CustomError/BaseError";
 
 /**
  * Converts an unknown error to a CustomError
@@ -8,13 +7,13 @@ import { NotFoundError } from "../../services/CustomError/BaseError";
  * @returns The converted error
  */
 export function convertToCustomError(error: unknown): CustomError {
-  if (error instanceof CustomError) {
-    return error;
-  }
-  return new CustomError(
-    error instanceof Error ? error.message : "An unexpected error occurred",
-    "INTERNAL_ERROR"
-  );
+    if (error instanceof CustomError) {
+        return error;
+    }
+    return new CustomError(
+        error instanceof Error ? error.message : "An unexpected error occurred",
+        "INTERNAL_ERROR"
+    );
 }
 
 /**
@@ -24,10 +23,10 @@ export function convertToCustomError(error: unknown): CustomError {
  * @throws NotFoundError if the socket ID is not found
  */
 export function getSocketId(userId: string): string {
-  const userSocketManager = UserSocketManager.getInstance();
-  const socketId = userSocketManager.getSocketId(userId);
-  if (!socketId) {
-    throw new NotFoundError("Socket ID not found");
-  }
-  return socketId;
+    const userSocketManager = UserSocketManager.getInstance();
+    const socketId = userSocketManager.getSocketId(userId);
+    if (!socketId) {
+        throw new NotFoundError("Socket ID not found");
+    }
+    return socketId;
 }

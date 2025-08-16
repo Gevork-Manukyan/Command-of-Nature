@@ -1,5 +1,4 @@
-import { ValidationError } from "../../services/CustomError/BaseError";
-import { NullSpaceError } from "../../services/CustomError/GameError";
+import { ValidationError, NullSpaceError } from "../../custom-errors";
 import {
     ElementalCard,
     AbilityResult,
@@ -403,7 +402,8 @@ export class Battlefield {
      * @returns The Battlefield instance
      */
     static fromPrisma(battlefieldJson: JsonValue): Battlefield {
-        const { fieldArray, numPlayersOnTeam } = BattlefieldSchema.parse(battlefieldJson);
+        const { fieldArray, numPlayersOnTeam } =
+            BattlefieldSchema.parse(battlefieldJson);
         const battlefield = new Battlefield(numPlayersOnTeam);
 
         battlefield.fieldArray = fieldArray.map((space) =>

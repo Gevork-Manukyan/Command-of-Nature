@@ -1,6 +1,6 @@
 import { isElementalCard } from "../lib";
 import { ActiveConGame } from "../models";
-import { InternalServerError, InvalidCardTypeError } from "../services";
+import { InternalServerError, InvalidCardTypeError } from "../custom-errors";
 import { ElementalCard, AbilityAction, AbilityResult } from "@shared-types";
 
 

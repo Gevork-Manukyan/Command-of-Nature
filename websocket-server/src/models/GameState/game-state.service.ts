@@ -1,5 +1,5 @@
 import { GameState } from "./GameState";
-import { NotFoundError } from "../../services/CustomError/BaseError";
+import { NotFoundError } from "../../custom-errors";
 import { TransitionEvent } from "./gamestate-types";
 import { prisma } from "../../lib/prisma";
 
@@ -8,111 +8,123 @@ import { prisma } from "../../lib/prisma";
  * @class GameStateService
  */
 export class GameStateService {
-  constructor() {}
+    constructor() {}
 
-  async createGameState(gameId: string): Promise<GameState> {
-    const gameState = new GameState(gameId);
-    const doc = await prisma.gameState.create({
-      data: {
-        gameId: gameState.gameId,
-        currentTransition: gameState.getCurrentTransition(),
-      },
-    });
-    return GameState.fromPrisma(doc);
-  }
-
-  async findGameStateById(id: string): Promise<GameState> {
-    const doc = await prisma.gameState.findUnique({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!doc) {
-      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
+    async createGameState(gameId: string): Promise<GameState> {
+        const gameState = new GameState(gameId);
+        const doc = await prisma.gameState.create({
+            data: {
+                gameId: gameState.gameId,
+                currentTransition: gameState.getCurrentTransition(),
+            },
+        });
+        return GameState.fromPrisma(doc);
     }
 
-    return GameState.fromPrisma(doc);
-  }
+    async findGameStateById(id: string): Promise<GameState> {
+        const doc = await prisma.gameState.findUnique({
+            where: {
+                id: id,
+            },
+        });
 
-  async findGameStateByGameId(gameId: string): Promise<GameState> {
-    const doc = await prisma.gameState.findUnique({
-      where: {
-        gameId: gameId,
-      },
-    });
+        if (!doc) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState with id ${id} not found`
+            );
+        }
 
-    if (!doc) {
-      throw new NotFoundError(
-        "GameState",
-        `GameState for game ${gameId} not found`
-      );
+        return GameState.fromPrisma(doc);
     }
 
-    return GameState.fromPrisma(doc);
-  }
+    async findGameStateByGameId(gameId: string): Promise<GameState> {
+        const doc = await prisma.gameState.findUnique({
+            where: {
+                gameId: gameId,
+            },
+        });
 
-  async updateGameState(
-    id: string,
-    updates: Partial<GameState>
-  ): Promise<GameState> {
-    const doc = await prisma.gameState.update({
-      where: { id: id },
-      data: updates,
-    });
+        if (!doc) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState for game ${gameId} not found`
+            );
+        }
 
-    if (!doc) {
-      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
+        return GameState.fromPrisma(doc);
     }
 
-    return GameState.fromPrisma(doc);
-  }
+    async updateGameState(
+        id: string,
+        updates: Partial<GameState>
+    ): Promise<GameState> {
+        const doc = await prisma.gameState.update({
+            where: { id: id },
+            data: updates,
+        });
 
-  async updateGameStateByGameId(
-    gameId: string,
-    updates: Partial<GameState>
-  ): Promise<GameState> {
-    const doc = await prisma.gameState.update({
-      where: { gameId: gameId },
-      data: updates,
-    });
+        if (!doc) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState with id ${id} not found`
+            );
+        }
 
-    if (!doc) {
-      throw new NotFoundError(
-        "GameState",
-        `GameState for game ${gameId} not found`
-      );
+        return GameState.fromPrisma(doc);
     }
-    
-    return GameState.fromPrisma(doc);
-  }
 
-  async processGameStateEvent(
-    id: string,
-    event: TransitionEvent
-  ): Promise<GameState> {
-    const gameState = await this.findGameStateById(id);
-    gameState.processEvent(event);
-    return this.updateGameState(id, gameState);
-  }
+    async updateGameStateByGameId(
+        gameId: string,
+        updates: Partial<GameState>
+    ): Promise<GameState> {
+        const doc = await prisma.gameState.update({
+            where: { gameId: gameId },
+            data: updates,
+        });
 
-  async deleteGameState(id: string): Promise<void> {
-    const result = await prisma.gameState.delete({
-      where: { id: id },
-    });
+        if (!doc) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState for game ${gameId} not found`
+            );
+        }
 
-    if (!result) {
-      throw new NotFoundError("GameState", `GameState with id ${id} not found`);
+        return GameState.fromPrisma(doc);
     }
-  }
 
-  async deleteGameStateByGameId(gameId: string): Promise<void> {
-    const result = await prisma.gameState.delete({
-      where: { gameId: gameId },
-    });
-
-    if (!result) {
-      throw new NotFoundError("GameState", `GameState for game ${gameId} not found`);
+    async processGameStateEvent(
+        id: string,
+        event: TransitionEvent
+    ): Promise<GameState> {
+        const gameState = await this.findGameStateById(id);
+        gameState.processEvent(event);
+        return this.updateGameState(id, gameState);
     }
-  }
+
+    async deleteGameState(id: string): Promise<void> {
+        const result = await prisma.gameState.delete({
+            where: { id: id },
+        });
+
+        if (!result) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState with id ${id} not found`
+            );
+        }
+    }
+
+    async deleteGameStateByGameId(gameId: string): Promise<void> {
+        const result = await prisma.gameState.delete({
+            where: { gameId: gameId },
+        });
+
+        if (!result) {
+            throw new NotFoundError(
+                "GameState",
+                `GameState for game ${gameId} not found`
+            );
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import { NotFoundError, PlayersNotReadyError, SageUnavailableError } from "../../services";
+import { NotFoundError, PlayersNotReadyError, SageUnavailableError } from "../../custom-errors";
 import { LeafDeck, TwigDeck } from "../../constants";
 import { ConGame, Player, Team } from "../../models";
 

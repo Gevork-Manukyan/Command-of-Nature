@@ -1,5 +1,7 @@
-import { ConGameService, ConGame } from "../models";
-import { GameStateService, GameState } from "../models";
+import { ConGameService } from "../models/ConGame/con-game.service";
+import { ConGame } from "../models/ConGame/ConGame";
+import { GameStateService } from "../models/GameState/game-state.service";
+import { GameState } from "../models/GameState/GameState";
 import { GameStateInfo } from "../types";
 
 export class GameDatabaseService {

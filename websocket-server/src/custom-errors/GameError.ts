@@ -1,4 +1,4 @@
-import { gameId } from "../../types";
+import { gameId } from "../types";
 import { Sage } from "@shared-types";
 import { ConflictError, CustomError, ValidationError } from "./BaseError";
 

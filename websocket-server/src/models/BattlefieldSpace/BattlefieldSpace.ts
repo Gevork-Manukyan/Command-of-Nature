@@ -1,6 +1,5 @@
 import { isElementalWarriorCard } from "../../lib/card-validators";
-import { ValidationError } from "../../services/CustomError/BaseError";
-import { NullSpaceError } from "../../services/CustomError/GameError";
+import { ValidationError, NullSpaceError } from "../../custom-errors";
 import {
     ElementalCard,
     SpaceOption,

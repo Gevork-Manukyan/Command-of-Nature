@@ -1,6 +1,7 @@
 import { Request } from "express";
-import { ValidationError } from "src/services";
+
 import z from "zod";
+import { ValidationError } from "../../custom-errors";
 
 /**
  * Validates the request body against a Zod schema

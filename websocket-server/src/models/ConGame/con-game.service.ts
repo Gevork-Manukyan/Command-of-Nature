@@ -1,5 +1,5 @@
 import { ConGame, ActiveConGame } from "./ConGame";
-import { NotFoundError } from "../../services/CustomError/BaseError";
+import { NotFoundError } from "../../custom-errors";
 import { prisma } from "../../lib/prisma";
 import { Player } from "../Player/Player";
 

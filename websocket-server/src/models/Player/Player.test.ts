@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError } from "../../services";
+import { NotFoundError, ValidationError } from "../../custom-errors";
 import { Player } from "../../models";
 import { ALL_CARDS, TwigDeck } from "../../constants";
 const { Cedar, Gravel, Timber, CloseStrike, FarStrike, TwigCharm, NaturalRestoration } = ALL_CARDS;

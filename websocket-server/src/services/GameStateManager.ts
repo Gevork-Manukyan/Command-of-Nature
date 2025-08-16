@@ -1,8 +1,7 @@
 import { Sage } from "@shared-types";
 import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo } from "../types";
-import { ValidationError } from "./CustomError/BaseError";
-import { GameConflictError } from "./CustomError/GameError";
+import { ValidationError, GameConflictError } from "../custom-errors";
 import { gameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../models/GameState/gamestate-types";
 
@@ -31,8 +30,18 @@ export class GameStateManager {
      * @param numPlayersTotal - The number of players in the game
      * @returns The newly created/saved game and game state
      */
-    async createGame(numPlayersTotal: ConGame['numPlayersTotal'], gameName: ConGame['gameName'], isPrivate: ConGame['isPrivate'], password: ConGame['password']): Promise<GameStateInfo> {
-        const { game, state } = await gameDatabaseService.saveNewGame(numPlayersTotal, gameName, isPrivate, password);
+    async createGame(
+        numPlayersTotal: ConGame["numPlayersTotal"],
+        gameName: ConGame["gameName"],
+        isPrivate: ConGame["isPrivate"],
+        password: ConGame["password"]
+    ): Promise<GameStateInfo> {
+        const { game, state } = await gameDatabaseService.saveNewGame(
+            numPlayersTotal,
+            gameName,
+            isPrivate,
+            password
+        );
         this.addGameAndState(game.id, game, state);
         return { game, state };
     }
@@ -44,14 +53,22 @@ export class GameStateManager {
      * @param gameId - The id of the game to add the player to
      * @param isHost - Whether the player is the host
      */
-    async playerJoinGame(userId: string, socketId: string, gameId: gameId, isHost: boolean, password?: string): Promise<void> {
+    async playerJoinGame(
+        userId: string,
+        socketId: string,
+        gameId: gameId,
+        isHost: boolean,
+        password?: string
+    ): Promise<void> {
         const game = this.getGame(gameId);
         if (game.isPrivate && password !== game.password) {
             throw new ValidationError("Incorrect password", "password");
         }
-        
+
         // Check if player already exists with same socket ID
-        const existingPlayer = game.players.find(p => p.socketId === socketId);
+        const existingPlayer = game.players.find(
+            (p) => p.socketId === socketId
+        );
         if (existingPlayer) {
             // If it's the same user, just update their socket ID
             if (existingPlayer.userId === userId) {
@@ -59,17 +76,20 @@ export class GameStateManager {
                 await this.saveGame(game);
                 return;
             }
-            throw new ValidationError("A player with this socket ID already exists in the game", "socketId");
+            throw new ValidationError(
+                "A player with this socket ID already exists in the game",
+                "socketId"
+            );
         }
-        
-        if (game.players.some(p => p.userId === userId)) {
+
+        if (game.players.some((p) => p.userId === userId)) {
             throw new ValidationError("You are already in this game", "userId");
         }
-        
+
         if (game.players.length >= game.numPlayersTotal) {
             throw new ValidationError("Cannot add more players", "players");
         }
-        
+
         const player = new Player(userId, socketId, isHost);
         game.addPlayer(player);
         await this.saveGame(game);
@@ -81,14 +101,18 @@ export class GameStateManager {
      * @param userId - The id of the user to add
      * @param socketId - The id of the socket to add
      */
-    async playerRejoinedGame(gameId: gameId, userId: string, socketId: string): Promise<void> {
+    async playerRejoinedGame(
+        gameId: gameId,
+        userId: string,
+        socketId: string
+    ): Promise<void> {
         const game = this.getGame(gameId);
         for (const player of game.players) {
-          if (player.userId === userId) {
-            player.updateSocketId(socketId);
-            await this.saveGame(game);
-            return;
-          }
+            if (player.userId === userId) {
+                player.updateSocketId(socketId);
+                await this.saveGame(game);
+                return;
+            }
         }
         throw new ValidationError("User not found in game", "userId");
     }
@@ -98,7 +122,10 @@ export class GameStateManager {
      * @param gameId - The id of the game to remove the player from
      * @param socketId - The id of the socket to remove
      */
-    async removePlayerFromGame(gameId: gameId, socketId: string): Promise<void> {
+    async removePlayerFromGame(
+        gameId: gameId,
+        socketId: string
+    ): Promise<void> {
         const game = this.getGame(gameId);
         game.removePlayer(socketId);
 
@@ -140,7 +167,7 @@ export class GameStateManager {
      * @param socketId - The id of the socket to join the player to
      * @param team - The team to join
      */
-    async joinTeam(gameId: gameId, socketId: string, team: Team['teamNumber']) {
+    async joinTeam(gameId: gameId, socketId: string, team: Team["teamNumber"]) {
         const game = this.getGame(gameId);
         game.joinTeam(socketId, team);
         await this.saveGame(game);
@@ -165,13 +192,16 @@ export class GameStateManager {
     toggleReadyStatus(gameId: gameId, socketId: string): boolean {
         const game = this.getGame(gameId);
         const currPlayer = game.getPlayer(socketId);
-        
+
         if (!currPlayer.sage) {
-            throw new ValidationError("Cannot toggle ready. The sage has not been set.", "sage");
+            throw new ValidationError(
+                "Cannot toggle ready. The sage has not been set.",
+                "sage"
+            );
         }
 
         currPlayer.toggleReady();
-        
+
         if (currPlayer.isReady) {
             game.incrementPlayersReady();
         } else {
@@ -194,11 +224,14 @@ export class GameStateManager {
         try {
             // Find all games
             const games = await gameDatabaseService.findAllGames();
-            
+
             // For each game, load its state and add it to the GameStateManager
             for (const game of games) {
                 try {
-                    const gameState = await gameDatabaseService.findGameStateByGameId(game.id);
+                    const gameState =
+                        await gameDatabaseService.findGameStateByGameId(
+                            game.id
+                        );
                     this.addGameAndState(game.id, game, gameState);
                     console.debug(`Loaded game ${game.id} from database`);
                 } catch (error) {
@@ -206,7 +239,7 @@ export class GameStateManager {
                 }
             }
         } catch (error) {
-            console.error('Failed to load existing games:', error);
+            console.error("Failed to load existing games:", error);
         }
     }
 
@@ -219,7 +252,7 @@ export class GameStateManager {
     addGameAndState(gameId: gameId, game: ConGame, gameState: GameState): void {
         this.currentGames[gameId] = {
             game: game,
-            state: gameState
+            state: gameState,
         };
     }
 
@@ -251,7 +284,8 @@ export class GameStateManager {
     getGameState(gameId: gameId): GameState {
         const gameState = this.currentGames[gameId];
         if (!gameState) throw new GameConflictError(gameId);
-        if (!gameState.state) throw new GameConflictError(gameId, 'Game state not loaded');
+        if (!gameState.state)
+            throw new GameConflictError(gameId, "Game state not loaded");
         return gameState.state;
     }
 
@@ -329,8 +363,13 @@ export class GameStateManager {
      * @param gameId - The ID of the game
      * @param event - The event to process
      */
-    private async processEventAndSaveState(gameId: gameId, event: TransitionEvent): Promise<void> {
-        const savedGameState = await this.getGameState(gameId).processEvent(event);
+    private async processEventAndSaveState(
+        gameId: gameId,
+        event: TransitionEvent
+    ): Promise<void> {
+        const savedGameState = await this.getGameState(gameId).processEvent(
+            event
+        );
         await gameDatabaseService.saveGameState(gameId, savedGameState);
         this.setGameState(gameId, savedGameState);
     }
@@ -341,34 +380,52 @@ export class GameStateManager {
     }
 
     async processJoinGameEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.PLAYER_JOINED);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.PLAYER_JOINED
+        );
     }
 
     // ###### Player Selected Sage ######
     verifySelectSageEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.PLAYER_SELECTED_SAGE);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.PLAYER_SELECTED_SAGE
+        );
     }
 
     async processSelectSageEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.PLAYER_SELECTED_SAGE);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.PLAYER_SELECTED_SAGE
+        );
     }
 
     // ###### All Sages Selected ######
     verifyAllSagesSelectedEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.ALL_SAGES_SELECTED);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.ALL_SAGES_SELECTED
+        );
     }
 
     async processAllSagesSelectedEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.ALL_SAGES_SELECTED);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.ALL_SAGES_SELECTED
+        );
     }
 
     // ###### Player Joined Team ######
     verifyJoinTeamEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.PLAYER_JOINED_TEAM);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.PLAYER_JOINED_TEAM
+        );
     }
 
     async processJoinTeamEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.PLAYER_JOINED_TEAM);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.PLAYER_JOINED_TEAM
+        );
     }
 
     // ###### Clear Teams ######
@@ -377,7 +434,10 @@ export class GameStateManager {
     }
 
     async processClearTeamsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.CLEAR_TEAMS);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.CLEAR_TEAMS
+        );
     }
 
     // ###### All Teams Joined ######
@@ -386,25 +446,38 @@ export class GameStateManager {
     }
 
     async processAllTeamsJoinedEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.ALL_TEAMS_JOINED);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.ALL_TEAMS_JOINED
+        );
     }
 
     // ###### Toggle Ready Status ######
     verifyToggleReadyStatusEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.TOGGLE_READY_STATUS);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.TOGGLE_READY_STATUS
+        );
     }
 
     async processToggleReadyStatusEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.TOGGLE_READY_STATUS);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.TOGGLE_READY_STATUS
+        );
     }
 
     // ###### All Players Ready ######
     verifyAllPlayersReadyEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.ALL_PLAYERS_READY);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.ALL_PLAYERS_READY
+        );
     }
 
     async processAllPlayersReadyEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.ALL_PLAYERS_READY);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.ALL_PLAYERS_READY
+        );
     }
 
     // ###### Choose Warriors ######
@@ -413,7 +486,10 @@ export class GameStateManager {
     }
 
     async processChooseWarriorsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.CHOOSE_WARRIORS);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.CHOOSE_WARRIORS
+        );
     }
 
     // ###### Swap Warriors ######
@@ -422,16 +498,24 @@ export class GameStateManager {
     }
 
     async processSwapWarriorsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.SWAP_WARRIORS);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.SWAP_WARRIORS
+        );
     }
 
     // ###### Finished Setup ######
     verifyFinishedSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.PLAYER_FINISHED_SETUP);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.PLAYER_FINISHED_SETUP
+        );
     }
 
     async processFinishedSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.PLAYER_FINISHED_SETUP);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.PLAYER_FINISHED_SETUP
+        );
     }
 
     // ###### Cancel Setup ######
@@ -440,25 +524,38 @@ export class GameStateManager {
     }
 
     async processCancelSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.CANCEL_SETUP);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.CANCEL_SETUP
+        );
     }
 
     // ###### All Players Setup ######
     verifyAllPlayersSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE
+        );
     }
 
     async processAllPlayersSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE
+        );
     }
 
     // ###### Get Day Break Cards ######
     verifyGetDayBreakCardsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.GET_DAY_BREAK_CARDS);
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.GET_DAY_BREAK_CARDS
+        );
     }
 
     async processGetDayBreakCardsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.GET_DAY_BREAK_CARDS);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.GET_DAY_BREAK_CARDS
+        );
     }
 
     // ###### Activate Day Break ######
@@ -467,9 +564,11 @@ export class GameStateManager {
     }
 
     async processActivateDayBreakEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.DAY_BREAK_CARD);
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.DAY_BREAK_CARD
+        );
     }
-
 
     // ------ Testing Methods ------
 

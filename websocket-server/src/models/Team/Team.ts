@@ -1,4 +1,4 @@
-import { NotFoundError, ValidationError } from "../../services";
+import { NotFoundError, ValidationError } from "../../custom-errors";
 import {
   Card,
   Decklist,

@@ -7,7 +7,7 @@ import {
     PlayersNotReadyError,
     SageUnavailableError,
     ShopFullError,
-} from "../../services";
+} from "../../custom-errors";
 import { gameId } from "../../types";
 import {
     Sage,

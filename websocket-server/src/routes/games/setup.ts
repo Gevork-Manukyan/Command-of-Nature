@@ -1,9 +1,6 @@
 import express from "express";
-import {
-    GameEventEmitter,
-    GameStateManager,
-    ValidationError,
-} from "../../services";
+import { GameEventEmitter, GameStateManager } from "../../services";
+import { ValidationError } from "../../custom-errors";
 import {
     AllSagesSelectedEvent,
     AllTeamsJoinedEvent,

@@ -1,4 +1,4 @@
-import { NotFoundError } from "../../services";
+import { NotFoundError } from "../../custom-errors";
 import { Card } from "@shared-types";
 
 export function drawCardFromDeck<T extends Card>(deck: T[]) {
