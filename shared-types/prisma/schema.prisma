@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model User {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  username      String   @unique
+  password      String
+  gamesPlayed   Int      @default(0)
+  gamesWon      Int      @default(0)
+  isOnline      Boolean  @default(false)
+  activeGameIds String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("users")
+}
+
+model ConGame {
+  id                       String  @id @default(auto()) @map("_id") @db.ObjectId
+  gameName                 String
+  isPrivate                Boolean
+  password                 String?
+  isStarted                Boolean
+  hasFinishedSetup         Boolean
+  numPlayersTotal          Int // 2 or 4
+  numPlayersReady          Int
+  numPlayersFinishedSetup  Int
+  teamOrder                Json // { first: Team, second: Team }
+  creatureShop             Json[] // ElementalCard[]
+  itemShop                 Json[] // ItemCard[]
+  currentCreatureShopCards Json[] // ElementalCard[]
+  currentItemShopCards     Json[] // ItemCard[]
+
+  players Json[] // Player[]
+  team1   Json // Team with embedded Battlefield
+  team2   Json // Team with embedded Battlefield
+
+  // Active game fields
+  isActive        Boolean @default(false)
+  activeTeam      String? // 'first' or 'second'
+  currentPhase    String? // 'phase1', 'phase2', 'phase3', 'phase4'
+  actionPoints    Int?
+  maxActionPoints Int? // 3 or 6
+
+  // Relations
+  gameState GameState?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("congames")
+}
+
+model GameState {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  currentTransition Json // Game state data @map("currentTransition")
+
+  // Relations
+  gameId  String  @unique @map("gameId") @db.ObjectId
+  conGame ConGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("gamestates")
+}
