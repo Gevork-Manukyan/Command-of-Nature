@@ -1,17 +1,14 @@
 // Command of Nature (C.O.N)
 
 import {
-    GameDatabaseService,
-    NotFoundError,
+    NotFoundError, 
     ValidationError,
-} from "../../services";
-import {
     NotEnoughGoldError,
     PlayersNotReadyError,
     SageUnavailableError,
     ShopFullError,
 } from "../../services";
-import { CleanConGamePrisma, gameId } from "../../types";
+import { gameId } from "../../types";
 import {
     Sage,
     ElementalCard,
@@ -24,11 +21,7 @@ import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
-import { ConGameService } from "./con-game.service";
-import { GameStateManager } from "../../services/GameStateManager";
-import { GameStateService } from "../GameState";
 import { ConGame as ConGamePrisma } from "@prisma/client";
-import { InputJsonValue } from "@prisma/client/runtime/library";
 
 const {
     BambooBerserker,
@@ -671,13 +664,7 @@ export class ConGame {
      */
     finishedSetup(): ActiveConGame {
         this.hasFinishedSetup = true;
-        return new ActiveConGame(
-            this,
-            GameDatabaseService.getInstance(
-                new ConGameService(),
-                new GameStateService()
-            )
-        );
+        return new ActiveConGame(this);
     }
 
     /**
@@ -759,7 +746,7 @@ export class ConGame {
             currentItemShopCards: this.currentItemShopCards.map((card) =>
                 card.getData()
             ),
-            
+
             isActive: false,
             activeTeam: "",
             currentPhase: "",
@@ -780,16 +767,14 @@ export class ActiveConGame extends ConGame {
     private currentPhase: "phase1" | "phase2" | "phase3" | "phase4" = "phase1";
     private actionPoints: number;
     private maxActionPoints: 3 | 6;
-    private gameDatabaseService: GameDatabaseService;
 
-    constructor(conGame: ConGame, gameDatabaseService: GameDatabaseService) {
+    constructor(conGame: ConGame) {
         super(
             conGame.numPlayersTotal,
             conGame.gameName,
             conGame.isPrivate,
             conGame.password
         );
-        this.gameDatabaseService = gameDatabaseService;
 
         this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
         this.actionPoints = this.maxActionPoints;
@@ -859,11 +844,6 @@ export class ActiveConGame extends ConGame {
     }
 
     endPhase4() {
-        // Save the current game state before ending the turn
-        const gameState = GameStateManager.getInstance().getGameState(this.id);
-        this.gameDatabaseService.saveGame(this);
-        this.gameDatabaseService.saveGameState(this.id, gameState);
-
         // End turn and reset all variables
         this.currentPhase = "phase1";
         this.toggleActiveTeam();
@@ -962,13 +942,7 @@ export class ActiveConGame extends ConGame {
         }
 
         const baseGame = ConGame.fromPrisma(data);
-        const activeGame = new ActiveConGame(
-            baseGame,
-            GameDatabaseService.getInstance(
-                new ConGameService(),
-                new GameStateService()
-            )
-        );
+        const activeGame = new ActiveConGame(baseGame);
 
         Object.assign(activeGame, {
             activeTeam: data.activeTeam as keyof TeamOrder,

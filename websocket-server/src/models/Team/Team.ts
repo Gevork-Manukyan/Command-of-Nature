@@ -6,9 +6,9 @@ import {
   SpaceOption,
 } from "@shared-types";
 import { Battlefield } from "../Battlefield/Battlefield";
-import { Player } from "../Player";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { TeamSchema } from "../validation";
+import { Player } from "../Player/Player";
 
 /**
  * Represents a team in the Command of Nature game

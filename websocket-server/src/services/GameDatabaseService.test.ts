@@ -26,7 +26,7 @@ describe('GameDatabaseService', () => {
         gameStateService = new GameStateService() as jest.Mocked<GameStateService>;
         
         // Create the service with mocked dependencies
-        gameDatabaseService = GameDatabaseService.getInstance(conGameService, gameStateService);
+        gameDatabaseService = GameDatabaseService.getInstance();
 
         mockGame = new ConGame(numPlayers, 'test-game', false, '');
         mockGame.setId(testGameId);
