@@ -1,5 +1,4 @@
 import { io, Socket } from 'socket.io-client';
-import { env } from '@/lib/env';
 
 class SocketService {
   private static instance: SocketService;
@@ -51,7 +50,7 @@ class SocketService {
       return this.connectionPromise;
     }
 
-    const url = this.constructUrl(env.NEXT_PUBLIC_SOCKET_URL, '/gameplay');
+    const url = this.constructUrl(process.env.NEXT_PUBLIC_SOCKET_URL!, '/gameplay');
 
     if (this.socket) {
       this.disconnect();

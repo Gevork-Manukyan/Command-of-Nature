@@ -1,6 +1,5 @@
 "use client";
 
-import { requireUserSession } from "@/lib/server/utils";
 import { socketService } from "@/services/socket";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -11,15 +10,19 @@ type SocketContextType = {
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
-export async function SocketProvider({ children }: { children: React.ReactNode }) {
+type SocketProviderProps = {
+    children: React.ReactNode;
+    userId: string;
+}
+
+export function SocketProvider({ children, userId }: SocketProviderProps) {
     const [isSocketConnected, setIsSocketConnected] = useState(false);
-    const session = await requireUserSession();
 
     useEffect(() => {
         const connectToSocket = async () => {
             try {
                 if (!socketService.getConnected()) {
-                    await socketService.connect(session.user.id);
+                    await socketService.connect(userId);
                     setIsSocketConnected(true);
                 }
             } catch (error) {
@@ -36,7 +39,7 @@ export async function SocketProvider({ children }: { children: React.ReactNode }
                 setIsSocketConnected(false);
             }
         };
-    }, [session.user.id]);
+    }, [userId]);
 
     return (
         <SocketContext.Provider

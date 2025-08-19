@@ -3,12 +3,9 @@ import Credentials from "next-auth/providers/credentials";
 import { loginFormSchema } from "../zod-schemas";
 import { prisma } from "./prisma";
 import { compare } from "bcryptjs";
-import { getServerEnv } from "../env";
-
-const serverEnv = getServerEnv();
 
 const config = {
-  secret: serverEnv.JWT_SECRET,
+  secret: process.env.JWT_SECRET!,
   pages: {
     signIn: "/login",
   },

@@ -8,7 +8,6 @@ import { ErrorMessage } from "../../../../components/error/error-message";
 import { EmptyState } from "./empty-state";
 import useLobby from "@/app/(private)/app/lobby/useLobby";
 import { LoadingScreen } from "../../../../components/loading/loading-screen";
-import { logoutAction } from "@/actions/auth-actions";
 import { LogoutBtn } from "@/components/logout-btn";
 
 export default function LobbyPage() {

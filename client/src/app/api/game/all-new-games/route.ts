@@ -1,11 +1,10 @@
-import { env } from '@/lib/env';
 import { NextResponse } from 'next/server';
 
 const CACHE_DURATION = 5; // Cache duration in seconds
 
 export async function GET() {
     try {
-        const response = await fetch(`${env.NEXT_PUBLIC_SOCKET_URL}/api/game-listings?isStarted=false`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SOCKET_URL}/api/game-listings?isStarted=false`, {
             next: { revalidate: CACHE_DURATION }, // Enable Next.js cache with revalidation
         });
         
