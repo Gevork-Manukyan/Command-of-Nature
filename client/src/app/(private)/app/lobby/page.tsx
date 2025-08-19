@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CreateGameModal } from "./create-game-modal";
-import { GameCard } from "./game-card";
+import { CreateGameModal } from "../../../../components/lobby/create-game-modal";
+import { GameCard } from "../../../../components/lobby/game-card/game-card";
 import { LoadingSpinner } from "../../../../components/loading/loading-spinner";
 import { ErrorMessage } from "../../../../components/error/error-message";
-import { EmptyState } from "./empty-state";
-import useLobby from "@/app/(private)/app/lobby/useLobby";
+import { EmptyState } from "../../../../components/lobby/empty-state";
+import useLobby from "@/components/lobby/useLobby";
 import { LoadingScreen } from "../../../../components/loading/loading-screen";
 import { LogoutBtn } from "@/components/logout-btn";
 
