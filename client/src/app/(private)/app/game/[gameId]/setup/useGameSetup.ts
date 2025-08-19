@@ -1,16 +1,19 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
 import { gameApiClient } from "@/services/game-api";
-import { useUserContext } from "@/contexts/UserContext";
+import { useSession } from "next-auth/react";
 
 export function useGameSetup() {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id || '';
-    const { userId } = useUserContext();
+    const { data: session } = useSession();
+    const userId = session?.user.id!;
     const [error, setError] = useState<string>('');
 
     // Game Related State

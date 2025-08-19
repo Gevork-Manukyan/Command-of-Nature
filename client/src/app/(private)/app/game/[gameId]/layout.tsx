@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { useUserContext } from '@/contexts/UserContext';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { ErrorScreen } from '@/components/error/error-screen';
 import { gameApiClient } from '@/services/game-api';
 import { useSocketContext } from '@/contexts/SocketContext';
+import { useSession } from 'next-auth/react';
 
 export default function GameLayout({
     children,
@@ -16,11 +16,12 @@ export default function GameLayout({
     children: React.ReactNode;
 }) {
     const params = useParams();
-    const { userId } = useUserContext();
+    const { data: session } = useSession();
+    const userId = session?.user.id!;
     const { isSocketConnected } = useSocketContext();
     const { currentGameSession, isLoadingGameSession } = useGameSessionContext();
     const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : '';
-    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId);
+    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId, userId);
     const shortGameId = gameId.toString().slice(-6);
     
     // Rejoin game state

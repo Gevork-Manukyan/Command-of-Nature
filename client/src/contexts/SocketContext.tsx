@@ -1,44 +1,47 @@
+"use client";
+
+import { requireUserSession } from "@/lib/server/utils";
 import { socketService } from "@/services/socket";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type SocketContextType = {
     isSocketConnected: boolean;
     setIsSocketConnected: (isSocketConnected: boolean) => void;
-}
+};
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
-export function SocketProvider({ children, userId }: { children: React.ReactNode, userId: string }) {
+export async function SocketProvider({ children }: { children: React.ReactNode }) {
     const [isSocketConnected, setIsSocketConnected] = useState(false);
+    const session = await requireUserSession();
 
     useEffect(() => {
-        // Only connect to socket if user is logged in
-        if (userId) {
-          const connectToSocket = async () => {
+        const connectToSocket = async () => {
             try {
-              if (!socketService.getConnected()) {
-                await socketService.connect(userId);
-                setIsSocketConnected(true);
-              }
+                if (!socketService.getConnected()) {
+                    await socketService.connect(session.user.id);
+                    setIsSocketConnected(true);
+                }
             } catch (error) {
-              console.error('Failed to connect to socket:', error);
+                console.error("Failed to connect to socket:", error);
             }
-          };
-    
-          connectToSocket();
-        }
-    
+        };
+
+        connectToSocket();
+
         // Cleanup function to disconnect when component unmounts or user logs out
         return () => {
-          if (socketService.getConnected()) {
-            socketService.disconnect();
-            setIsSocketConnected(false);
-          }
+            if (socketService.getConnected()) {
+                socketService.disconnect();
+                setIsSocketConnected(false);
+            }
         };
-      }, [userId]);
+    }, [session.user.id]);
 
     return (
-        <SocketContext.Provider value={{ isSocketConnected, setIsSocketConnected }}>
+        <SocketContext.Provider
+            value={{ isSocketConnected, setIsSocketConnected }}
+        >
             {children}
         </SocketContext.Provider>
     );
@@ -47,7 +50,9 @@ export function SocketProvider({ children, userId }: { children: React.ReactNode
 export function useSocketContext() {
     const context = useContext(SocketContext);
     if (!context) {
-        throw new Error('useSocketContext must be used within a SocketProvider');
+        throw new Error(
+            "useSocketContext must be used within a SocketProvider"
+        );
     }
     return context;
 }

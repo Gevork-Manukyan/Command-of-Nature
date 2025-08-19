@@ -1,12 +1,15 @@
-import { useUserContext } from "@/contexts/UserContext";
+"use client";
+
 import { useState } from "react";
 import { GameListing } from "@shared-types";
 import { gameApiClient } from "@/services/game-api";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean) => void) {
-    const { userId } = useUserContext();
+    const { data: session } = useSession();
+    const userId = session?.user.id!;
     const [password, setPassword] = useState("");
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const { updateCurrentSession } = useGameSessionContext();

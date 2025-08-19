@@ -1,7 +1,6 @@
 "use client";
 
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { useUserContext } from '@/contexts/UserContext';
 import { CreateGameFormData, createGameFormSchema } from '@/lib/zod-schemas';
 import { gameApiClient } from '@/services/game-api';
 import { Input } from '@/components/shadcn-ui/input';
@@ -11,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@/components/error/error-message';
+import { useSession } from 'next-auth/react';
 
 interface CreateGameModalProps {
   isOpen: boolean;
@@ -22,7 +22,8 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
   if (!isOpen) return null;
 
   const router = useRouter();
-  const { userId } = useUserContext();
+  const { data: session } = useSession();
+  const userId = session?.user.id!;
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const { updateCurrentSession } = useGameSessionContext();
   const [apiError, setApiError] = useState("");

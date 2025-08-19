@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { UserProvider } from '@/contexts/UserContext';
 import { GameSessionProvider } from '@/contexts/GameSessionContext';
 
 export const metadata: Metadata = {
@@ -20,13 +19,11 @@ export default function RootLayout({
       <body
         className={``}
       >
-        <UserProvider>
-          <GameSessionProvider>
-            <Header />
-            {children}
-            <Footer />
-          </GameSessionProvider>
-        </UserProvider>
+        <GameSessionProvider>
+          <Header />
+          {children}
+          <Footer />
+        </GameSessionProvider>
       </body>
     </html>
   );
