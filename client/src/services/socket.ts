@@ -16,7 +16,7 @@ class SocketService {
     }
     
     const cleanBase = baseUrl.replace(/\/$/, ''); // Remove trailing slash
-    const cleanPath = path.replace(/^\//, ''); // Remove leading slash
+    const cleanPath = path.replace(/^\//, '');    // Remove leading slash
     return `${cleanBase}/${cleanPath}`;
   }
 

@@ -1,15 +1,17 @@
+"use client";
+
 import { GameListing } from "@shared-types";
 import { useGameCard } from "./useGameCard";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 
-
-interface GameCardProps {
+type GameCardProps = {
   game: GameListing;
-  setIsJoining: (isJoining: boolean) => void;
 }
 
-export const GameCard = ({ game, setIsJoining }: GameCardProps) => {
-  const shortGameId = game.id.toString().slice(-6);
+export function GameCard({ game }: GameCardProps) {
+  const { setIsJoining } = useLobbyContext();
   const { handleJoinClick, showPasswordInput, password, setPassword } = useGameCard(game, setIsJoining);
+  const shortGameId = game.id.toString().slice(-6);
 
   return (
     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">

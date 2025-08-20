@@ -11,16 +11,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@/components/error/error-message';
 import { useSession } from 'next-auth/react';
+import { useLobbyContext } from '@/contexts/LobbyContext';
 
-interface CreateGameModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  setIsJoining: (isJoining: boolean) => void;
-}
-
-export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameModalProps) => {
-  if (!isOpen) return null;
-
+export const CreateGameModal = () => {
+  const { showModal, setShowModal, setIsJoining } = useLobbyContext();
+  if (!showModal) return null;
+  
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user.id!;
@@ -56,7 +52,7 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
         if (response.error) throw new Error(response.error);
         updateCurrentSession(response);
         router.push(`/app/game/${response.id}`);
-        onClose();
+        closeModal();
     } catch (err) {
         setApiError(err as string);
         setIsJoining(false);
@@ -65,13 +61,17 @@ export const CreateGameModal = ({ isOpen, onClose, setIsJoining }: CreateGameMod
     }
   };
 
+  function closeModal() {
+    setShowModal(false);
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Create New Game</h2>
           <button
-            onClick={onClose}
+            onClick={closeModal}
             className="text-gray-500 hover:text-gray-700"
             disabled={isCreatingGame}
           >

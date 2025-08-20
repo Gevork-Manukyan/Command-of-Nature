@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { GameSessionProvider } from '@/contexts/GameSessionContext';
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Command of Nature",
@@ -19,11 +20,13 @@ export default function RootLayout({
       <body
         className={``}
       >
-        <GameSessionProvider>
-          <Header />
-          {children}
-          <Footer />
-        </GameSessionProvider>
+        <SessionProvider>
+          <GameSessionProvider>
+            <Header />
+            {children}
+            <Footer />
+          </GameSessionProvider>
+        </SessionProvider>
       </body>
     </html>
   );
