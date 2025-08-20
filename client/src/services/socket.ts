@@ -1,3 +1,4 @@
+import { requireUserSession } from '@/lib/server/utils';
 import { io, Socket } from 'socket.io-client';
 
 class SocketService {
@@ -26,26 +27,7 @@ class SocketService {
     return SocketService.instance;
   }
 
-  private async validateToken(): Promise<boolean> {
-    try {
-      const response = await fetch('/api/auth/validate-token');
-      return response.ok && !response.redirected;
-    } catch (error) {
-      console.error('Token validation failed:', error);
-      return false;
-    }
-  }
-
-  private async ensureValidToken(): Promise<boolean> {
-    const isValid = await this.validateToken();
-    if (!isValid) {
-      window.location.href = '/login';
-      return false;
-    }
-    return true;
-  }
-
-  public connect(userId: string): Promise<void> {
+  public connect(): Promise<void> {
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -58,19 +40,15 @@ class SocketService {
 
     this.connectionPromise = new Promise(async (resolve, reject) => {
       try {
-        // Validate token before connecting
-        const isValid = await this.ensureValidToken();
-        if (!isValid) {
-          return reject(new Error('Account Session Expired'));
-        }
+        const session = await requireUserSession();
 
         this.socket = io(url, {
           reconnectionAttempts: 3,
           reconnectionDelay: 1000,
           timeout: 20000,
-          transports: ['websocket', 'polling'], // Explicitly specify transport methods
+          transports: ['websocket', 'polling'],
           query: {
-            userId: userId
+            userId: session.user.id
           }
         });
 
@@ -150,12 +128,8 @@ class SocketService {
       throw new Error('Socket is not connected');
     }
 
-    // Validate token before emitting
-    const isValid = await this.ensureValidToken();
-    if (!isValid) {
-      throw new Error('Account Session Expired');
-    }
-    this.socket?.emit(event, ...args);
+    const session = await requireUserSession();
+    this.socket?.emit(event, { userId: session.user.id, ...args });
   }
 }
 

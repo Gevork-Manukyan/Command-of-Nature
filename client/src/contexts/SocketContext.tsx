@@ -22,7 +22,7 @@ export function SocketProvider({ children, userId }: SocketProviderProps) {
         const connectToSocket = async () => {
             try {
                 if (!socketService.getConnected()) {
-                    await socketService.connect(userId);
+                    await socketService.connect();
                     setIsSocketConnected(true);
                 }
             } catch (error) {
