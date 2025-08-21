@@ -14,9 +14,7 @@ import { useSession } from 'next-auth/react';
 import { useLobbyContext } from '@/contexts/LobbyContext';
 
 export const CreateGameModal = () => {
-  const { showModal, setShowModal, setIsJoining } = useLobbyContext();
-  if (!showModal) return null;
-  
+  const { showModal, setShowModal, setIsJoining } = useLobbyContext();  
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user.id!;
@@ -35,6 +33,8 @@ export const CreateGameModal = () => {
   
   const watchedNumPlayers = watch("numPlayers");
   const watchedIsPrivate = watch("isPrivate");  
+
+  if (!showModal) return null;
 
   const onSubmit = async (data: CreateGameFormData) => {
     if (!userId) throw new Error('User ID not found');
