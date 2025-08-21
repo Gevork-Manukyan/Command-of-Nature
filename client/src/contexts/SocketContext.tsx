@@ -13,7 +13,7 @@ const SocketContext = createContext<SocketContextType | null>(null);
 type SocketProviderProps = {
     children: React.ReactNode;
     userId: string;
-}
+};
 
 export function SocketProvider({ children, userId }: SocketProviderProps) {
     const [isSocketConnected, setIsSocketConnected] = useState(false);
@@ -22,7 +22,7 @@ export function SocketProvider({ children, userId }: SocketProviderProps) {
         const connectToSocket = async () => {
             try {
                 if (!socketService.getConnected()) {
-                    await socketService.connect();
+                    await socketService.connect(userId);
                     setIsSocketConnected(true);
                 }
             } catch (error) {
