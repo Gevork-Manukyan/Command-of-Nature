@@ -53,7 +53,7 @@ const InputSchema = z.object({
 export type Input = z.infer<typeof InputSchema>;
 
 const TransitionSchema = z.object({
-    currentStateValue: z.nativeEnum(State),
+    currentState: z.nativeEnum(State),
     possibleInputs: z.array(InputSchema),
 })
 export type Transition = z.infer<typeof TransitionSchema>;

@@ -148,13 +148,13 @@ export class GameState {
         ]);
     }
 
-    private addTransition(currentStateValue: State, possibleInputs: Input[]) {
-        this.stateTransitionTable.push({ currentStateValue, possibleInputs });
+    private addTransition(currentState: State, possibleInputs: Input[]) {
+        this.stateTransitionTable.push({ currentState, possibleInputs });
     }
 
     getCurrentTransition() {
         return {
-            currentState: this.currentTransition.currentStateValue,
+            currentState: this.currentTransition.currentState,
             possibleInputs: this.currentTransition.possibleInputs
         };
     }
@@ -181,7 +181,7 @@ export class GameState {
      */
     private findNextTransition(nextState: State) {
         return this.stateTransitionTable.find(
-            (transition) => transition.currentStateValue === nextState
+            (transition) => transition.currentState === nextState
         );
     }
 
@@ -197,7 +197,7 @@ export class GameState {
         );
         if (!input)
             throw new GameStateError(
-                `Invalid event: ${event} for current state: ${this.currentTransition.currentStateValue}`
+                `Invalid event: ${event} for current state: ${this.currentTransition.currentState}`
             );
     }
 
@@ -213,7 +213,7 @@ export class GameState {
         );
         if (!input)
             throw new GameStateError(
-                `Invalid event: ${event} for current state: ${this.currentTransition.currentStateValue}`
+                `Invalid event: ${event} for current state: ${this.currentTransition.currentState}`
             );
 
         const nextTransition = this.findNextTransition(input.nextState);
@@ -230,6 +230,7 @@ export class GameState {
      * @returns The runtime instance
      */
     static fromPrisma(doc: GameStatePrisma): GameState {
+        console.log("doc: ", doc);
         const validatedGameState = GameStateSchema.safeParse(doc);
         if (!validatedGameState.success) {
             throw new GameStateError(
