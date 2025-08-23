@@ -48,9 +48,7 @@ export class GameDatabaseService {
             );
 
             // Create and save the game state with the new game ID
-            const savedGameState = await this.gameStateService.createGameState(
-                savedGame.id
-            );
+            const savedGameState = await this.gameStateService.createGameState(savedGame.id);
 
             return { game: savedGame, state: savedGameState };
         } catch (error) {

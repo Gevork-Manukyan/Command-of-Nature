@@ -48,9 +48,6 @@ model ConGame {
   actionPoints    Int?
   maxActionPoints Int? // 3 or 6
 
-  // Relations
-  gameState GameState?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -60,10 +57,7 @@ model ConGame {
 model GameState {
   id                String @id @default(auto()) @map("_id") @db.ObjectId
   currentTransition Json // Game state data @map("currentTransition")
-
-  // Relations
   gameId  String  @unique @map("gameId") @db.ObjectId
-  conGame ConGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

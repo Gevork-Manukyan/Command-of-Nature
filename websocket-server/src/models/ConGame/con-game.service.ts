@@ -19,9 +19,10 @@ export class ConGameService {
         const game = new ConGame(numPlayers, gameName, isPrivate, password);
 
         try {
-            await prisma.conGame.create({
+            const doc = await prisma.conGame.create({
                 data: game.toPrismaObject(),
             });
+            game.setId(doc.id);
         } catch (error) {
             throw new Error("Failed to create game");
         }
