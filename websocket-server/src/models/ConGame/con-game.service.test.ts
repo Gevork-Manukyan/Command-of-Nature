@@ -113,7 +113,7 @@ describe("ConGameService", () => {
                 mockPrismaData
             );
 
-            const result = await conGameService.updateGameState(
+            const result = await conGameService.updateGame(
                 testGameId,
                 mockGame
             );
@@ -131,7 +131,7 @@ describe("ConGameService", () => {
             (prisma.conGame.update as jest.Mock).mockResolvedValue(null);
 
             await expect(
-                conGameService.updateGameState(testGameId, mockGame)
+                conGameService.updateGame(testGameId, mockGame)
             ).rejects.toThrow(NotFoundError);
         });
     });

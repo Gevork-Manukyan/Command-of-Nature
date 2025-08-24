@@ -57,11 +57,11 @@ export class GameStateService {
 
     async updateGameState(
         id: string,
-        updates: Partial<GameState>
+        updates: GameState
     ): Promise<GameState> {
         const doc = await prisma.gameState.update({
             where: { id: id },
-            data: updates,
+            data: updates.toPrismaObject(),
         });
 
         if (!doc) {
@@ -76,11 +76,11 @@ export class GameStateService {
 
     async updateGameStateByGameId(
         gameId: string,
-        updates: Partial<GameState>
+        updates: GameState
     ): Promise<GameState> {
         const doc = await prisma.gameState.update({
             where: { gameId: gameId },
-            data: updates,
+            data: updates.toPrismaObject(),
         });
 
         if (!doc) {

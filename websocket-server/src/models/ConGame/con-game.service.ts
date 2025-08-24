@@ -73,7 +73,7 @@ export class ConGameService {
         return ActiveConGame.fromPrisma(doc);
     }
 
-    async updateGameState(id: string, game: ConGame): Promise<ConGame> {
+    async updateGame(id: string, game: ConGame): Promise<ConGame> {
         const doc = await prisma.conGame.update({
             where: { id: id },
             data: game.toPrismaObject(),

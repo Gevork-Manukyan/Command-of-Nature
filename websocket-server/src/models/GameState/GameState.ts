@@ -243,4 +243,15 @@ export class GameState {
 
         return gameState;
     }
+
+    /**
+     * Convert from runtime instance to Prisma object
+     * @returns The Prisma object
+     */
+    toPrismaObject() {
+        return {
+            gameId: this.gameId,
+            currentTransition: this.currentTransition,
+        };
+    }
 }

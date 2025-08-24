@@ -722,7 +722,6 @@ export class ConGame {
      */
     toPrismaObject() {
         return {
-            id: this.id,
             gameName: this.gameName,
             isPrivate: this.isPrivate,
             password: this.password,

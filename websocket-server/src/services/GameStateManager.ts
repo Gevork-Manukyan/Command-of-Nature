@@ -70,6 +70,7 @@ export class GameStateManager {
         const existingPlayer = game.players.find(
             (p) => p.socketId === socketId
         );
+        
         if (existingPlayer) {
             // If it's the same user, just update their socket ID
             if (existingPlayer.userId === userId) {

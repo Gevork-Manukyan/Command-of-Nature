@@ -92,7 +92,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 numPlayersTotal: game.numPlayersTotal,
                 numCurrentPlayers: game.players.length,
             };
-
             userSocketManager.joinGameRoom(userId, game.id);
             res.json(gameListing);
         })

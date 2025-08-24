@@ -26,6 +26,7 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
       try {
           setIsJoining(true);
           const response = await gameApiClient.joinGame({ userId, gameId: game.id, password: password || undefined });
+          console.log("response", response)
           if (response.error) {
             throw new Error(response.error);
           } 

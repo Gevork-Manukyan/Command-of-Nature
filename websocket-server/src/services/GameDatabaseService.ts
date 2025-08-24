@@ -48,7 +48,9 @@ export class GameDatabaseService {
             );
 
             // Create and save the game state with the new game ID
-            const savedGameState = await this.gameStateService.createGameState(savedGame.id);
+            const savedGameState = await this.gameStateService.createGameState(
+                savedGame.id
+            );
 
             return { game: savedGame, state: savedGameState };
         } catch (error) {
@@ -65,7 +67,7 @@ export class GameDatabaseService {
     async saveGame(game: ConGame): Promise<ConGame> {
         console.debug("Saving game:", game.id);
         try {
-            return await this.conGameService.updateGameState(game.id, game);
+            return await this.conGameService.updateGame(game.id, game);
         } catch (error) {
             console.error("Failed to save game:", error);
             throw error;
