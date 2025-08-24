@@ -4,7 +4,7 @@ import { LogoutBtn } from "@/components/logout-btn";
 import { CreateGameBtn } from "@/components/lobby/create-game/create-game-btn";
 import { JoinableGames } from "@/components/lobby/joinable-games";
 import { requireUserSession } from "@/lib/server/utils";
-import { getUserActiveGames } from "@/actions/user";
+import { getUserActiveGames } from "@/actions/user-actions";
 
 export default async function LobbyPage() {
     const session = await requireUserSession();

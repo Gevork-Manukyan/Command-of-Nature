@@ -3,7 +3,7 @@
 import { GameListing } from "@shared-types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useGameSessionContext } from "./GameSessionContext";
-import { getGameListings } from "@/actions/game";
+import { getGameListings } from "@/actions/game-actions";
 
 type LobbyContextType = {
     currentGameSession: GameListing | null;
