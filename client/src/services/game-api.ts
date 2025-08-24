@@ -50,7 +50,7 @@ class GameApiClient {
     return GameApiClient.instance;
   }
 
-  // Setup Endpoints
+  /* ------------ Setup Endpoints ------------ */
   private getSetupUrl(url: string, data: any, method: string) {
     return this.fetch(`/setup${url}`, data, method);
   }
@@ -119,19 +119,21 @@ class GameApiClient {
     return this.getSetupUrlWithGameId('/all-players-setup', gameId, data, 'POST');
   }
 
+  
+  /* ------------ Gameplay Endpoints ------------ */
+  
+  private getGameplayUrlWithGameId(url: string, gameId: string, data: any, method: string) {
+    return this.fetch(`/gameplay/${gameId}${url}`, data, method);
+  }
+
   // just go back to the lobby
   async exitGame(gameId: string, data: ExitGameData) {
-    return this.getSetupUrlWithGameId('/exit', gameId, data, 'POST');
+    return this.getGameplayUrlWithGameId('/exit', gameId, data, 'POST');
   }
 
   // leave the game and the session
   async leaveGame(gameId: string, data: LeaveGameData) {
-    return this.getSetupUrlWithGameId('/leave', gameId, data, 'POST');
-  }
-
-  // Gameplay Endpoints
-  private getGameplayUrlWithGameId(url: string, gameId: string, data: any, method: string) {
-    return this.fetch(`/gameplay/${gameId}${url}`, data, method);
+    return this.getGameplayUrlWithGameId('/leave', gameId, data, 'POST');
   }
   
   async getDayBreakCards(gameId: string, data: GetDayBreakCardsData) {

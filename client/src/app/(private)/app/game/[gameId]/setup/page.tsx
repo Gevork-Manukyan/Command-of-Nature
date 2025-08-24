@@ -1,9 +1,9 @@
 "use client";
 
-import { useGameSetup } from './useGameSetup';
 import { ErrorScreen } from '@/components/error/error-screen';
-import SageSelection from './sage-selection';
-import TeamSelection from './team-selection';
+import SageSelection from '@/components/game/setup/sage-selection';
+import TeamSelection from '@/components/game/setup/team-selection';
+import { useGameSetup } from '@/components/game/setup/useGameSetup';
 
 export default function GameSetupPage() {
     const { 
