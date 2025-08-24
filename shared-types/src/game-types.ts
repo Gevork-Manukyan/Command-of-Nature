@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { SageSchema } from './card-types';
 
-export type GameListing = {
-    id: string;
-    gameName: string;
-    isPrivate: boolean;
-    numPlayersTotal: number;
-    numCurrentPlayers: number;
-}
+export const GameListingSchema = z.object({
+    id: z.string(),
+    gameName: z.string(),
+    isPrivate: z.boolean(),
+    numPlayersTotal: z.number(),
+    numCurrentPlayers: z.number(),
+});
+export type GameListing = z.infer<typeof GameListingSchema>;
 
 export const SetupPhasesSchema = z.enum([
     "sage-selection",

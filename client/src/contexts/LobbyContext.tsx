@@ -3,7 +3,7 @@
 import { GameListing } from "@shared-types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useGameSessionContext } from "./GameSessionContext";
-import { apiClient } from "@/lib/client/api-client";
+import { getGameListings } from "@/actions/game";
 
 type LobbyContextType = {
     currentGameSession: GameListing | null;
@@ -35,11 +35,8 @@ export function LobbyProvider({ children }: LobbyProviderProps) {
         const fetchGames = async () => {
             try {
                 setIsFetchingGames(true);
-                const response = await apiClient.getAllNewGames();
-                if (response.error) {
-                    throw new Error(response.error);
-                }
-                setCurrentGames(response.data || []);
+                const games = await getGameListings(false);
+                setCurrentGames(games);
             } catch (err) {
                 setError('Failed to fetch games');
             } finally {

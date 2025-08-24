@@ -2,7 +2,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
-import gameListingsRouter from "./routes/game-listings";
 import usersRouter from "./routes/users";
 import { GameEventEmitter, GameStateManager } from "./services";
 import { RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
@@ -35,7 +34,6 @@ const userSocketManager = UserSocketManager.getInstance();
 
 // API routes
 app.use('/api/games', createGamesRouter(gameEventEmitter));
-app.use('/api/game-listings', gameListingsRouter);
 app.use('/api/users', usersRouter);
 
 // Error handling middleware (must be last)

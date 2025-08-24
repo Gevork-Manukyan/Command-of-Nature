@@ -7,9 +7,9 @@ import { EmptyState } from "./empty-state";
 import { GameCard } from "./game-card/game-card";
 import { LoadingScreen } from "../loading/loading-screen";
 
-export function ActiveGames() {
+export function JoinableGames() {
     const { isFetchingGames, error, currentGames, isJoining } = useLobbyContext();
-    
+
     if (isFetchingGames) {
         return <LoadingSpinner />;
     } else if (error) {
@@ -21,15 +21,12 @@ export function ActiveGames() {
     if (isJoining) {
         return <LoadingScreen message="Joining game..." />;
     }
-    
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             {currentGames.map((game) => (
-                <GameCard
-                    key={game.id}
-                    game={game}
-                />
+                <GameCard key={game.id} game={game} />
             ))}
         </div>
-    )
+    );
 }

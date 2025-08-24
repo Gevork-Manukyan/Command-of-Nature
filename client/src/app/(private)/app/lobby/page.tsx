@@ -2,18 +2,13 @@ import { redirect } from "next/navigation";
 import { CreateGameModal } from "../../../../components/lobby/create-game/create-game-modal";
 import { LogoutBtn } from "@/components/logout-btn";
 import { CreateGameBtn } from "@/components/lobby/create-game/create-game-btn";
-import { ActiveGames } from "@/components/lobby/active-games";
+import { JoinableGames } from "@/components/lobby/joinable-games";
 import { requireUserSession } from "@/lib/server/utils";
-import { prisma } from "@/lib/server/prisma";
+import { getUserActiveGames } from "@/actions/user";
 
 export default async function LobbyPage() {
     const session = await requireUserSession();
-
-    const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { activeGameIds: true },
-    })
-
+    const user = await getUserActiveGames(session.user.id);
     const currentGameId = user?.activeGameIds?.[0];
 
     if (currentGameId) {
@@ -35,7 +30,7 @@ export default async function LobbyPage() {
             </div>
 
             <CreateGameModal />
-            <ActiveGames />
+            <JoinableGames />
         </>
     );
 }

@@ -230,7 +230,6 @@ export class GameState {
      * @returns The runtime instance
      */
     static fromPrisma(doc: GameStatePrisma): GameState {
-        console.log("doc: ", doc);
         const validatedGameState = GameStateSchema.safeParse(doc);
         if (!validatedGameState.success) {
             throw new GameStateError(
