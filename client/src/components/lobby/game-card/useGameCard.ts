@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { GameListing } from "@shared-types";
-import { gameApiClient } from "@/services/game-api";
+import { joinGame } from "@/services/game-api";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -25,7 +25,7 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
   
       try {
           setIsJoining(true);
-          const response = await gameApiClient.joinGame({ userId, gameId: game.id, password: password || undefined });
+          const response = await joinGame({ userId, gameId: game.id, password: password || undefined });
           if (response.error) {
             throw new Error(response.error);
           } 

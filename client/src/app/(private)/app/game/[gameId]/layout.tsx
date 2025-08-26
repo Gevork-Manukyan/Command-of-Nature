@@ -6,9 +6,9 @@ import { useGameNavigation } from '@/hooks/useGameNavigation';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { ErrorScreen } from '@/components/error/error-screen';
-import { gameApiClient } from '@/services/game-api';
 import { useSocketContext } from '@/contexts/SocketContext';
 import { useSession } from 'next-auth/react';
+import { rejoinGame as rejoinGameApi } from '@/services/game-api';
 
 export default function GameLayout({
     children,
@@ -36,7 +36,7 @@ export default function GameLayout({
             try {
                 setIsRejoiningGame(true);
                 setRejoinError('');
-                await gameApiClient.rejoinGame({ userId, gameId });
+                await rejoinGameApi({ userId, gameId });
                 setIsRejoiningGame(false);
             } catch (err) {
                 console.error('Failed to rejoin game:', err);

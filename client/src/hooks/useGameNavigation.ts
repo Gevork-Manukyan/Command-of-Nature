@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-import { gameApiClient } from '@/services/game-api';
+import { exitGame, leaveGame as leaveGameApi } from '@/services/game-api';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 
 export function useGameNavigation(gameId: string, userId: string) {
@@ -15,7 +15,7 @@ export function useGameNavigation(gameId: string, userId: string) {
         setIsLeaving(true);
         router.push('/app/lobby');
         if (!currentGameSession) return;
-        await gameApiClient.exitGame(gameId, { userId });
+        await exitGame(gameId, { userId });
     };
 
     const leaveGame = async () => {
@@ -27,7 +27,7 @@ export function useGameNavigation(gameId: string, userId: string) {
         setIsLeaving(true);
 
         try {
-            await gameApiClient.leaveGame(gameId, { userId });
+            await leaveGameApi(gameId, { userId });
             router.push('/app/lobby');
 
             // Wait for the router to push to the lobby before updating the current session

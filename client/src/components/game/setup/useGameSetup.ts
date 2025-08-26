@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
-import { gameApiClient } from "@/services/game-api";
+import { joinTeam, selectSage } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 
 export function useGameSetup() {
@@ -114,7 +114,7 @@ export function useGameSetup() {
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentGameSession || !userId) return;
         try {
-            await gameApiClient.selectSage(gameId, { userId: userId, sage });
+            await selectSage(gameId, { userId: userId, sage });
             setAvailableSages(prev => {
                 // make the previously confirmed sage available again
                 const newAvailableSages = { ...prev };
@@ -138,7 +138,7 @@ export function useGameSetup() {
     const handleTeamJoin = async (team: 1 | 2) => {
         if (!currentGameSession || !userId) return;
         try {
-            await gameApiClient.joinTeam(gameId, { userId: userId, team });
+            await joinTeam(gameId, { userId: userId, team });
         } catch (err) {
             console.error('Failed to join team:', err);
             setError(err instanceof Error ? err.message : 'Failed to join team');
