@@ -59,7 +59,7 @@ export const CreateGameModal = () => {
             updateCurrentSession(response);
             router.push(`/app/game/${response.id}`);
             closeModal();
-        } catch (err) {
+          } catch (err) {
             setApiError(
                 err instanceof Error ? err.message : "An error occurred"
             );

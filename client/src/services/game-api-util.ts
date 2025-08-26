@@ -5,8 +5,7 @@ const BASE_URL = 'http://localhost:3003/api/games';
 export async function gameApiFetch(endpoint: string, data: any, method: string) {
   // Check socket connection before making any API call
   if (!socketService.getConnected()) {
-    console.error('Socket connection required.');
-    return;
+    await socketService.connect(data.userId);
   }    
 
   const url = `${BASE_URL}${endpoint}`;
