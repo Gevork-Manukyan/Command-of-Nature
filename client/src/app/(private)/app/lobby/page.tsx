@@ -10,6 +10,7 @@ export default async function LobbyPage() {
     const session = await requireUserSession();
     const user = await getUserActiveGames(session.user.id);
     const currentGameId = user?.activeGameIds?.[0];
+    console.log("currentGameId", currentGameId);
 
     if (currentGameId) {
         redirect(`/app/game/${currentGameId}`);

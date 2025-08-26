@@ -26,10 +26,6 @@ export function useGameCard(game: GameListing, setIsJoining: (isJoining: boolean
       try {
           setIsJoining(true);
           const response = await joinGame({ userId, gameId: game.id, password: password || undefined });
-          if (response.error) {
-            throw new Error(response.error);
-          } 
-          
           router.push(`/app/game/${response.id}`);
           updateCurrentSession(response);
       } catch (err) {

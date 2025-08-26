@@ -55,7 +55,6 @@ export const CreateGameModal = () => {
                 isPrivate: data.isPrivate,
                 password: data.isPrivate ? data.password : undefined,
             });
-            if (response.error) throw new Error(response.error);
             updateCurrentSession(response);
             router.push(`/app/game/${response.id}`);
             closeModal();
