@@ -52,9 +52,20 @@ import {
     requireHostForClearTeams,
 } from "src/middleware/hostOnly";
 import { validateRequestBody } from "src/lib/utilities/routes";
+import { ConGame } from "src/models";
 
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
+
+function createGameListing(game: ConGame): GameListing {
+    return {
+        id: game.id,
+        gameName: game.gameName,
+        isPrivate: game.isPrivate,
+        numPlayersTotal: game.numPlayersTotal,
+        numCurrentPlayers: game.players.length,
+    }
+}
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
@@ -85,13 +96,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 true,
                 password
             );
-            const gameListing: GameListing = {
-                id: game.id,
-                gameName: game.gameName,
-                isPrivate: game.isPrivate,
-                numPlayersTotal: game.numPlayersTotal,
-                numCurrentPlayers: game.players.length,
-            };
+            const gameListing = createGameListing(game);
             userSocketManager.joinGameRoom(userId, game.id);
             res.json(gameListing);
         })
@@ -101,7 +106,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/join",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, gameId, password } = validateRequestBody<JoinGameData>(joinGameSchema, req);
+            const { userId, gameId, password } =
+                validateRequestBody<JoinGameData>(joinGameSchema, req);
             const socketId = getSocketId(userId);
 
             gameStateManager.verifyJoinGameEvent(gameId);
@@ -114,13 +120,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             );
             gameStateManager.processJoinGameEvent(gameId);
             const game = gameStateManager.getGame(gameId);
-            const gameListing: GameListing = {
-                id: gameId,
-                gameName: game.gameName,
-                isPrivate: game.isPrivate,
-                numPlayersTotal: game.numPlayersTotal,
-                numCurrentPlayers: game.players.length,
-            };
+            const gameListing = createGameListing(game);
 
             userSocketManager.joinGameRoom(userId, gameId);
             gameEventEmitter.emitToOtherPlayersInRoom(
@@ -137,18 +137,15 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/rejoin",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, gameId } = validateRequestBody<RejoinGameData>(rejoinGameSchema, req);
+            const { userId, gameId } = validateRequestBody<RejoinGameData>(
+                rejoinGameSchema,
+                req
+            );
             const socketId = getSocketId(userId);
 
             await gameStateManager.playerRejoinedGame(gameId, userId, socketId);
             const game = gameStateManager.getGame(gameId);
-            const gameListing: GameListing = {
-                id: gameId,
-                gameName: game.gameName,
-                isPrivate: game.isPrivate,
-                numPlayersTotal: game.numPlayersTotal,
-                numCurrentPlayers: game.players.length,
-            };
+            const gameListing = createGameListing(game);
 
             userSocketManager.joinGameRoom(userId, gameId);
             gameEventEmitter.emitToOtherPlayersInRoom(
@@ -165,7 +162,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/sage",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, sage } = validateRequestBody<SelectSageData>(selectSageSchema, req);
+            const { userId, sage } = validateRequestBody<SelectSageData>(
+                selectSageSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
@@ -210,7 +210,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/join-team",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, team } = validateRequestBody<JoinTeamData>(joinTeamSchema, req);
+            const { userId, team } = validateRequestBody<JoinTeamData>(
+                joinTeamSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
@@ -267,7 +270,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/toggle-ready",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<ToggleReadyStatusData>(toggleReadyStatusSchema, req);
+            const { userId } = validateRequestBody<ToggleReadyStatusData>(
+                toggleReadyStatusSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
@@ -313,7 +319,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/choose-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, choices } = validateRequestBody<ChooseWarriorsData>(chooseWarriorsSchema, req);
+            const { userId, choices } = validateRequestBody<ChooseWarriorsData>(
+                chooseWarriorsSchema,
+                req
+            );
             const parsedChoices: [
                 ElementalWarriorStarterCard,
                 ElementalWarriorStarterCard
@@ -348,7 +357,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/swap-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<SwapWarriorsData>(swapWarriorsSchema, req);
+            const { userId } = validateRequestBody<SwapWarriorsData>(
+                swapWarriorsSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
@@ -370,7 +382,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/finish-setup",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<PlayerFinishedSetupData>(playerFinishedSetupSchema, req);
+            const { userId } = validateRequestBody<PlayerFinishedSetupData>(
+                playerFinishedSetupSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
@@ -395,7 +410,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/cancel-setup",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<CancelSetupData>(cancelSetupSchema, req);
+            const { userId } = validateRequestBody<CancelSetupData>(
+                cancelSetupSchema,
+                req
+            );
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
