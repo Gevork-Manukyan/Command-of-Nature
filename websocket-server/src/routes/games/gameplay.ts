@@ -15,7 +15,6 @@ const userSocketManager = UserSocketManager.getInstance();
 export default function createGameplayRouter(gameEventEmitter: GameEventEmitter) {
   const router = express.Router();
 
-  // TODO: implement on client side
   // Exits the game for everyone. Only the host can exit the game.
   // POST /api/games/gameplay/:gameId/exit
   router.post('/:gameId/exit', requireHostForGameExit, asyncHandler(async (req: Request, res: Response) => {
@@ -28,7 +27,6 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     res.status(200).json({ message: 'Game exited successfully' });
   }));
   
-  // TODO: implement on client side
   // POST /api/games/gameplay/:gameId/leave
   router.post('/:gameId/leave', asyncHandler(async (req: Request, res: Response) => {
     const { userId } = validateRequestBody<LeaveGameData>(leaveGameSchema, req);
