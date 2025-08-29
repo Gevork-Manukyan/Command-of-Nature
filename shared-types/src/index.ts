@@ -19,3 +19,6 @@ export * from "./server-types";
 
 // Decklist
 export * from "./Decklist";
+
+// Modal Validation
+export * from "./modal-validation";

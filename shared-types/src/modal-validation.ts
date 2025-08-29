@@ -1,12 +1,8 @@
-import {
-    CardSchema,
-    DecklistSchema,
-    ElementalCardSchema,
-    ItemCardSchema,
-    SageSchema,
-    SpaceOptionsSchema,
-} from "@shared-types";
 import { z } from "zod";
+import { CardSchema, ElementalCardSchema, ItemCardSchema } from "./card-classes";
+import { SageSchema } from "./card-types";
+import { DecklistSchema } from "./Decklist";
+import { SpaceOptionsSchema } from "./space-options";
 
 export const PlayerSchema = z.object({
     userId: z.string(),

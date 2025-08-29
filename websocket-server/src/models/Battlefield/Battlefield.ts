@@ -8,7 +8,7 @@ import {
 } from "@shared-types";
 import { BattlefieldSpace } from "../BattlefieldSpace/BattlefieldSpace";
 import { JsonValue } from "@prisma/client/runtime/library";
-import { BattlefieldSchema } from "../validation";
+import { BattlefieldSchema } from "@shared-types";
 
 const ONE_PLAYER_SPACE_MAX = 6;
 const TWO_PLAYER_SPACE_MAX = 12;

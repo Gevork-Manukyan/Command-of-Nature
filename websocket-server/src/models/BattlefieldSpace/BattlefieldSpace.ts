@@ -6,7 +6,7 @@ import {
     ElementalWarriorCard,
 } from "@shared-types";
 import { JsonValue } from "@prisma/client/runtime/library";
-import { BattlefieldSpaceSchema } from "../validation";
+import { BattlefieldSpaceSchema } from "@shared-types";
 
 export type Direction = "TL" | "T" | "TR" | "L" | "R" | "BL" | "B" | "BR";
 

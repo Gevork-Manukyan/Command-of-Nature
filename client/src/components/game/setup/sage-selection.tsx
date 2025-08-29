@@ -1,3 +1,5 @@
+"use client";
+
 import { Sage } from "@shared-types";
 import { useState } from "react";
 
@@ -7,11 +9,15 @@ type SageSelectionProps = {
         [key in Sage]: boolean;
     };
     onSageConfirm: (sage: Sage) => void;
-}
-    
-export default function SageSelection({ selectedSage, availableSages, onSageConfirm }: SageSelectionProps) {
+};
+
+export default function SageSelection({
+    selectedSage,
+    availableSages,
+    onSageConfirm,
+}: SageSelectionProps) {
     const [clickedSage, setClickedSage] = useState<Sage | null>(null);
-    
+
     const handleSageSelect = (sage: Sage) => {
         if (availableSages[sage]) {
             setClickedSage(sage);
@@ -33,7 +39,7 @@ export default function SageSelection({ selectedSage, availableSages, onSageConf
                     const isAvailable = availableSages[sage as Sage];
                     const isSelected = clickedSage === sage;
                     const isConfirmed = selectedSage === sage;
-                    
+
                     return (
                         <button
                             key={sage}
@@ -41,12 +47,12 @@ export default function SageSelection({ selectedSage, availableSages, onSageConf
                             disabled={!isAvailable}
                             className={`p-4 border rounded-lg transition-colors ${
                                 isConfirmed
-                                    ? "bg-green-100 border-green-500 text-green-800" 
-                                    : !isAvailable 
-                                        ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
-                                        : isSelected
-                                            ? "bg-blue-100 border-blue-500 text-blue-800"
-                                        : "hover:bg-blue-50 border-gray-300"
+                                    ? "bg-green-100 border-green-500 text-green-800"
+                                    : !isAvailable
+                                    ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
+                                    : isSelected
+                                    ? "bg-blue-100 border-blue-500 text-blue-800"
+                                    : "hover:bg-blue-50 border-gray-300"
                             }`}
                         >
                             <h4 className="font-medium">{sage}</h4>

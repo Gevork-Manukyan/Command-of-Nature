@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import { ActiveConGame } from "src/models";
-import { ActiveConGameSchema } from "src/models/validation";
+import { ActiveConGameSchema } from "@shared-types";
 
 const router = express.Router();
 

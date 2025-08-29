@@ -5,7 +5,7 @@ export const GameListingSchema = z.object({
     id: z.string(),
     gameName: z.string(),
     isPrivate: z.boolean(),
-    numPlayersTotal: z.number(),
+    numPlayersTotal: z.union([z.literal(2), z.literal(4)]),
     numCurrentPlayers: z.number(),
 });
 export type GameListing = z.infer<typeof GameListingSchema>;

@@ -5,7 +5,7 @@ import {
 import { Card, Sage, Decklist } from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
-import { PlayerSchema } from "../validation";
+import { PlayerSchema } from "@shared-types";
 
 /**
  * Represents a player in the Command of Nature game

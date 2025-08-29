@@ -7,7 +7,7 @@ import {
 } from "@shared-types";
 import { Battlefield } from "../Battlefield/Battlefield";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
-import { TeamSchema } from "../validation";
+import { TeamSchema } from "@shared-types";
 import { Player } from "../Player/Player";
 
 /**
