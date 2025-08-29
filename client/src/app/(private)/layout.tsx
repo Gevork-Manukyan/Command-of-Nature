@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingScreen } from "@/components/loading/loading-screen";
 import { SocketProvider } from "@/contexts/SocketContext";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ export default function PrivateLayout({
     }, [session, status, router]);
 
     if (status === "loading") {
-        return <div>Loading...</div>;
+        return <LoadingScreen message="Loading..." />;
     }
 
     if (!session?.user) {

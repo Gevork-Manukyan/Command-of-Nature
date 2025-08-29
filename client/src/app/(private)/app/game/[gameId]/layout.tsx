@@ -49,8 +49,12 @@ export default function GameLayout({
     }, [userId, currentGameSession, isSocketConnected]);
 
     // Handle loading states
-    if (isLoadingGameSession || isRejoiningGame) {
-        return <LoadingScreen message={isRejoiningGame ? "Rejoining game..." : "Loading game session..."} />;
+    if (isLoadingGameSession) {
+        return <LoadingScreen message={"Loading game..."} />;
+    }
+
+    if (isRejoiningGame) {
+        return <LoadingScreen message="Rejoining game..." />;
     }
 
     if (isLeaving) {
@@ -65,7 +69,7 @@ export default function GameLayout({
     if (!(isLeaving || isRejoiningGame) && !currentGameSession) {
         return (
             <div className="flex flex-col min-h-screen">
-                <ErrorScreen message="Game session not found" />
+                <ErrorScreen message="Game session not found" onGoBack={goToLobby} />
             </div>
         );
     }
