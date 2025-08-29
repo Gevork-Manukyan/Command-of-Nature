@@ -29,18 +29,12 @@ export function useGameNavigation(gameId: string, userId: string) {
         try {
             await leaveGameApi(gameId, { userId });
             router.push('/app/lobby');
-
-            // Wait for the router to push to the lobby before updating the current session
-            // This is a temporary solution to avoid race conditions (visual bug)
-            setTimeout(() => {
-                updateCurrentSession(null);
-            }, 100);
+            updateCurrentSession(null);
         } catch (err) {
             console.error('Failed to leave game:', err);
             setError(err instanceof Error ? err.message : 'Failed to leave game');
+            setIsLeaving(false);
         }
-
-        setIsLeaving(false);
     };
 
     return {
