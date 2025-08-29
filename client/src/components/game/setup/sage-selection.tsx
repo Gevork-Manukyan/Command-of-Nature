@@ -4,17 +4,23 @@ import { Sage } from "@shared-types";
 import { useState } from "react";
 
 type SageSelectionProps = {
+    isHost: boolean;
     selectedSage: Sage | null;
+    numberOfPlayers: number;
     availableSages: {
         [key in Sage]: boolean;
     };
     onSageConfirm: (sage: Sage) => void;
+    onAllSagesSelected?: () => void;
 };
 
 export default function SageSelection({
+    isHost,
     selectedSage,
+    numberOfPlayers,
     availableSages,
     onSageConfirm,
+    onAllSagesSelected,
 }: SageSelectionProps) {
     const [clickedSage, setClickedSage] = useState<Sage | null>(null);
 
@@ -60,7 +66,7 @@ export default function SageSelection({
                     );
                 })}
             </div>
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center gap-4">
                 <button
                     onClick={handleSageConfirmClick}
                     className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -68,6 +74,17 @@ export default function SageSelection({
                 >
                     Confirm
                 </button>
+
+                {/* Conditionally render "All Sages Selected" button for hosts */}
+                {isHost && onAllSagesSelected && (
+                    <button
+                        onClick={onAllSagesSelected}
+                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={numberOfPlayers !== Object.values(availableSages).filter((isSageSelected) => isSageSelected).length}
+                    >
+                        All Sages Selected
+                    </button>
+                )}
             </div>
         </section>
     );

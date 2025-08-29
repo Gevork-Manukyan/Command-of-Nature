@@ -8,10 +8,13 @@ import { useGameSetup } from '@/components/game/setup/useGameSetup';
 export default function GameSetupPage() {
     const { 
         error, 
+        numberOfPlayers,
         currentPhase,
+        isHost,
         selectedSage,
         availableSages,
         handleSageConfirm,
+        handleAllSagesSelected,
         handleTeamJoin,
     } = useGameSetup();
 
@@ -24,8 +27,11 @@ export default function GameSetupPage() {
             {/* Sage Selection */}
             {currentPhase === 'sage-selection' && (
                 <SageSelection 
-                    selectedSage={selectedSage}     
-                    onSageConfirm={handleSageConfirm} 
+                    isHost={isHost}
+                    selectedSage={selectedSage} 
+                    numberOfPlayers={numberOfPlayers}
+                    onSageConfirm={handleSageConfirm}
+                    onAllSagesSelected={handleAllSagesSelected}
                     availableSages={availableSages}
                 />
             )}

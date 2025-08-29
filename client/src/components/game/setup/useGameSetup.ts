@@ -5,16 +5,19 @@ import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
-import { joinTeam, selectSage } from "@/services/game-api";
+import { allSagesSelected, joinTeam, selectSage } from "@/services/game-api";
 import { useSession } from "next-auth/react";
+import { isPlayerHostOfGame } from "@/actions/game-actions";
 
 export function useGameSetup() {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
-    const gameId = currentGameSession?.id || '';
-    const { data: session } = useSession();
-    const userId = session?.user.id!;
+    const [isHost, setIsHost] = useState(false);
     const [error, setError] = useState<string>('');
+    const { data: session } = useSession();
+    const gameId = currentGameSession?.id || '';
+    const numberOfPlayers = currentGameSession?.numPlayersTotal || 0;
+    const userId = session?.user.id!;
 
     // Game Related State
     const [currentPhase, setCurrentPhase] = useState<SetupPhase>('sage-selection');
@@ -27,6 +30,16 @@ export function useGameSetup() {
         "Porella": true,
         "Torrent": true,
     });
+
+    // Check if user is the host
+    useEffect(() => {
+        const checkIsHost = async () => {
+            if (!userId || !currentGameSession) return;
+            const isHost = await isPlayerHostOfGame(userId, currentGameSession.id);
+            setIsHost(isHost);
+        };
+        checkIsHost();
+    }, [currentGameSession, userId]);
 
     // Setup socket event listeners for game setup - these are the handlers for the events that are emitted by the server
     useEffect(() => {
@@ -135,6 +148,10 @@ export function useGameSetup() {
         }
     };
 
+    const handleAllSagesSelected = async () => {
+        await allSagesSelected(gameId, { userId });
+    }
+
     const handleTeamJoin = async (team: 1 | 2) => {
         if (!currentGameSession || !userId) return;
         try {
@@ -147,10 +164,13 @@ export function useGameSetup() {
 
     return {
         error,
+        numberOfPlayers,
         currentPhase,
+        isHost,
         selectedSage,
         availableSages,
         handleSageConfirm,
+        handleAllSagesSelected,
         handleTeamJoin,
     };
 } 
