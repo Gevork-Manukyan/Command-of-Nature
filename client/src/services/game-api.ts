@@ -30,14 +30,10 @@ import { GameListingSchema } from "@shared-types";
 
 /* ------------ Utility ------------ */
 async function updatePlayerActiveGames(userId: string, gameId: string) {
-    await prisma.user.update({
-        where: {
-            id: userId,
-        },
+    await prisma.userGame.create({
         data: {
-            activeGameIds: {
-                push: gameId,
-            },
+            userId,
+            gameId,
         },
     });
 }
@@ -134,25 +130,16 @@ export async function leaveGame(gameId: string, data: LeaveGameData) {
         data,
         "POST"
     );
-    if (response.ok) {
-        await prisma.user.update({
-            where: {
-                id: data.userId,
+
+    await prisma.userGame.delete({
+        where: {
+            userId_gameId: {
+                userId: data.userId,
+                gameId: gameId,
             },
-            data: {
-                // remove the gameId from the user's activeGameIds
-                activeGameIds: {
-                    set:
-                        (
-                            await prisma.user.findUnique({
-                                where: { id: data.userId },
-                                select: { activeGameIds: true },
-                            })
-                        )?.activeGameIds.filter((id) => id !== gameId) || [],
-                },
-            },
-        });
-    }
+        },
+    });
+    
     return response;
 }
 

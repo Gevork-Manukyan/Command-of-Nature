@@ -8,14 +8,14 @@ export async function GET(
   try {
     const user = await prisma.user.findUnique({
       where: { id: params.userId },
-      select: { activeGameIds: true },
+      select: { userGames: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ activeGameIds: user.activeGameIds });
+    return NextResponse.json({ userGames: user.userGames });
   } catch (error) {
     console.error("Error fetching user games:", error);
     return NextResponse.json(
@@ -32,16 +32,14 @@ export async function POST(
   try {
     const { gameId } = await request.json();
 
-    const user = await prisma.user.update({
-      where: { id: params.userId },
+    const userGame = await prisma.userGame.create({
       data: {
-        activeGameIds: {
-          push: gameId,
-        },
+        userId: params.userId,
+        gameId,
       },
     });
 
-    return NextResponse.json({ success: true, user });
+    return NextResponse.json({ success: true, userGame });
   } catch (error) {
     console.error("Error adding game to user:", error);
     return NextResponse.json(
