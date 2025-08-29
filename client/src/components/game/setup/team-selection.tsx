@@ -1,8 +1,8 @@
-type TeamSelectionProps = {
-    handleTeamJoin: (team: 1 | 2) => void;
-}
+import { useGameSetupContext } from "@/contexts/GameSetupContext";
 
-export default function TeamSelection({ handleTeamJoin }: TeamSelectionProps) {
+export default function TeamSelection() {
+    const { handleTeamJoin } = useGameSetupContext();
+    
     return (
         <div className="mb-8">
             <h3 className="text-xl font-semibold mb-4">Teams</h3>

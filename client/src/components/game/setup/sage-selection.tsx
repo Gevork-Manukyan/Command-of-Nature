@@ -1,27 +1,18 @@
 "use client";
 
+import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { Sage } from "@shared-types";
 import { useState } from "react";
 
-type SageSelectionProps = {
-    isHost: boolean;
-    selectedSage: Sage | null;
-    numberOfPlayers: number;
-    availableSages: {
-        [key in Sage]: boolean;
-    };
-    onSageConfirm: (sage: Sage) => void;
-    onAllSagesSelected?: () => void;
-};
-
-export default function SageSelection({
-    isHost,
-    selectedSage,
-    numberOfPlayers,
-    availableSages,
-    onSageConfirm,
-    onAllSagesSelected,
-}: SageSelectionProps) {
+export default function SageSelection() {
+    const { 
+        numberOfPlayers,
+        isHost,
+        selectedSage,
+        availableSages,
+        handleSageConfirm,
+        handleAllSagesSelected,
+    } = useGameSetupContext();
     const [clickedSage, setClickedSage] = useState<Sage | null>(null);
 
     const handleSageSelect = (sage: Sage) => {
@@ -32,7 +23,7 @@ export default function SageSelection({
 
     const handleSageConfirmClick = () => {
         if (clickedSage) {
-            onSageConfirm(clickedSage);
+            handleSageConfirm(clickedSage);
             setClickedSage(null);
         }
     };
@@ -76,9 +67,9 @@ export default function SageSelection({
                 </button>
 
                 {/* Conditionally render "All Sages Selected" button for hosts */}
-                {isHost && onAllSagesSelected && (
+                {isHost && handleAllSagesSelected && (
                     <button
-                        onClick={onAllSagesSelected}
+                        onClick={handleAllSagesSelected}
                         className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={numberOfPlayers !== Object.values(availableSages).filter((isSageSelected) => isSageSelected).length}
                     >

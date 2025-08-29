@@ -3,20 +3,13 @@
 import { ErrorScreen } from '@/components/error/error-screen';
 import SageSelection from '@/components/game/setup/sage-selection';
 import TeamSelection from '@/components/game/setup/team-selection';
-import { useGameSetup } from '@/components/game/setup/useGameSetup';
+import { useGameSetupContext } from '@/contexts/GameSetupContext';
 
 export default function GameSetupPage() {
     const { 
         error, 
-        numberOfPlayers,
         currentPhase,
-        isHost,
-        selectedSage,
-        availableSages,
-        handleSageConfirm,
-        handleAllSagesSelected,
-        handleTeamJoin,
-    } = useGameSetup();
+    } = useGameSetupContext();
 
     if (error) {
         return <ErrorScreen message={error} />;
@@ -26,19 +19,12 @@ export default function GameSetupPage() {
         <section className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-lg">
             {/* Sage Selection */}
             {currentPhase === 'sage-selection' && (
-                <SageSelection 
-                    isHost={isHost}
-                    selectedSage={selectedSage} 
-                    numberOfPlayers={numberOfPlayers}
-                    onSageConfirm={handleSageConfirm}
-                    onAllSagesSelected={handleAllSagesSelected}
-                    availableSages={availableSages}
-                />
+                <SageSelection />
             )}
             
             {/* Team Formation */}
             {currentPhase === 'team-formation' && (
-                <TeamSelection handleTeamJoin={handleTeamJoin} />
+                <TeamSelection />
             )}
 
             {/* Action Buttons */}

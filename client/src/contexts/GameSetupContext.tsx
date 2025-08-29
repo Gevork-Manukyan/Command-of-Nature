@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
@@ -9,7 +9,25 @@ import { allSagesSelected, joinTeam, selectSage } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
 
-export function useGameSetup() {
+type GameSetupContextType = {
+    error: string;
+    numberOfPlayers: number;
+    currentPhase: SetupPhase;
+    isHost: boolean;
+    selectedSage: Sage | null;
+    availableSages: { [key in Sage]: boolean };
+    handleSageConfirm: (sage: Sage) => Promise<void>;
+    handleAllSagesSelected: () => Promise<void>;
+    handleTeamJoin: (team: 1 | 2) => Promise<void>;
+}
+
+const GameSetupContext = createContext<GameSetupContextType | undefined>(undefined);
+
+type GameSetupProviderProps = {
+    children: React.ReactNode;
+}
+
+export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
     const [isHost, setIsHost] = useState(false);
@@ -162,15 +180,27 @@ export function useGameSetup() {
         }
     };
 
-    return {
-        error,
-        numberOfPlayers,
-        currentPhase,
-        isHost,
-        selectedSage,
-        availableSages,
-        handleSageConfirm,
-        handleAllSagesSelected,
-        handleTeamJoin,
-    };
-} 
+    return (
+        <GameSetupContext.Provider value={{
+            error,
+            numberOfPlayers,
+            currentPhase,
+            isHost,
+            selectedSage,
+            availableSages,
+            handleSageConfirm,
+            handleAllSagesSelected,
+            handleTeamJoin,
+        }}>
+            {children}
+        </GameSetupContext.Provider>
+    );
+}
+
+export function useGameSetupContext() {
+    const context = useContext(GameSetupContext);
+    if (!context) {
+        throw new Error('useGameSetupContext must be used within a GameSetupProvider');
+    }
+    return context;
+}
