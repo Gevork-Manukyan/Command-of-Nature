@@ -9,6 +9,7 @@ import { ErrorScreen } from '@/components/error/error-screen';
 import { useSocketContext } from '@/contexts/SocketContext';
 import { useSession } from 'next-auth/react';
 import { rejoinGame as rejoinGameApi } from '@/services/game-api';
+import { isUserInGame } from '@/actions/user-actions';
 
 export default function GameLayout({
     children,
@@ -19,7 +20,7 @@ export default function GameLayout({
     const { data: session } = useSession();
     const userId = session?.user.id!;
     const { isSocketConnected } = useSocketContext();
-    const { currentGameSession, isLoadingGameSession } = useGameSessionContext();
+    const { currentGameSession, isLoadingGameSession, updateCurrentSession } = useGameSessionContext();
     const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : '';
     const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId, userId);
     const shortGameId = gameId.toString().slice(-6);
@@ -30,7 +31,18 @@ export default function GameLayout({
 
     // Handle game rejoining - this happens once when entering any game page
     useEffect(() => {
-        if (!userId || !currentGameSession || !isSocketConnected) return;
+        if (!userId || !isSocketConnected) return;
+
+        const checkIfUserInGame = async (userId: string, gameId: string) => {
+            const playerGame = await isUserInGame(userId, gameId);
+            if (playerGame) {
+                updateCurrentSession(playerGame);
+            }
+        }
+        
+        if (!currentGameSession && !isLoadingGameSession) {
+            checkIfUserInGame(userId, params.gameId as string);
+        }
 
         const rejoinGame = async () => {
             try {
@@ -45,7 +57,9 @@ export default function GameLayout({
             }
         };
 
-        rejoinGame();
+        if (gameId) {
+            rejoinGame();
+        }
     }, [userId, currentGameSession, isSocketConnected]);
 
     // Handle loading states

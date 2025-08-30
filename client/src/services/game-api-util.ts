@@ -15,7 +15,7 @@ export async function gameApiFetch(endpoint: string, data: any, method: string) 
     body: JSON.stringify(data)
   });
   
-  if (!response.ok) throw new Error(`${response.statusText}`);
+  if (!response.ok) throw new Error(`Game API Error: ${response.statusText}`);
   const responseData = await response.json();
   return responseData;
 }

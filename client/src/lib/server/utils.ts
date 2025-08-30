@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
+import { GameListing } from "@shared-types";
+import { ConGame } from "@prisma/client";
 
 /**
  * Ensures the user is authenticated. If not, redirects to /login.
@@ -12,3 +14,13 @@ export async function requireUserSession() {
     }
     return session;
 }
+
+export function createGameListing(game: ConGame): GameListing {
+  return {
+      id: game.id,
+      gameName: game.gameName,
+      isPrivate: game.isPrivate,
+      numPlayersTotal: game.numPlayersTotal as 2 | 4,
+      numCurrentPlayers: game.players.length,
+    }
+  }
