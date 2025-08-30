@@ -20,3 +20,20 @@ export const validateRequestBody = <T>(
     }
     return parsedData.data;
 };
+
+/**
+ * Validates the request query against a Zod schema
+ * @param schema - The Zod schema to validate against
+ * @param req - The request object
+ * @returns The parsed data
+ */
+export const validateRequestQuery = <T>(
+    schema: z.ZodSchema<T>,
+    req: Request,
+): T => {
+    const parsedData = schema.safeParse(req.query);
+    if (!parsedData.success) {
+        throw new ValidationError(parsedData.error.message);
+    }
+    return parsedData.data;
+};

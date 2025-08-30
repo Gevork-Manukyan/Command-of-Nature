@@ -14,6 +14,8 @@ import {
     CreateGameData,
     ElementalWarriorStarterCard,
     GameListing,
+    GetSelectedSagesData,
+    getSelectedSagesSchema,
     JoinGameData,
     joinGameSchema,
     JoinTeamData,
@@ -51,7 +53,7 @@ import {
     requireHostForAllTeamsJoined,
     requireHostForClearTeams,
 } from "src/middleware/hostOnly";
-import { validateRequestBody } from "src/lib/utilities/routes";
+import { validateRequestBody, validateRequestQuery } from "src/lib/utilities/routes";
 import { ConGame } from "src/models";
 
 const gameStateManager = GameStateManager.getInstance();
@@ -176,6 +178,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const availableSages = gameStateManager
                 .getGame(gameId)
                 .getAvailableSages();
+            
             gameEventEmitter.emitToOtherPlayersInRoom(
                 gameId,
                 socketId,
@@ -183,6 +186,23 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 { userId, sage, availableSages } as SageSelectedData
             );
             res.status(200).json({ message: "Sage selected successfully" });
+        })
+    );
+
+    // GET /api/games/setup/:gameId/selected-sages
+    router.get(
+        "/:gameId/selected-sages",
+        asyncHandler(async (req: Request, res: Response) => {
+            const { userId } = validateRequestQuery<GetSelectedSagesData>(
+                getSelectedSagesSchema,
+                req
+            );
+            const gameId = req.params.gameId;
+            const game = gameStateManager.getGame(gameId);
+            const availableSages = game.getAvailableSages();
+            const selectedSage = game.getPlayerByUserId(userId)?.sage;
+
+            res.json({ availableSages, selectedSage });
         })
     );
 

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AvailableSagesSchema } from "./game-types";
 import { AllSpaceOptionsSchema } from "./space-options";
-import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent, ReadyStatusToggledEvent, TeamJoinedEvent, SageSelectedEvent, PlayerRejoinedEvent, PlayerJoinedEvent, PlayerLeftEvent } from "./game-events";
+import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent, ReadyStatusToggledEvent, TeamJoinedEvent, SageSelectedEvent, PlayerRejoinedEvent, PlayerJoinedEvent, PlayerLeftEvent, GetSelectedSagesEvent } from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
 import { SageSchema } from "./card-types";
 
@@ -39,6 +39,10 @@ export const playerRejoinedSchema = z.object({
 export const selectSageSchema = z.object({
   userId: z.string(),
   sage: SageSchema,
+});
+
+export const getSelectedSagesSchema = z.object({
+  userId: z.string(),
 });
 
 export const sageSelectedSchema = z.object({
@@ -132,6 +136,7 @@ export const EventSchemas = {
   [PlayerJoinedEvent]: playerJoinedSchema,
   [PlayerRejoinedEvent]: playerRejoinedSchema,
   [SelectSageEvent]: selectSageSchema,
+  [GetSelectedSagesEvent]: getSelectedSagesSchema,
   [SageSelectedEvent]: sageSelectedSchema,
   [AllSagesSelectedEvent]: allSagesSelectedSchema,
   [ToggleReadyStatusEvent]: toggleReadyStatusSchema,
@@ -161,6 +166,7 @@ export type JoinGameData = z.infer<typeof joinGameSchema>;
 export type PlayerJoinedData = z.infer<typeof playerJoinedSchema>;
 export type PlayerRejoinedData = z.infer<typeof playerRejoinedSchema>;
 export type SelectSageData = z.infer<typeof selectSageSchema>;
+export type GetSelectedSagesData = z.infer<typeof getSelectedSagesSchema>;
 export type SageSelectedData = z.infer<typeof sageSelectedSchema>;
 export type AllSagesSelectedData = z.infer<typeof allSagesSelectedSchema>;
 export type ToggleReadyStatusData = z.infer<typeof toggleReadyStatusSchema>;

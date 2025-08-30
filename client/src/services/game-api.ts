@@ -19,6 +19,7 @@ import {
     LeaveGameData,
     GetDayBreakCardsData,
     ActivateDayBreakData,
+    GetSelectedSagesData,
 } from "@shared-types/server-types";
 import {
     getSetupUrl,
@@ -61,6 +62,10 @@ export async function rejoinGame(data: RejoinGameData) {
 
 export async function selectSage(gameId: string, data: SelectSageData) {
     return getSetupUrlWithGameId("/sage", gameId, data, "POST");
+}
+
+export async function getSelectedSages(gameId: string, data: GetSelectedSagesData) {
+    return getSetupUrlWithGameId("/selected-sages", gameId, data, "GET");
 }
 
 export async function allSagesSelected(
@@ -139,7 +144,7 @@ export async function leaveGame(gameId: string, data: LeaveGameData) {
             },
         },
     });
-    
+
     return response;
 }
 

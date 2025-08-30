@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
 import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
-import { allSagesSelected, joinTeam, selectSage } from "@/services/game-api";
+import { allSagesSelected, getSelectedSages, joinTeam, selectSage } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
 
@@ -16,6 +16,7 @@ type GameSetupContextType = {
     isHost: boolean;
     selectedSage: Sage | null;
     availableSages: { [key in Sage]: boolean };
+    fetchSelectedSages: () => Promise<void>;
     handleSageConfirm: (sage: Sage) => Promise<void>;
     handleAllSagesSelected: () => Promise<void>;
     handleTeamJoin: (team: 1 | 2) => Promise<void>;
@@ -64,6 +65,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         if (!currentGameSession) return;
 
         const handleSageSelected = (data: SageSelectedData) => {
+            console.log("Sage selected: ", data)
             const parsedData = sageSelectedSchema.parse(data);
             setAvailableSages(parsedData.availableSages);
         };
@@ -166,6 +168,12 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         }
     };
 
+    const fetchSelectedSages = async () => {
+        const { availableSages, selectedSage } = await getSelectedSages(gameId, { userId });
+        setAvailableSages(availableSages);
+        setSelectedSage(selectedSage);
+    }
+
     const handleAllSagesSelected = async () => {
         await allSagesSelected(gameId, { userId });
     }
@@ -188,6 +196,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             isHost,
             selectedSage,
             availableSages,
+            fetchSelectedSages,
             handleSageConfirm,
             handleAllSagesSelected,
             handleTeamJoin,

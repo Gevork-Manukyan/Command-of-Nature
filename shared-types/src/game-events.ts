@@ -11,6 +11,7 @@ export const LeaveGameEvent = "leave-game";
 
 // SET UP EVENTS
 export const SelectSageEvent = "select-sage";
+export const GetSelectedSagesEvent = "get-selected-sages";
 export const SageSelectedEvent = "sage-selected";
 export const AllSagesSelectedEvent = "all-sages-selected";
 export const ToggleReadyStatusEvent = "toggle-ready-status";

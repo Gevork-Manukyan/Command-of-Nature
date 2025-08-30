@@ -83,7 +83,6 @@ export class GameDatabaseService {
         gameId: string,
         gameState: GameState
     ): Promise<GameState> {
-        console.debug("Saving game state for game:", gameId);
         try {
             return await this.gameStateService.updateGameStateByGameId(
                 gameId,
