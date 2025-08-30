@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { socketService } from '@/services/socket';
 import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, SetupPhase } from '@shared-types';
-import { allSagesSelected, getSelectedSages, joinTeam, selectSage } from "@/services/game-api";
+import { Sage, SageSelectedEvent, AllSagesSelectedEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ReadyStatusToggledEvent, TeamJoinedEvent, PickWarriorsEvent, SageSelectedData, sageSelectedSchema, State, SetupPhase } from '@shared-types';
+import { allSagesSelected, getCurrentPhase, getSelectedSages, joinTeam, selectSage } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
 
@@ -65,7 +65,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         if (!currentGameSession) return;
 
         const handleSageSelected = (data: SageSelectedData) => {
-            console.log("Sage selected: ", data)
             const parsedData = sageSelectedSchema.parse(data);
             setAvailableSages(parsedData.availableSages);
         };
@@ -144,6 +143,16 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         };
     }, [currentGameSession, router]);
 
+    // Fetch the current phase
+    useEffect(() => {
+        const fetchCurrentPhase = async () => {
+            const currentPhase = await getCurrentPhase(gameId);
+            console.log('currentPhase', currentPhase);
+            setCurrentPhase(currentPhase);
+        };
+        fetchCurrentPhase();
+    }, [gameId]);
+    
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentGameSession || !userId) return;
         try {

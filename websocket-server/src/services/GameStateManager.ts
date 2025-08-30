@@ -3,7 +3,7 @@ import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo } from "../types";
 import { ValidationError, GameConflictError } from "../custom-errors";
 import { GameDatabaseService } from "./GameDatabaseService";
-import { TransitionEvent } from "../models/GameState/gamestate-types";
+import { TransitionEvent } from "../../../shared-types/src/gamestate-types";
 
 export class GameStateManager {
     private static instance: GameStateManager;
@@ -70,7 +70,7 @@ export class GameStateManager {
         const existingPlayer = game.players.find(
             (p) => p.socketId === socketId
         );
-        
+
         if (existingPlayer) {
             // If it's the same user, just update their socket ID
             if (existingPlayer.userId === userId) {

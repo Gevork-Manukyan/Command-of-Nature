@@ -6,7 +6,7 @@ import {
     State,
     Transition,
     TransitionEvent,
-} from "./gamestate-types";
+} from "../../../../shared-types/src/gamestate-types";
 import { GameState as GameStatePrisma } from "@prisma/client";
 
 export class GameState {
@@ -155,7 +155,7 @@ export class GameState {
     getCurrentTransition() {
         return {
             currentState: this.currentTransition.currentState,
-            possibleInputs: this.currentTransition.possibleInputs
+            possibleInputs: this.currentTransition.possibleInputs,
         };
     }
 

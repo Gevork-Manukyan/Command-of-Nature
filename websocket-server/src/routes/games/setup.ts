@@ -206,7 +206,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-sages-selected
     router.post(
         "/:gameId/all-sages-selected",

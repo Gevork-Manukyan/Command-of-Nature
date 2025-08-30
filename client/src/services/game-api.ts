@@ -39,6 +39,11 @@ async function updatePlayerActiveGames(userId: string, gameId: string) {
     });
 }
 
+/* ------------ General Endpoints ------------ */
+export async function getCurrentPhase(gameId: string) {
+    return getGameplayUrlWithGameId("/current-phase", gameId, {}, "GET");
+}
+
 /* ------------ Setup Endpoints ------------ */
 export async function createGame(data: CreateGameData) {
     const response = await getSetupUrl("/create", data, "POST");

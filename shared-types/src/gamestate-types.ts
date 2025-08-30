@@ -14,6 +14,15 @@ export enum State {
     END_GAME = "end-game",
     GAME_FINISHED = "game-finished",
 }
+
+export const SetupPhasesSchema = z.enum([
+    "sage-selection",
+    "team-formation",
+    "warrior-selection",
+    "warrior-swapping",
+    "setup-complete",
+]);
+export type SetupPhase = z.infer<typeof SetupPhasesSchema>;
   
 export enum TransitionEvent {
     PLAYER_JOINED = "player-joined",

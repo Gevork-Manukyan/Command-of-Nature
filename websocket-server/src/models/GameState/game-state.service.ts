@@ -1,6 +1,6 @@
 import { GameState } from "./GameState";
 import { NotFoundError } from "../../custom-errors";
-import { TransitionEvent } from "./gamestate-types";
+import { TransitionEvent } from "../../../../shared-types/src/gamestate-types";
 import { prisma } from "../../lib/prisma";
 
 /**
@@ -55,10 +55,7 @@ export class GameStateService {
         return GameState.fromPrisma(doc);
     }
 
-    async updateGameState(
-        id: string,
-        updates: GameState
-    ): Promise<GameState> {
+    async updateGameState(id: string, updates: GameState): Promise<GameState> {
         const doc = await prisma.gameState.update({
             where: { id: id },
             data: updates.toPrismaObject(),

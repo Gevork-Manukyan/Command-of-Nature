@@ -15,6 +15,17 @@ const userSocketManager = UserSocketManager.getInstance();
 export default function createGameplayRouter(gameEventEmitter: GameEventEmitter) {
   const router = express.Router();
 
+  // GET /api/games/gameplay/:gameId/current-phase
+  router.get(
+    "/:gameId/current-phase",
+    asyncHandler(async (req: Request, res: Response) => {
+        const gameId = req.params.gameId;
+        const gameState = gameStateManager.getGameState(gameId);
+        const currentPhase = gameState.getCurrentTransition().currentState;
+        res.json(currentPhase);
+    })
+  );
+
   // Exits the game for everyone. Only the host can exit the game.
   // POST /api/games/gameplay/:gameId/exit
   router.post('/:gameId/exit', requireHostForGameExit, asyncHandler(async (req: Request, res: Response) => {
