@@ -3,6 +3,7 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { Sage } from "@shared-types";
 import { useState, useEffect } from "react";
+import H3 from "./components/h3";
 
 export default function SageSelection() {
     const { 
@@ -34,8 +35,8 @@ export default function SageSelection() {
     };
 
     return (
-        <section>
-            <h3 className="text-xl font-semibold mb-4">Sage Selection</h3>
+        <div>
+            <H3>Sage Selection</H3>
             <div className="grid grid-cols-2 gap-8">
                 {Object.keys(availableSages).map((sage) => {
                     const isAvailable = availableSages[sage as Sage];
@@ -82,6 +83,6 @@ export default function SageSelection() {
                     </button>
                 )}
             </div>
-        </section>
+        </div>
     );
 }

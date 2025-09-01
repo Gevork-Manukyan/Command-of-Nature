@@ -1,11 +1,12 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
+import H3 from "./components/h3";
 
 export default function TeamSelection() {
     const { handleTeamJoin } = useGameSetupContext();
     
     return (
         <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4">Teams</h3>
+            <H3>Teams</H3>
             <div className="grid grid-cols-2 gap-8">
                 <div className="p-4 border rounded-lg">
                     <h4 className="font-medium mb-2">Team 1</h4>

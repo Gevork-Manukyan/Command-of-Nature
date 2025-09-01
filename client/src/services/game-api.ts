@@ -26,20 +26,13 @@ import {
     getSetupUrlWithGameId,
     getGameplayUrlWithGameId,
 } from "./game-api-util";
-import { prisma } from "@/lib/server/prisma";
 import { GameListingSchema } from "@shared-types";
 
-/* ------------ Utility ------------ */
-async function updatePlayerActiveGames(userId: string, gameId: string) {
-    await prisma.userGame.create({
-        data: {
-            userId,
-            gameId,
-        },
-    });
+/* ------------ General Endpoints ------------ */
+export async function getCurrentUsers(gameId: string) {
+    return getGameplayUrlWithGameId("/current-users", gameId, {}, "GET");
 }
 
-/* ------------ General Endpoints ------------ */
 export async function getCurrentPhase(gameId: string) {
     return getGameplayUrlWithGameId("/current-phase", gameId, {}, "GET");
 }
@@ -48,14 +41,12 @@ export async function getCurrentPhase(gameId: string) {
 export async function createGame(data: CreateGameData) {
     const response = await getSetupUrl("/create", data, "POST");
     const validatedResponse = GameListingSchema.parse(response);
-    await updatePlayerActiveGames(data.userId, validatedResponse.id);
     return validatedResponse;
 }
 
 export async function joinGame(data: JoinGameData) {
     const response = await getSetupUrl("/join", data, "POST");
     const validatedResponse = GameListingSchema.parse(response);
-    await updatePlayerActiveGames(data.userId, validatedResponse.id);
     return validatedResponse;
 }
 
@@ -69,7 +60,10 @@ export async function selectSage(gameId: string, data: SelectSageData) {
     return getSetupUrlWithGameId("/sage", gameId, data, "POST");
 }
 
-export async function getSelectedSages(gameId: string, data: GetSelectedSagesData) {
+export async function getSelectedSages(
+    gameId: string,
+    data: GetSelectedSagesData
+) {
     return getSetupUrlWithGameId("/selected-sages", gameId, data, "GET");
 }
 
@@ -134,23 +128,12 @@ export async function exitGame(gameId: string, data: ExitGameData) {
 
 // leave the game and the session
 export async function leaveGame(gameId: string, data: LeaveGameData) {
-    const response = await getGameplayUrlWithGameId(
+    return getGameplayUrlWithGameId(
         "/leave",
         gameId,
         data,
         "POST"
     );
-
-    await prisma.userGame.delete({
-        where: {
-            userId_gameId: {
-                userId: data.userId,
-                gameId: gameId,
-            },
-        },
-    });
-
-    return response;
 }
 
 export async function getDayBreakCards(

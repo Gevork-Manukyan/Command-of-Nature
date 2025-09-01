@@ -1,162 +1,194 @@
 import { z } from "zod";
 import { AvailableSagesSchema } from "./game-types";
 import { AllSpaceOptionsSchema } from "./space-options";
-import { CreateGameEvent, JoinGameEvent, SelectSageEvent, AllSagesSelectedEvent, ToggleReadyStatusEvent, JoinTeamEvent, ClearTeamsEvent, AllTeamsJoinedEvent, StartGameEvent, ChooseWarriorsEvent, SwapWarriorsEvent, PlayerFinishedSetupEvent, CancelSetupEvent, AllPlayersSetupEvent, ExitGameEvent, RejoinGameEvent, LeaveGameEvent, GetDayBreakCardsEvent, ActivateDayBreakEvent, RegisterUserSocketEvent, ReadyStatusToggledEvent, TeamJoinedEvent, SageSelectedEvent, PlayerRejoinedEvent, PlayerJoinedEvent, PlayerLeftEvent, GetSelectedSagesEvent } from "./game-events";
+import {
+    CreateGameEvent,
+    JoinGameEvent,
+    SelectSageEvent,
+    AllSagesSelectedEvent,
+    ToggleReadyStatusEvent,
+    JoinTeamEvent,
+    ClearTeamsEvent,
+    AllTeamsJoinedEvent,
+    StartGameEvent,
+    ChooseWarriorsEvent,
+    SwapWarriorsEvent,
+    PlayerFinishedSetupEvent,
+    CancelSetupEvent,
+    AllPlayersSetupEvent,
+    ExitGameEvent,
+    RejoinGameEvent,
+    LeaveGameEvent,
+    GetDayBreakCardsEvent,
+    ActivateDayBreakEvent,
+    RegisterUserSocketEvent,
+    ReadyStatusToggledEvent,
+    TeamJoinedEvent,
+    SageSelectedEvent,
+    PlayerRejoinedEvent,
+    PlayerJoinedEvent,
+    PlayerLeftEvent,
+    GetSelectedSagesEvent,
+} from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
 import { SageSchema } from "./card-types";
+import { UserProfileSchema } from "./types";
 
 export const registerUserSocketSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const createGameSchema = z.object({
-  userId: z.string(),
-  gameName: z.string(),
-  numPlayers: z.union([z.literal(2), z.literal(4)]),
-  isPrivate: z.boolean().default(false),
-  password: z.string().optional(),
-})
+    userId: z.string(),
+    gameName: z.string(),
+    numPlayers: z.union([z.literal(2), z.literal(4)]),
+    isPrivate: z.boolean().default(false),
+    password: z.string().optional(),
+});
 
 export const joinGameSchema = z.object({
-  userId: z.string(),
-  gameId: z.string(),
-  password: z.string().optional(),
+    userId: z.string(),
+    gameId: z.string(),
+    password: z.string().optional(),
 });
 
 export const rejoinGameSchema = z.object({
-  userId: z.string(),
-  gameId: z.string(),
-})
+    userId: z.string(),
+    gameId: z.string(),
+});
 
 export const playerJoinedSchema = z.object({
-  userId: z.string(),
+    updatedUsers: z.array(UserProfileSchema),
 });
 
 export const playerRejoinedSchema = z.object({
-  userId: z.string(),
+    updatedUsers: z.array(UserProfileSchema),
 });
 
 export const selectSageSchema = z.object({
-  userId: z.string(),
-  sage: SageSchema,
+    userId: z.string(),
+    sage: SageSchema,
 });
 
 export const getSelectedSagesSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const sageSelectedSchema = z.object({
-  userId: z.string(),
-  sage: SageSchema,
-  availableSages: AvailableSagesSchema,
+    userId: z.string(),
+    sage: SageSchema,
+    availableSages: AvailableSagesSchema,
 });
 
 export const allSagesSelectedSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const toggleReadyStatusSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const readyStatusToggledSchema = z.object({
-  userId: z.string(),
-  isReady: z.boolean(),
+    userId: z.string(),
+    isReady: z.boolean(),
 });
 
 export const joinTeamSchema = z.object({
-  userId: z.string(),
-  team: z.union([z.literal(1), z.literal(2)]),
+    userId: z.string(),
+    team: z.union([z.literal(1), z.literal(2)]),
 });
 
 export const teamJoinedSchema = z.object({
-  userId: z.string(),
-  team: z.union([z.literal(1), z.literal(2)]),
+    userId: z.string(),
+    team: z.union([z.literal(1), z.literal(2)]),
 });
 
 export const clearTeamsSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const allTeamsJoinedSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const startGameSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const chooseWarriorsSchema = z.object({
-  userId: z.string(),
-  choices: z.tuple([ElementalWarriorStarterCardSchema, ElementalWarriorStarterCardSchema]),
+    userId: z.string(),
+    choices: z.tuple([
+        ElementalWarriorStarterCardSchema,
+        ElementalWarriorStarterCardSchema,
+    ]),
 });
 
 export const swapWarriorsSchema = z.object({
-  userId: z.string(),
-})
+    userId: z.string(),
+});
 
 export const playerFinishedSetupSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const cancelSetupSchema = z.object({
-  userId: z.string(),
-})
+    userId: z.string(),
+});
 
 export const allPlayersSetupSchema = z.object({
-  userId: z.string(),
-})
+    userId: z.string(),
+});
 
 export const exitGameSchema = z.object({
-  userId: z.string(),
-})
+    userId: z.string(),
+});
 
 export const leaveGameSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const playerLeftSchema = z.object({
-  userId: z.string(),
+    updatedUsers: z.array(UserProfileSchema),
 });
 
 export const getDayBreakCardsSchema = z.object({
-  userId: z.string(),
+    userId: z.string(),
 });
 
 export const activateDayBreakSchema = z.object({
-  userId: z.string(),
-  spaceOption: AllSpaceOptionsSchema,
+    userId: z.string(),
+    spaceOption: AllSpaceOptionsSchema,
 });
 
 // Define EventSchemas record
 export const EventSchemas = {
-  [RegisterUserSocketEvent]: registerUserSocketSchema,
-  [CreateGameEvent]: createGameSchema,
-  [JoinGameEvent]: joinGameSchema,
-  [PlayerJoinedEvent]: playerJoinedSchema,
-  [PlayerRejoinedEvent]: playerRejoinedSchema,
-  [SelectSageEvent]: selectSageSchema,
-  [GetSelectedSagesEvent]: getSelectedSagesSchema,
-  [SageSelectedEvent]: sageSelectedSchema,
-  [AllSagesSelectedEvent]: allSagesSelectedSchema,
-  [ToggleReadyStatusEvent]: toggleReadyStatusSchema,
-  [ReadyStatusToggledEvent]: readyStatusToggledSchema,
-  [JoinTeamEvent]: joinTeamSchema,
-  [TeamJoinedEvent]: teamJoinedSchema,
-  [ClearTeamsEvent]: clearTeamsSchema,
-  [AllTeamsJoinedEvent]: allTeamsJoinedSchema,
-  [StartGameEvent]: startGameSchema,
-  [ChooseWarriorsEvent]: chooseWarriorsSchema,
-  [SwapWarriorsEvent]: swapWarriorsSchema,
-  [PlayerFinishedSetupEvent]: playerFinishedSetupSchema,
-  [CancelSetupEvent]: cancelSetupSchema,
-  [AllPlayersSetupEvent]: allPlayersSetupSchema,
-  [ExitGameEvent]: exitGameSchema,
-  [RejoinGameEvent]: rejoinGameSchema,
-  [LeaveGameEvent]: leaveGameSchema,
-  [PlayerLeftEvent]: playerLeftSchema,
-  [GetDayBreakCardsEvent]: getDayBreakCardsSchema,
-  [ActivateDayBreakEvent]: activateDayBreakSchema,
+    [RegisterUserSocketEvent]: registerUserSocketSchema,
+    [CreateGameEvent]: createGameSchema,
+    [JoinGameEvent]: joinGameSchema,
+    [PlayerJoinedEvent]: playerJoinedSchema,
+    [PlayerRejoinedEvent]: playerRejoinedSchema,
+    [SelectSageEvent]: selectSageSchema,
+    [GetSelectedSagesEvent]: getSelectedSagesSchema,
+    [SageSelectedEvent]: sageSelectedSchema,
+    [AllSagesSelectedEvent]: allSagesSelectedSchema,
+    [ToggleReadyStatusEvent]: toggleReadyStatusSchema,
+    [ReadyStatusToggledEvent]: readyStatusToggledSchema,
+    [JoinTeamEvent]: joinTeamSchema,
+    [TeamJoinedEvent]: teamJoinedSchema,
+    [ClearTeamsEvent]: clearTeamsSchema,
+    [AllTeamsJoinedEvent]: allTeamsJoinedSchema,
+    [StartGameEvent]: startGameSchema,
+    [ChooseWarriorsEvent]: chooseWarriorsSchema,
+    [SwapWarriorsEvent]: swapWarriorsSchema,
+    [PlayerFinishedSetupEvent]: playerFinishedSetupSchema,
+    [CancelSetupEvent]: cancelSetupSchema,
+    [AllPlayersSetupEvent]: allPlayersSetupSchema,
+    [ExitGameEvent]: exitGameSchema,
+    [RejoinGameEvent]: rejoinGameSchema,
+    [LeaveGameEvent]: leaveGameSchema,
+    [PlayerLeftEvent]: playerLeftSchema,
+    [GetDayBreakCardsEvent]: getDayBreakCardsSchema,
+    [ActivateDayBreakEvent]: activateDayBreakSchema,
 } as const;
 
 // Infer the types from the schemas directly
@@ -190,30 +222,30 @@ export type ActivateDayBreakData = z.infer<typeof activateDayBreakSchema>;
 
 // Create a mapped type for socket events
 export type SocketEventMap = {
-  [RegisterUserSocketEvent]: RegisterUserData;
-  [CreateGameEvent]: CreateGameData;
-  [JoinGameEvent]: JoinGameData;
-  [PlayerJoinedEvent]: PlayerJoinedData;
-  [PlayerRejoinedEvent]: PlayerRejoinedData;
-  [SelectSageEvent]: SelectSageData;
-  [SageSelectedEvent]: SageSelectedData;
-  [AllSagesSelectedEvent]: AllSagesSelectedData;
-  [ToggleReadyStatusEvent]: ToggleReadyStatusData;
-  [ReadyStatusToggledEvent]: ReadyStatusToggledData;
-  [JoinTeamEvent]: JoinTeamData;
-  [TeamJoinedEvent]: TeamJoinedData;
-  [ClearTeamsEvent]: ClearTeamsData;
-  [AllTeamsJoinedEvent]: AllTeamsJoinedData;
-  [StartGameEvent]: StartGameData;
-  [ChooseWarriorsEvent]: ChooseWarriorsData;
-  [SwapWarriorsEvent]: SwapWarriorsData;
-  [PlayerFinishedSetupEvent]: PlayerFinishedSetupData;
-  [CancelSetupEvent]: CancelSetupData;
-  [AllPlayersSetupEvent]: AllPlayersSetupData;
-  [ExitGameEvent]: ExitGameData;
-  [RejoinGameEvent]: RejoinGameData;
-  [LeaveGameEvent]: LeaveGameData;
-  [PlayerLeftEvent]: PlayerLeftData;
-  [GetDayBreakCardsEvent]: GetDayBreakCardsData;
-  [ActivateDayBreakEvent]: ActivateDayBreakData;
-}
+    [RegisterUserSocketEvent]: RegisterUserData;
+    [CreateGameEvent]: CreateGameData;
+    [JoinGameEvent]: JoinGameData;
+    [PlayerJoinedEvent]: PlayerJoinedData;
+    [PlayerRejoinedEvent]: PlayerRejoinedData;
+    [SelectSageEvent]: SelectSageData;
+    [SageSelectedEvent]: SageSelectedData;
+    [AllSagesSelectedEvent]: AllSagesSelectedData;
+    [ToggleReadyStatusEvent]: ToggleReadyStatusData;
+    [ReadyStatusToggledEvent]: ReadyStatusToggledData;
+    [JoinTeamEvent]: JoinTeamData;
+    [TeamJoinedEvent]: TeamJoinedData;
+    [ClearTeamsEvent]: ClearTeamsData;
+    [AllTeamsJoinedEvent]: AllTeamsJoinedData;
+    [StartGameEvent]: StartGameData;
+    [ChooseWarriorsEvent]: ChooseWarriorsData;
+    [SwapWarriorsEvent]: SwapWarriorsData;
+    [PlayerFinishedSetupEvent]: PlayerFinishedSetupData;
+    [CancelSetupEvent]: CancelSetupData;
+    [AllPlayersSetupEvent]: AllPlayersSetupData;
+    [ExitGameEvent]: ExitGameData;
+    [RejoinGameEvent]: RejoinGameData;
+    [LeaveGameEvent]: LeaveGameData;
+    [PlayerLeftEvent]: PlayerLeftData;
+    [GetDayBreakCardsEvent]: GetDayBreakCardsData;
+    [ActivateDayBreakEvent]: ActivateDayBreakData;
+};

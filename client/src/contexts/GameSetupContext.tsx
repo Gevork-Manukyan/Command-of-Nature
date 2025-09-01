@@ -21,24 +21,33 @@ import {
     SageSelectedData,
     sageSelectedSchema,
     State,
+    PlayerJoinedEvent,
+    PlayerJoinedData,
+    playerJoinedSchema,
+    PlayerLeftData,
+    playerLeftSchema,
+    PlayerLeftEvent,
 } from "@shared-types";
 import {
     allSagesSelected,
     getCurrentPhase,
+    getCurrentUsers,
     getSelectedSages,
     joinTeam,
     selectSage,
 } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
+import { UserProfile } from "@shared-types";
 
 type GameSetupContextType = {
     error: string;
     numberOfPlayers: number;
-    currentPhase: State;
+    currentPhase: State | null;
     isHost: boolean;
     selectedSage: Sage | null;
     availableSages: { [key in Sage]: boolean };
+    userPlayers: UserProfile[];
     fetchSelectedSages: () => Promise<void>;
     handleSageConfirm: (sage: Sage) => Promise<void>;
     handleAllSagesSelected: () => Promise<void>;
@@ -64,9 +73,8 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const userId = session?.user.id!;
 
     // Game Related State
-    const [currentPhase, setCurrentPhase] = useState<State>(
-        State.SAGE_SELECTION
-    );
+    const [userPlayers, setUserPlayers] = useState<UserProfile[]>([]);
+    const [currentPhase, setCurrentPhase] = useState<State | null>(null);
     const [selectedSage, setSelectedSage] = useState<Sage | null>(null);
     const [availableSages, setAvailableSages] = useState<{
         [key in Sage]: boolean;
@@ -76,6 +84,21 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         Porella: true,
         Torrent: true,
     });
+
+    // Fetch the current phase
+    useEffect(() => {
+        const fetchCurrentUsers = async () => {
+            const currentUsers = await getCurrentUsers(gameId);
+            setUserPlayers(currentUsers);
+        };
+        fetchCurrentUsers();
+
+        const fetchCurrentPhase = async () => {
+            const currentPhase = await getCurrentPhase(gameId);
+            setCurrentPhase(currentPhase);
+        };
+        fetchCurrentPhase();
+    }, [gameId]);
 
     // Check if user is the host
     useEffect(() => {
@@ -94,13 +117,23 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
     useEffect(() => {
         if (!currentGameSession) return;
 
+        const handlePlayerJoined = (data: PlayerJoinedData) => {
+            const validatedData = playerJoinedSchema.parse(data);
+            setUserPlayers(validatedData.updatedUsers);
+        };
+
+        const handlePlayerLeft = (data: PlayerLeftData) => {
+            const validatedData = playerLeftSchema.parse(data);
+            setUserPlayers(validatedData.updatedUsers);
+        };
+
         const handleSageSelected = (data: SageSelectedData) => {
             const parsedData = sageSelectedSchema.parse(data);
             setAvailableSages(parsedData.availableSages);
         };
 
         const handleAllSagesSelected = () => {
-            setCurrentPhase(State.TEAM_FORMATION);
+            setCurrentPhase(State.JOINING_TEAMS);
         };
 
         const handleReadyStatusToggled = () => {};
@@ -136,6 +169,8 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         };
 
         // Register event listeners
+        socketService.on(PlayerJoinedEvent, handlePlayerJoined);
+        socketService.on(PlayerLeftEvent, handlePlayerLeft);
         socketService.on(SageSelectedEvent, handleSageSelected);
         socketService.on(AllSagesSelectedEvent, handleAllSagesSelected);
         socketService.on(ReadyStatusToggledEvent, handleReadyStatusToggled);
@@ -150,6 +185,8 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         socketService.on(AllPlayersSetupEvent, handleAllPlayersSetup);
 
         return () => {
+            socketService.off(PlayerJoinedEvent, handlePlayerJoined);
+            socketService.off(PlayerLeftEvent, handlePlayerLeft);
             socketService.off(SageSelectedEvent, handleSageSelected);
             socketService.off(AllSagesSelectedEvent, handleAllSagesSelected);
             socketService.off(
@@ -170,16 +207,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             socketService.off(AllPlayersSetupEvent, handleAllPlayersSetup);
         };
     }, [currentGameSession, router]);
-
-    // Fetch the current phase
-    useEffect(() => {
-        const fetchCurrentPhase = async () => {
-            const currentPhase = await getCurrentPhase(gameId);
-            console.log("currentPhase", currentPhase);
-            setCurrentPhase(currentPhase);
-        };
-        fetchCurrentPhase();
-    }, [gameId]);
 
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentGameSession || !userId) return;
@@ -241,6 +268,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
                 isHost,
                 selectedSage,
                 availableSages,
+                userPlayers,
                 fetchSelectedSages,
                 handleSageConfirm,
                 handleAllSagesSelected,

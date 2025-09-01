@@ -1,6 +1,7 @@
 "use client";
 
 import { ErrorScreen } from "@/components/error/error-screen";
+import JoiningGame from "@/components/game/setup/joining-game";
 import SageSelection from "@/components/game/setup/sage-selection";
 import TeamSelection from "@/components/game/setup/team-selection";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
@@ -15,11 +16,15 @@ export default function GameSetupPage() {
 
     return (
         <section className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-xl shadow-lg">
+
+            {/* Joining Game */}
+            {currentPhase === State.JOINING_GAME && <JoiningGame />}
+            
             {/* Sage Selection */}
             {currentPhase === State.SAGE_SELECTION && <SageSelection />}
 
             {/* Team Formation */}
-            {currentPhase === State.TEAM_FORMATION && <TeamSelection />}
+            {currentPhase === State.JOINING_TEAMS && <TeamSelection />}
 
             {/* Action Buttons */}
             {/* <div className="flex justify-center gap-4">

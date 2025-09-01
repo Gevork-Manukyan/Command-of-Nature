@@ -8,12 +8,20 @@ import { Request, Response } from 'express';
 import { requireHostForGameExit } from 'src/middleware/hostOnly';
 import { validateRequestBody } from 'src/lib/utilities/routes';
 import { GameStateManager, GameEventEmitter } from '../../services';
+import { deleteUserActiveGames, getUserProfilesByGameId } from 'src/lib/utilities/db';
 
 const gameStateManager = GameStateManager.getInstance();
 const userSocketManager = UserSocketManager.getInstance();
 
 export default function createGameplayRouter(gameEventEmitter: GameEventEmitter) {
   const router = express.Router();
+
+  // get the current users in the game
+  router.get('/:gameId/current-users', asyncHandler(async (req: Request, res: Response) => {
+    const gameId = req.params.gameId;
+    const currentUsers = await getUserProfilesByGameId(gameId);
+    res.json(currentUsers);
+  }));
 
   // GET /api/games/gameplay/:gameId/current-phase
   router.get(
@@ -43,10 +51,12 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     const { userId } = validateRequestBody<LeaveGameData>(leaveGameSchema, req);
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
-
+    
     await gameStateManager.removePlayerFromGame(gameId, socketId);
+    await deleteUserActiveGames(userId, gameId);
+    const currentUsers = await getUserProfilesByGameId(gameId);
     userSocketManager.leaveGameRoom(userId, gameId);
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { userId } as PlayerLeftData);
+    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { updatedUsers: currentUsers } as PlayerLeftData);
     res.status(200).json({ message: 'Game left successfully' });
   }));
 
