@@ -23,11 +23,18 @@ export class GameState {
     private initTransitionTable() {
         this.addTransition(State.JOINING_GAME, [
             {
-                acceptableEvents: [
-                    TransitionEvent.PLAYER_JOINED,
-                    TransitionEvent.PLAYER_SELECTED_SAGE,
-                ],
+                acceptableEvents: [TransitionEvent.PLAYER_JOINED],
                 nextState: State.JOINING_GAME,
+            },
+            {
+                acceptableEvents: [TransitionEvent.ALL_PLAYERS_JOINED],
+                nextState: State.SAGE_SELECTION,
+            },
+        ]);
+        this.addTransition(State.SAGE_SELECTION, [
+            {
+                acceptableEvents: [TransitionEvent.PLAYER_SELECTED_SAGE],
+                nextState: State.SAGE_SELECTION,
             },
             {
                 acceptableEvents: [TransitionEvent.ALL_SAGES_SELECTED],
@@ -54,18 +61,26 @@ export class GameState {
             },
             {
                 acceptableEvents: [TransitionEvent.ALL_PLAYERS_READY],
-                nextState: State.STARTING_SETUP,
+                nextState: State.WARRIOR_SELECTION,
             },
         ]);
-        this.addTransition(State.STARTING_SETUP, [
+        this.addTransition(State.WARRIOR_SELECTION, [
             {
                 acceptableEvents: [
                     TransitionEvent.CHOOSE_WARRIORS,
                     TransitionEvent.SWAP_WARRIORS,
-                    TransitionEvent.PLAYER_FINISHED_SETUP,
-                    TransitionEvent.CANCEL_SETUP,
                 ],
-                nextState: State.STARTING_SETUP,
+                nextState: State.WARRIOR_SELECTION,
+            },
+            {
+                acceptableEvents: [TransitionEvent.PLAYER_FINISHED_SETUP],
+                nextState: State.SETUP_COMPLETE,
+            }
+        ]);
+        this.addTransition(State.SETUP_COMPLETE, [
+            {
+                acceptableEvents: [TransitionEvent.CANCEL_SETUP],
+                nextState: State.WARRIOR_SELECTION,
             },
             {
                 acceptableEvents: [TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE],

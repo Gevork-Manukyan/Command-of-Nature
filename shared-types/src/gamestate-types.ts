@@ -5,6 +5,11 @@ export enum State {
     JOINING_TEAMS = "joining-teams",
     READY_UP = "ready-up",
     STARTING_SETUP = "starting-setup",
+    SAGE_SELECTION = "sage-selection",
+    TEAM_FORMATION = "team-formation",
+    WARRIOR_SELECTION = "warrior-selection",
+    WARRIOR_SWAPPING = "warrior-swapping",
+    SETUP_COMPLETE = "setup-complete",
     PHASE1 = "phase1",
     RESOLVE_DAY_BREAK_CARDS = "resolve-day-break-cards",
     PHASE2 = "phase2",
@@ -15,17 +20,9 @@ export enum State {
     GAME_FINISHED = "game-finished",
 }
 
-export const SetupPhasesSchema = z.enum([
-    "sage-selection",
-    "team-formation",
-    "warrior-selection",
-    "warrior-swapping",
-    "setup-complete",
-]);
-export type SetupPhase = z.infer<typeof SetupPhasesSchema>;
-  
 export enum TransitionEvent {
     PLAYER_JOINED = "player-joined",
+    ALL_PLAYERS_JOINED = "all-players-joined",
     PLAYER_SELECTED_SAGE = "player-selected-sage",
     ALL_SAGES_SELECTED = "all-sages-selected",
     PLAYER_JOINED_TEAM = "player-joined-team",
@@ -34,6 +31,7 @@ export enum TransitionEvent {
     TOGGLE_READY_STATUS = "toggle-ready-status",
     ALL_PLAYERS_READY = "all-players-ready",
     CHOOSE_WARRIORS = "choose-warriors",
+    CONFIRM_WARRIORS = "confirm-warriors",
     SWAP_WARRIORS = "swap-warriors",
     PLAYER_FINISHED_SETUP = "player-finished-setup",
     CANCEL_SETUP = "cancel-setup",
@@ -58,16 +56,16 @@ export enum TransitionEvent {
 const InputSchema = z.object({
     acceptableEvents: z.array(z.nativeEnum(TransitionEvent)),
     nextState: z.nativeEnum(State),
-})
+});
 export type Input = z.infer<typeof InputSchema>;
 
 const TransitionSchema = z.object({
     currentState: z.nativeEnum(State),
     possibleInputs: z.array(InputSchema),
-})
+});
 export type Transition = z.infer<typeof TransitionSchema>;
 
 export const GameStateSchema = z.object({
     gameId: z.string(),
     currentTransition: TransitionSchema,
-})
+});

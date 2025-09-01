@@ -49,6 +49,7 @@ import { getSocketId } from "../../lib/utilities/common";
 import { Request, Response } from "express";
 import {
     requireHostForAllPlayersSetup,
+    requireHostForAllPlayersJoined,
     requireHostForAllSagesSelected,
     requireHostForAllTeamsJoined,
     requireHostForClearTeams,
@@ -108,8 +109,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/join",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, gameId, password } =
-                validateRequestBody<JoinGameData>(joinGameSchema, req);
+            const { userId, gameId, password } = validateRequestBody<JoinGameData>(joinGameSchema, req);
             const socketId = getSocketId(userId);
 
             gameStateManager.verifyJoinGameEvent(gameId);
@@ -157,6 +157,21 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 { userId } as PlayerRejoinedData
             );
             res.json(gameListing);
+        })
+    );
+
+    // POST /api/games/setup/:gameId/all-players-joined
+    router.post(
+        "/:gameId/all-players-joined",
+        requireHostForAllPlayersJoined,
+        asyncHandler(async (req: Request, res: Response) => {
+            const gameId = req.params.gameId;
+
+            gameStateManager.verifyAllPlayersJoinedEvent(gameId);
+            await gameStateManager.allPlayersJoined(gameId);
+            gameStateManager.processAllPlayersJoinedEvent(gameId);
+
+            res.status(200).json({ message: "All players joined successfully" });
         })
     );
 

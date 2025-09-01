@@ -47,4 +47,5 @@ export const requireHostForClearTeams = requireHost("clear teams");
 export const requireHostForAllTeamsJoined = requireHost("join all teams");
 export const requireHostForGameStart = requireHost("start the game");
 export const requireHostForAllPlayersSetup = requireHost("finish setup");
+export const requireHostForAllPlayersJoined = requireHost("join all players");
 export const requireHostForGameExit = requireHost("exit the game");

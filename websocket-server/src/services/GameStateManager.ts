@@ -142,6 +142,24 @@ export class GameStateManager {
     }
 
     /**
+     * Validates that all players have joined
+     * @param gameId - The id of the game to validate
+     */
+    async allPlayersJoined(gameId: gameId): Promise<void> {
+        const game = this.getGame(gameId);
+        const { players, numPlayersTotal } = game;
+
+        if (players.length !== numPlayersTotal) {
+            throw new ValidationError(
+                `Missing ${numPlayersTotal - players.length} players`,
+                "players"
+            );
+        }
+        
+        await this.saveGame(game);
+    }
+
+    /**
      * Sets a player's sage
      * @param gameId - The id of the game to set the player's sage
      * @param socketId - The id of the socket to set the player's sage
@@ -159,7 +177,19 @@ export class GameStateManager {
      */
     async allPlayersSelectedSage(gameId: gameId): Promise<void> {
         const game = this.getGame(gameId);
-        game.validateAllPlayersSeclectedSage();
+        const { players, numPlayersTotal } = game;
+
+        if (players.length !== numPlayersTotal) {
+            throw new ValidationError(
+                `Missing ${numPlayersTotal - players.length} players`,
+                "players"
+            );
+        }
+
+        if (players.some((player) => !player.sage)) {
+            throw new ValidationError("All players must select a sage", "sage");
+        }
+
         await this.saveGame(game);
     }
 
@@ -388,6 +418,20 @@ export class GameStateManager {
         );
     }
 
+    // ###### All Players Joined ######
+    verifyAllPlayersJoinedEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.ALL_PLAYERS_JOINED
+        );
+    }
+
+    async processAllPlayersJoinedEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.ALL_PLAYERS_JOINED
+        );
+    }
+
     // ###### Player Selected Sage ######
     verifySelectSageEvent(gameId: gameId) {
         this.getGameState(gameId).verifyEvent(
@@ -506,7 +550,19 @@ export class GameStateManager {
         );
     }
 
-    // ###### Finished Setup ######
+    // ###### Cancel Setup ######
+    verifyCancelSetupEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.CANCEL_SETUP);
+    }
+
+    async processCancelSetupEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.CANCEL_SETUP
+        );
+    }
+
+    // ###### Player Finished Setup ######
     verifyFinishedSetupEvent(gameId: gameId) {
         this.getGameState(gameId).verifyEvent(
             TransitionEvent.PLAYER_FINISHED_SETUP
@@ -520,19 +576,7 @@ export class GameStateManager {
         );
     }
 
-    // ###### Cancel Setup ######
-    verifyCancelSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.CANCEL_SETUP);
-    }
-
-    async processCancelSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.CANCEL_SETUP
-        );
-    }
-
-    // ###### All Players Setup ######
+    // ###### All Players Setup Complete ######
     verifyAllPlayersSetupEvent(gameId: gameId) {
         this.getGameState(gameId).verifyEvent(
             TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE
@@ -569,6 +613,139 @@ export class GameStateManager {
         await this.processEventAndSaveState(
             gameId,
             TransitionEvent.DAY_BREAK_CARD
+        );
+    }
+
+    // ###### Next Phase ######
+    verifyNextPhaseEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.NEXT_PHASE);
+    }
+
+    async processNextPhaseEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.NEXT_PHASE);
+    }
+
+    // ###### Draw Card ######
+    verifyDrawCardEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.DRAW_CARD);
+    }
+
+    async processDrawCardEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.DRAW_CARD);
+    }
+
+    // ###### Swap Cards ######
+    verifySwapCardsEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.SWAP_CARDS);
+    }
+
+    async processSwapCardsEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.SWAP_CARDS);
+    }
+
+    // ###### Summon Card ######
+    verifySummonCardEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.SUMMON_CARD);
+    }
+
+    async processSummonCardEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.SUMMON_CARD
+        );
+    }
+
+    // ###### Attack ######
+    verifyAttackEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.ATTACK);
+    }
+
+    async processAttackEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.ATTACK);
+    }
+
+    // ###### Utility ######
+    verifyUtilityEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.UTILITY);
+    }
+
+    async processUtilityEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.UTILITY);
+    }
+
+    // ###### Sage Skill ######
+    verifySageSkillEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.SAGE_SKILL);
+    }
+
+    async processSageSkillEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.SAGE_SKILL);
+    }
+
+    // ###### Win Game ######
+    verifyWinGameEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.WIN_GAME);
+    }
+
+    async processWinGameEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.WIN_GAME);
+    }
+
+    // ###### Buy Card ######
+    verifyBuyCardEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.BUY_CARD);
+    }
+
+    async processBuyCardEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.BUY_CARD);
+    }
+
+    // ###### Sell Card ######
+    verifySellCardEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.SELL_CARD);
+    }
+
+    async processSellCardEvent(gameId: gameId) {
+        await this.processEventAndSaveState(gameId, TransitionEvent.SELL_CARD);
+    }
+
+    // ###### Refresh Shop ######
+    verifyRefreshShopEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(TransitionEvent.REFRESH_SHOP);
+    }
+
+    async processRefreshShopEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.REFRESH_SHOP
+        );
+    }
+
+    // ###### Done Discarding Cards ######
+    verifyDoneDiscardingCardsEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.DONE_DISCARDING_CARDS
+        );
+    }
+
+    async processDoneDiscardingCardsEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.DONE_DISCARDING_CARDS
+        );
+    }
+
+    // ###### Done Drawing New Hand ######
+    verifyDoneDrawingNewHandEvent(gameId: gameId) {
+        this.getGameState(gameId).verifyEvent(
+            TransitionEvent.DONE_DRAWING_NEW_HAND
+        );
+    }
+
+    async processDoneDrawingNewHandEvent(gameId: gameId) {
+        await this.processEventAndSaveState(
+            gameId,
+            TransitionEvent.DONE_DRAWING_NEW_HAND
         );
     }
 

@@ -241,20 +241,6 @@ export class ConGame {
     }
 
     /**
-     * Checks if all players have selected a sage
-     * @returns True if all players have selected a sage, false otherwise
-     */
-    validateAllPlayersSeclectedSage() {
-        if (this.players.length !== this.numPlayersTotal)
-            throw new ValidationError(
-                `Missing ${this.numPlayersTotal - this.players.length} players`,
-                "players"
-            );
-        if (this.players.some((player) => !player.sage))
-            throw new ValidationError("All players must select a sage", "sage");
-    }
-
-    /**
      * Checks if all teams have joined
      * @returns True if all teams have joined, false otherwise
      */
