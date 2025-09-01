@@ -29,6 +29,7 @@ import {
     PlayerJoinedEvent,
     PlayerLeftEvent,
     GetSelectedSagesEvent,
+    AllPlayersJoinedEvent,
 } from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
 import { SageSchema } from "./card-types";
@@ -63,6 +64,10 @@ export const playerJoinedSchema = z.object({
 
 export const playerRejoinedSchema = z.object({
     updatedUsers: z.array(UserProfileSchema),
+});
+
+export const allPlayersJoinedSchema = z.object({
+    userId: z.string(),
 });
 
 export const selectSageSchema = z.object({
@@ -167,6 +172,7 @@ export const EventSchemas = {
     [JoinGameEvent]: joinGameSchema,
     [PlayerJoinedEvent]: playerJoinedSchema,
     [PlayerRejoinedEvent]: playerRejoinedSchema,
+    [AllPlayersJoinedEvent]: allPlayersJoinedSchema,
     [SelectSageEvent]: selectSageSchema,
     [GetSelectedSagesEvent]: getSelectedSagesSchema,
     [SageSelectedEvent]: sageSelectedSchema,
@@ -197,6 +203,7 @@ export type CreateGameData = z.infer<typeof createGameSchema>;
 export type JoinGameData = z.infer<typeof joinGameSchema>;
 export type PlayerJoinedData = z.infer<typeof playerJoinedSchema>;
 export type PlayerRejoinedData = z.infer<typeof playerRejoinedSchema>;
+export type AllPlayersJoinedData = z.infer<typeof allPlayersJoinedSchema>;
 export type SelectSageData = z.infer<typeof selectSageSchema>;
 export type GetSelectedSagesData = z.infer<typeof getSelectedSagesSchema>;
 export type SageSelectedData = z.infer<typeof sageSelectedSchema>;

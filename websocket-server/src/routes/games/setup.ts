@@ -43,6 +43,10 @@ import {
     TeamJoinedEvent,
     ToggleReadyStatusData,
     toggleReadyStatusSchema,
+    AllPlayersJoinedEvent,
+    State,
+    AllPlayersJoinedData,
+    NextStateData,
 } from "@shared-types";
 import { UserSocketManager } from "../../services/UserSocketManager";
 import { asyncHandler } from "src/middleware/asyncHandler";
@@ -181,12 +185,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
 
-            await gameStateManager.verifyAndProcessAllPlayersJoinedEvent(
-                gameId,
-                async () => {
-                    await gameStateManager.allPlayersJoined(gameId);
-                }
-            );
+            await gameStateManager.verifyAndProcessAllPlayersJoinedEvent(gameId, async () => {
+                await gameStateManager.allPlayersJoined(gameId);
+                gameEventEmitter.emitToAllPlayers(
+                    gameId,
+                    AllPlayersJoinedEvent,
+                    { nextState: State.SAGE_SELECTION } as NextStateData
+                );
+            });
 
             res.status(200).json({
                 message: "All players joined successfully",
@@ -261,7 +267,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     await gameStateManager.allPlayersSelectedSage(gameId);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        AllSagesSelectedEvent
+                        AllSagesSelectedEvent,
+                        { nextState: State.JOINING_TEAMS } as NextStateData
                     );
                 }
             );
@@ -336,7 +343,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     await gameStateManager.allTeamsJoined(gameId);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        AllTeamsJoinedEvent
+                        AllTeamsJoinedEvent,
+                        { nextState: State.WARRIOR_SELECTION } as NextStateData
                     );
                 }
             );

@@ -27,6 +27,9 @@ import {
     PlayerLeftData,
     playerLeftSchema,
     PlayerLeftEvent,
+    AllPlayersJoinedEvent,
+    NextStateData,
+    NextStateDataSchema,
 } from "@shared-types";
 import {
     allPlayersJoined,
@@ -129,13 +132,19 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setUserPlayers(validatedData.updatedUsers);
         };
 
+        const handleAllPlayersJoined = (data: NextStateData) => {
+            const validatedData = NextStateDataSchema.parse(data);
+            setCurrentPhase(validatedData.nextState);
+        };
+
         const handleSageSelected = (data: SageSelectedData) => {
             const parsedData = sageSelectedSchema.parse(data);
             setAvailableSages(parsedData.availableSages);
         };
 
-        const handleAllSagesSelected = () => {
-            setCurrentPhase(State.JOINING_TEAMS);
+        const handleAllSagesSelected = (data: NextStateData) => {
+            const validatedData = NextStateDataSchema.parse(data);
+            setCurrentPhase(validatedData.nextState);
         };
 
         const handleReadyStatusToggled = () => {};
@@ -144,27 +153,20 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
 
         const handleClearTeams = () => {};
 
-        const handleAllTeamsJoined = () => {
-            setCurrentPhase(State.WARRIOR_SELECTION);
+        const handleAllTeamsJoined = (data: NextStateData) => {
+            const validatedData = NextStateDataSchema.parse(data);
+            setCurrentPhase(validatedData.nextState);
         };
 
-        const handleStartGame = () => {
-            setCurrentPhase(State.SETUP_COMPLETE);
-        };
+        const handleStartGame = () => {};
 
         const handlePickWarriors = () => {};
 
-        const handleSwapWarriors = () => {
-            // Temporary no-op function
-        };
+        const handleSwapWarriors = () => {};
 
-        const handlePlayerFinishedSetup = () => {
-            // Temporary no-op function
-        };
+        const handlePlayerFinishedSetup = () => {};
 
-        const handleCancelSetup = () => {
-            // Temporary no-op function
-        };
+        const handleCancelSetup = () => {};
 
         const handleAllPlayersSetup = () => {
             router.push(`/app/game/${gameId}`);
@@ -173,6 +175,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         // Register event listeners
         socketService.on(PlayerJoinedEvent, handlePlayerJoined);
         socketService.on(PlayerLeftEvent, handlePlayerLeft);
+        socketService.on(AllPlayersJoinedEvent, handleAllPlayersJoined);
         socketService.on(SageSelectedEvent, handleSageSelected);
         socketService.on(AllSagesSelectedEvent, handleAllSagesSelected);
         socketService.on(ReadyStatusToggledEvent, handleReadyStatusToggled);
@@ -189,22 +192,17 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         return () => {
             socketService.off(PlayerJoinedEvent, handlePlayerJoined);
             socketService.off(PlayerLeftEvent, handlePlayerLeft);
+            socketService.off(AllPlayersJoinedEvent, handleAllPlayersJoined);
             socketService.off(SageSelectedEvent, handleSageSelected);
             socketService.off(AllSagesSelectedEvent, handleAllSagesSelected);
-            socketService.off(
-                ReadyStatusToggledEvent,
-                handleReadyStatusToggled
-            );
+            socketService.off(ReadyStatusToggledEvent, handleReadyStatusToggled);
             socketService.off(TeamJoinedEvent, handleTeamJoined);
             socketService.off(ClearTeamsEvent, handleClearTeams);
             socketService.off(AllTeamsJoinedEvent, handleAllTeamsJoined);
             socketService.off(StartGameEvent, handleStartGame);
             socketService.off(PickWarriorsEvent, handlePickWarriors);
             socketService.off(SwapWarriorsEvent, handleSwapWarriors);
-            socketService.off(
-                PlayerFinishedSetupEvent,
-                handlePlayerFinishedSetup
-            );
+            socketService.off(PlayerFinishedSetupEvent, handlePlayerFinishedSetup);
             socketService.off(CancelSetupEvent, handleCancelSetup);
             socketService.off(AllPlayersSetupEvent, handleAllPlayersSetup);
         };
