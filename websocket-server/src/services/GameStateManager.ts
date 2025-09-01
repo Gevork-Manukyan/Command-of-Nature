@@ -5,6 +5,8 @@ import { ValidationError, GameConflictError } from "../custom-errors";
 import { GameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../../../shared-types/src/gamestate-types";
 
+type EventProcessor = () => void;
+
 export class GameStateManager {
     private static instance: GameStateManager;
     private currentGames: {
@@ -406,347 +408,155 @@ export class GameStateManager {
         this.setGameState(gameId, savedGameState);
     }
 
-    // ###### Player Joined ######
-    verifyJoinGameEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.PLAYER_JOINED);
+    private async verifyAndProcessEvent(gameId: gameId, event: TransitionEvent, fn: EventProcessor): Promise<void> {
+        this.getGameState(gameId).verifyEvent(event);
+        fn();
+        await this.processEventAndSaveState(gameId, event);
     }
 
-    async processJoinGameEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.PLAYER_JOINED
-        );
+    // ###### Player Joined ######
+    async verifyAndProcessJoinGameEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.PLAYER_JOINED, fn);
     }
 
     // ###### All Players Joined ######
-    verifyAllPlayersJoinedEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.ALL_PLAYERS_JOINED
-        );
-    }
-
-    async processAllPlayersJoinedEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.ALL_PLAYERS_JOINED
-        );
+    async verifyAndProcessAllPlayersJoinedEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ALL_PLAYERS_JOINED, fn);
     }
 
     // ###### Player Selected Sage ######
-    verifySelectSageEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.PLAYER_SELECTED_SAGE
-        );
-    }
-
-    async processSelectSageEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.PLAYER_SELECTED_SAGE
-        );
+    async verifyAndProcessSelectSageEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.PLAYER_SELECTED_SAGE, fn);
     }
 
     // ###### All Sages Selected ######
-    verifyAllSagesSelectedEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.ALL_SAGES_SELECTED
-        );
-    }
-
-    async processAllSagesSelectedEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.ALL_SAGES_SELECTED
-        );
+    async verifyAndProcessAllSagesSelectedEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ALL_SAGES_SELECTED, fn);
     }
 
     // ###### Player Joined Team ######
-    verifyJoinTeamEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.PLAYER_JOINED_TEAM
-        );
-    }
-
-    async processJoinTeamEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.PLAYER_JOINED_TEAM
-        );
+    async verifyAndProcessJoinTeamEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.PLAYER_JOINED_TEAM, fn);
     }
 
     // ###### Clear Teams ######
-    verifyClearTeamsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.CLEAR_TEAMS);
-    }
-
-    async processClearTeamsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.CLEAR_TEAMS
-        );
+    async verifyAndProcessClearTeamsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.CLEAR_TEAMS, fn);
     }
 
     // ###### All Teams Joined ######
-    verifyAllTeamsJoinedEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.ALL_TEAMS_JOINED);
+    async verifyAndProcessAllTeamsJoinedEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ALL_TEAMS_JOINED, fn);
     }
-
-    async processAllTeamsJoinedEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.ALL_TEAMS_JOINED
-        );
-    }
-
+        
     // ###### Toggle Ready Status ######
-    verifyToggleReadyStatusEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.TOGGLE_READY_STATUS
-        );
-    }
-
-    async processToggleReadyStatusEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.TOGGLE_READY_STATUS
-        );
+    async verifyAndProcessToggleReadyStatusEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.TOGGLE_READY_STATUS, fn);
     }
 
     // ###### All Players Ready ######
-    verifyAllPlayersReadyEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.ALL_PLAYERS_READY
-        );
-    }
-
-    async processAllPlayersReadyEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.ALL_PLAYERS_READY
-        );
+    async verifyAndProcessAllPlayersReadyEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ALL_PLAYERS_READY, fn);
     }
 
     // ###### Choose Warriors ######
-    verifyChooseWarriorsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.CHOOSE_WARRIORS);
-    }
-
-    async processChooseWarriorsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.CHOOSE_WARRIORS
-        );
+    async verifyAndProcessChooseWarriorsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.CHOOSE_WARRIORS, fn);
     }
 
     // ###### Swap Warriors ######
-    verifySwapWarriorsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.SWAP_WARRIORS);
-    }
-
-    async processSwapWarriorsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.SWAP_WARRIORS
-        );
+    async verifyAndProcessSwapWarriorsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.SWAP_WARRIORS, fn);
     }
 
     // ###### Cancel Setup ######
-    verifyCancelSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.CANCEL_SETUP);
+    async verifyAndProcessCancelSetupEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.CANCEL_SETUP, fn);
     }
-
-    async processCancelSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.CANCEL_SETUP
-        );
-    }
-
+        
     // ###### Player Finished Setup ######
-    verifyFinishedSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.PLAYER_FINISHED_SETUP
-        );
-    }
-
-    async processFinishedSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.PLAYER_FINISHED_SETUP
-        );
+    async verifyAndProcessFinishedSetupEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.PLAYER_FINISHED_SETUP, fn);
     }
 
     // ###### All Players Setup Complete ######
-    verifyAllPlayersSetupEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE
-        );
-    }
-
-    async processAllPlayersSetupEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE
-        );
+    async verifyAndProcessAllPlayersSetupEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE, fn);
     }
 
     // ###### Get Day Break Cards ######
-    verifyGetDayBreakCardsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.GET_DAY_BREAK_CARDS
-        );
-    }
-
-    async processGetDayBreakCardsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.GET_DAY_BREAK_CARDS
-        );
+    async verifyAndProcessGetDayBreakCardsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.GET_DAY_BREAK_CARDS, fn);
     }
 
     // ###### Activate Day Break ######
-    verifyActivateDayBreakEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.DAY_BREAK_CARD);
-    }
-
-    async processActivateDayBreakEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.DAY_BREAK_CARD
-        );
+    async verifyAndProcessActivateDayBreakEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.DAY_BREAK_CARD, fn);
     }
 
     // ###### Next Phase ######
-    verifyNextPhaseEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.NEXT_PHASE);
-    }
-
-    async processNextPhaseEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.NEXT_PHASE);
+    async verifyAndProcessNextPhaseEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.NEXT_PHASE, fn);
     }
 
     // ###### Draw Card ######
-    verifyDrawCardEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.DRAW_CARD);
-    }
-
-    async processDrawCardEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.DRAW_CARD);
+    async verifyAndProcessDrawCardEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.DRAW_CARD, fn);
     }
 
     // ###### Swap Cards ######
-    verifySwapCardsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.SWAP_CARDS);
-    }
-
-    async processSwapCardsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.SWAP_CARDS);
+    async verifyAndProcessSwapCardsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.SWAP_CARDS, fn);
     }
 
     // ###### Summon Card ######
-    verifySummonCardEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.SUMMON_CARD);
-    }
-
-    async processSummonCardEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.SUMMON_CARD
-        );
+    async verifyAndProcessSummonCardEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.SUMMON_CARD, fn);
     }
 
     // ###### Attack ######
-    verifyAttackEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.ATTACK);
-    }
-
-    async processAttackEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.ATTACK);
+    async verifyAndProcessAttackEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.ATTACK, fn);
     }
 
     // ###### Utility ######
-    verifyUtilityEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.UTILITY);
-    }
-
-    async processUtilityEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.UTILITY);
+    async verifyAndProcessUtilityEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.UTILITY, fn);
     }
 
     // ###### Sage Skill ######
-    verifySageSkillEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.SAGE_SKILL);
-    }
-
-    async processSageSkillEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.SAGE_SKILL);
+    async verifyAndProcessSageSkillEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.SAGE_SKILL, fn);
     }
 
     // ###### Win Game ######
-    verifyWinGameEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.WIN_GAME);
-    }
-
-    async processWinGameEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.WIN_GAME);
+    async verifyAndProcessWinGameEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.WIN_GAME, fn);
     }
 
     // ###### Buy Card ######
-    verifyBuyCardEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.BUY_CARD);
-    }
-
-    async processBuyCardEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.BUY_CARD);
+    async verifyAndProcessBuyCardEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.BUY_CARD, fn);
     }
 
     // ###### Sell Card ######
-    verifySellCardEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.SELL_CARD);
-    }
-
-    async processSellCardEvent(gameId: gameId) {
-        await this.processEventAndSaveState(gameId, TransitionEvent.SELL_CARD);
+    async verifyAndProcessSellCardEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.SELL_CARD, fn);
     }
 
     // ###### Refresh Shop ######
-    verifyRefreshShopEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(TransitionEvent.REFRESH_SHOP);
-    }
-
-    async processRefreshShopEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.REFRESH_SHOP
-        );
+    async verifyAndProcessRefreshShopEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.REFRESH_SHOP, fn);
     }
 
     // ###### Done Discarding Cards ######
-    verifyDoneDiscardingCardsEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.DONE_DISCARDING_CARDS
-        );
-    }
-
-    async processDoneDiscardingCardsEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.DONE_DISCARDING_CARDS
-        );
+    async verifyAndProcessDoneDiscardingCardsEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.DONE_DISCARDING_CARDS, fn);
     }
 
     // ###### Done Drawing New Hand ######
-    verifyDoneDrawingNewHandEvent(gameId: gameId) {
-        this.getGameState(gameId).verifyEvent(
-            TransitionEvent.DONE_DRAWING_NEW_HAND
-        );
-    }
-
-    async processDoneDrawingNewHandEvent(gameId: gameId) {
-        await this.processEventAndSaveState(
-            gameId,
-            TransitionEvent.DONE_DRAWING_NEW_HAND
-        );
+    async verifyAndProcessDoneDrawingNewHandEvent(gameId: gameId, fn: EventProcessor): Promise<void> {
+        await this.verifyAndProcessEvent(gameId, TransitionEvent.DONE_DRAWING_NEW_HAND, fn);
     }
 
     // ------ Testing Methods ------
