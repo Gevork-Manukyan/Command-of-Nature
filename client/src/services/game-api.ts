@@ -56,6 +56,10 @@ export async function rejoinGame(data: RejoinGameData) {
     return validatedResponse;
 }
 
+export async function allPlayersJoined(gameId: string, data: AllPlayersJoinedData) {
+    return getSetupUrlWithGameId("/all-players-joined", gameId, data, "POST");
+}
+
 export async function selectSage(gameId: string, data: SelectSageData) {
     return getSetupUrlWithGameId("/sage", gameId, data, "POST");
 }

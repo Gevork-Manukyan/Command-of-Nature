@@ -29,6 +29,7 @@ import {
     PlayerLeftEvent,
 } from "@shared-types";
 import {
+    allPlayersJoined,
     allSagesSelected,
     getCurrentPhase,
     getCurrentUsers,
@@ -48,6 +49,7 @@ type GameSetupContextType = {
     selectedSage: Sage | null;
     availableSages: { [key in Sage]: boolean };
     userPlayers: UserProfile[];
+    handleAllPlayersJoined: () => Promise<void>;
     fetchSelectedSages: () => Promise<void>;
     handleSageConfirm: (sage: Sage) => Promise<void>;
     handleAllSagesSelected: () => Promise<void>;
@@ -208,6 +210,10 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         };
     }, [currentGameSession, router]);
 
+    const handleAllPlayersJoined = async () => {
+        await allPlayersJoined(gameId, { userId });
+    }
+    
     const handleSageConfirm = async (sage: Sage) => {
         if (!currentGameSession || !userId) return;
         try {
@@ -269,6 +275,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
                 selectedSage,
                 availableSages,
                 userPlayers,
+                handleAllPlayersJoined,
                 fetchSelectedSages,
                 handleSageConfirm,
                 handleAllSagesSelected,

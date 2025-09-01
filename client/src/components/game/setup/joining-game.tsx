@@ -1,8 +1,9 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import H3 from "./components/h3";
+import NextPhaseButton from "./components/NextPhaseButton";
 
 export default function JoiningGame() {
-    const { userPlayers } = useGameSetupContext();
+    const { userPlayers, isHost, handleAllPlayersJoined } = useGameSetupContext();
     
     return (
         <div>
@@ -12,6 +13,12 @@ export default function JoiningGame() {
                     <div key={player.username}>{player.username}</div>
                 ))}
             </div>
+
+            {isHost && handleAllPlayersJoined && (
+                <NextPhaseButton onClick={handleAllPlayersJoined} disabled={false}>
+                    All Players Joined
+                </NextPhaseButton>
+            )}
         </div>
     );
 }

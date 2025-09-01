@@ -4,6 +4,7 @@ import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { Sage } from "@shared-types";
 import { useState, useEffect } from "react";
 import H3 from "./components/h3";
+import NextPhaseButton from "./components/NextPhaseButton";
 
 export default function SageSelection() {
     const { 
@@ -74,13 +75,12 @@ export default function SageSelection() {
 
                 {/* Conditionally render "All Sages Selected" button for hosts */}
                 {isHost && handleAllSagesSelected && (
-                    <button
+                    <NextPhaseButton
                         onClick={handleAllSagesSelected}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={numberOfPlayers !== Object.values(availableSages).filter((isSageSelected) => isSageSelected).length}
                     >
                         All Sages Selected
-                    </button>
+                    </NextPhaseButton>
                 )}
             </div>
         </div>
