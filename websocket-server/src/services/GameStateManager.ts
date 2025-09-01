@@ -5,7 +5,7 @@ import { ValidationError, GameConflictError } from "../custom-errors";
 import { GameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../../../shared-types/src/gamestate-types";
 
-type EventProcessor = () => void;
+type EventProcessor = () => Promise<void>;
 
 export class GameStateManager {
     private static instance: GameStateManager;
@@ -410,7 +410,7 @@ export class GameStateManager {
 
     private async verifyAndProcessEvent(gameId: gameId, event: TransitionEvent, fn: EventProcessor): Promise<void> {
         this.getGameState(gameId).verifyEvent(event);
-        fn();
+        await fn();
         await this.processEventAndSaveState(gameId, event);
     }
 

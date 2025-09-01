@@ -56,11 +56,12 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
 
-    gameStateManager.verifyGetDayBreakCardsEvent(gameId);
-    const game = gameStateManager.getActiveGame(gameId);
-    const dayBreakCards = game.getDayBreakCards(socketId);
-    gameStateManager.processGetDayBreakCardsEvent(gameId);
-    gameEventEmitter.emitToPlayers(game.getActiveTeamPlayers(), GetDayBreakCardsEvent, dayBreakCards);
+    gameStateManager.verifyAndProcessGetDayBreakCardsEvent(gameId, async () => {
+        const game = gameStateManager.getActiveGame(gameId);
+        const dayBreakCards = game.getDayBreakCards(socketId);
+        gameEventEmitter.emitToPlayers(game.getActiveTeamPlayers(), GetDayBreakCardsEvent, dayBreakCards);
+    });
+
     res.status(200).json({ message: 'Day break cards fetched successfully' });
   });
 
@@ -70,15 +71,16 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     const gameId = req.params.gameId;
     const socketId = getSocketId(userId);
     
-    gameStateManager.verifyActivateDayBreakEvent(gameId);
-    const game = gameStateManager.getActiveGame(gameId);
+    gameStateManager.verifyAndProcessActivateDayBreakEvent(gameId, async () => {
+        const game = gameStateManager.getActiveGame(gameId);
 
-    if (game.players.length === 2 && AllSpaceOptionsSchema.safeParse(spaceOption).error) {
-      throw new InvalidSpaceError(spaceOption);
-    }
+        if (game.players.length === 2 && AllSpaceOptionsSchema.safeParse(spaceOption).error) {
+        throw new InvalidSpaceError(spaceOption);
+        }
 
-    game.activateDayBreak(socketId, spaceOption);
-    gameStateManager.processActivateDayBreakEvent(gameId);
+        game.activateDayBreak(socketId, spaceOption);
+    });
+
     res.status(200).json({ message: 'Day break activated successfully' });
   });
 
