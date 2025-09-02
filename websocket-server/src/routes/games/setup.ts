@@ -364,7 +364,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/toggle-ready
     router.post(
         "/:gameId/toggle-ready",

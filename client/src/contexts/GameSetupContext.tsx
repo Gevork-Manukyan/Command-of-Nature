@@ -48,6 +48,7 @@ import {
     getUserSetupData,
     joinTeam,
     selectSage,
+    startGame,
     toggleReady,
 } from "@/services/game-api";
 import { useSession } from "next-auth/react";
@@ -70,6 +71,7 @@ type GameSetupContextType = {
     handleClearTeams: () => Promise<void>;
     handleAllTeamsJoined: () => Promise<void>;
     handleToggleReady: () => Promise<void>;
+    handleAllPlayersReady: () => Promise<void>;
 };
 
 const GameSetupContext = createContext<GameSetupContextType | undefined>(
@@ -229,7 +231,9 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setUserPlayers((prev) => updateSetupReadyStatusData(prev, validatedData.userId, validatedData.isReady));
         };
 
-        const handleSocketStartGame = () => {};
+        const handleSocketStartGame = () => {
+            
+        };
 
         const handleSocketPickWarriors = () => {};
 
@@ -360,6 +364,10 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         await toggleReady(gameId, { userId });
     };
 
+    const handleAllPlayersReady = async () => {
+        await startGame(gameId, { userId });
+    };
+
     return (
         <GameSetupContext.Provider
             value={{
@@ -378,6 +386,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
                 handleClearTeams,
                 handleAllTeamsJoined,
                 handleToggleReady,
+                handleAllPlayersReady,
             }}
         >
             {children}
