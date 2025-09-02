@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { useGameNavigation } from '@/hooks/useGameNavigation';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
-import { LoadingScreen } from '@/components/loading/loading-screen';
-import { ErrorScreen } from '@/components/error/error-screen';
-import { useSocketContext } from '@/contexts/SocketContext';
-import { useSession } from 'next-auth/react';
-import { rejoinGame as rejoinGameApi } from '@/services/game-api';
-import { isUserInGame } from '@/actions/user-actions';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useGameNavigation } from "@/hooks/useGameNavigation";
+import { useGameSessionContext } from "@/contexts/GameSessionContext";
+import { LoadingScreen } from "@/components/loading/loading-screen";
+import { ErrorScreen } from "@/components/error/error-screen";
+import { useSocketContext } from "@/contexts/SocketContext";
+import { useSession } from "next-auth/react";
+import { rejoinGame as rejoinGameApi } from "@/services/game-api";
+import { isUserInGame } from "@/actions/user-actions";
 
 export default function GameLayout({
     children,
@@ -20,14 +20,21 @@ export default function GameLayout({
     const { data: session } = useSession();
     const userId = session?.user.id!;
     const { isSocketConnected } = useSocketContext();
-    const { currentGameSession, isLoadingGameSession, updateCurrentSession } = useGameSessionContext();
-    const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : '';
-    const { error: navigationError, isLeaving, goToLobby, leaveGame } = useGameNavigation(gameId, userId);
+    const { currentGameSession, isLoadingGameSession, updateCurrentSession } =
+        useGameSessionContext();
+    const gameId =
+        params.gameId === currentGameSession?.id ? currentGameSession?.id : "";
+    const {
+        error: navigationError,
+        isLeaving,
+        goToLobby,
+        leaveGame,
+    } = useGameNavigation(gameId, userId);
     const shortGameId = gameId.toString().slice(-6);
-    
+
     // Rejoin game state
     const [isRejoiningGame, setIsRejoiningGame] = useState(false);
-    const [rejoinError, setRejoinError] = useState<string>('');
+    const [rejoinError, setRejoinError] = useState<string>("");
 
     // Handle game rejoining - this happens once when entering any game page
     useEffect(() => {
@@ -38,8 +45,8 @@ export default function GameLayout({
             if (playerGame) {
                 updateCurrentSession(playerGame);
             }
-        }
-        
+        };
+
         if (!currentGameSession && !isLoadingGameSession) {
             checkIfUserInGame(userId, params.gameId as string);
         }
@@ -47,12 +54,14 @@ export default function GameLayout({
         const rejoinGame = async () => {
             try {
                 setIsRejoiningGame(true);
-                setRejoinError('');
+                setRejoinError("");
                 await rejoinGameApi({ userId, gameId });
                 setIsRejoiningGame(false);
             } catch (err) {
-                console.error('Failed to rejoin game:', err);
-                setRejoinError(err instanceof Error ? err.message : 'Failed to rejoin game');
+                console.error("Failed to rejoin game:", err);
+                setRejoinError(
+                    err instanceof Error ? err.message : "Failed to rejoin game"
+                );
                 setIsRejoiningGame(false);
             }
         };
@@ -83,7 +92,10 @@ export default function GameLayout({
     if (!(isLeaving || isRejoiningGame) && !currentGameSession) {
         return (
             <div className="flex flex-col min-h-screen">
-                <ErrorScreen message="Game session not found" onGoBack={goToLobby} />
+                <ErrorScreen
+                    message="Game session not found"
+                    onGoBack={goToLobby}
+                />
             </div>
         );
     }
@@ -92,7 +104,9 @@ export default function GameLayout({
         <div className="flex flex-col min-h-screen">
             <section className="h-24 flex flex-row items-center justify-around">
                 <div>
-                    <h1 className="text-4xl font-bold">Game: {currentGameSession?.gameName}</h1>
+                    <h1 className="text-4xl font-bold">
+                        Game: {currentGameSession?.gameName}
+                    </h1>
                     <p className="text-xl">Game ID: {shortGameId}</p>
                 </div>
                 <div className="flex gap-4">
@@ -113,4 +127,4 @@ export default function GameLayout({
             {children}
         </div>
     );
-} 
+}

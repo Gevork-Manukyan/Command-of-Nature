@@ -1,7 +1,7 @@
 import { NotFoundError } from "src/custom-errors";
 import { prisma } from "../prisma";
 import { User } from "@prisma/client";
-import { UserProfile } from "@shared-types";
+import { UserSetup } from "@shared-types";
 
 export async function getUserByUserId(userId: string): Promise<User> {
     const user = await prisma.user.findUnique({
@@ -19,7 +19,7 @@ export async function getUserByUserId(userId: string): Promise<User> {
 
 export async function getUserProfilesByGameId(
     gameId: string
-): Promise<UserProfile[]> {
+) {
     const users = await prisma.userGame.findMany({
         where: {
             gameId,

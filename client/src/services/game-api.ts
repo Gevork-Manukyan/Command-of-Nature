@@ -30,16 +30,12 @@ import {
 import { GameListingSchema } from "@shared-types";
 
 /* ------------ General Endpoints ------------ */
-export async function getCurrentUsers(gameId: string) {
-    return getGameplayUrlWithGameId("/current-users", gameId, {}, "GET");
-}
-
-export async function getTeams(gameId: string) {
-    return getSetupUrlWithGameId("/teams", gameId, {}, "GET");
-}
-
 export async function getCurrentPhase(gameId: string) {
     return getGameplayUrlWithGameId("/current-phase", gameId, {}, "GET");
+}
+
+export async function getUserSetupData(gameId: string, userId: string) {
+    return getSetupUrlWithGameId("/user-setup-data", gameId, { userId }, "GET");
 }
 
 /* ------------ Setup Endpoints ------------ */

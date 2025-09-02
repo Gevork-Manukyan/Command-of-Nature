@@ -15,6 +15,7 @@ export const SelectSageEvent = "select-sage";
 export const GetSelectedSagesEvent = "get-selected-sages";
 export const SageSelectedEvent = "sage-selected";
 export const AllSagesSelectedEvent = "all-sages-selected";
+export const UserSetupDataEvent = "user-setup-data";
 export const ToggleReadyStatusEvent = "toggle-ready-status";
 export const ReadyStatusToggledEvent = "ready-status-toggled";
 export const JoinTeamEvent = "join-team";

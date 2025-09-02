@@ -263,19 +263,22 @@ export class ConGame {
 
     /**
      * Gets the team the player is on
-     * @param playerId - The socket ID of the player to get the team of
+     * @param playerSocketId - The socket ID of the player to get the team of
      * @returns The team the player is on
      */
-    getPlayerTeam(playerId: Player["socketId"]) {
-        const player = this.getPlayer(playerId);
-        const playerTeam = this.team1.isPlayerOnTeam(player.userId)
+    getPlayerTeam(playerSocketId: Player["socketId"]) {
+        const player = this.getPlayer(playerSocketId);
+        return this.getPlayerTeamByUserId(player.userId);
+    }
+
+    getPlayerTeamByUserId(playerUserId: Player["userId"]) {
+        const playerTeam = this.team1.isPlayerOnTeam(playerUserId)
             ? this.team1
-            : this.team2.isPlayerOnTeam(player.userId)
+            : this.team2.isPlayerOnTeam(playerUserId)
             ? this.team2
             : null;
 
-        if (!playerTeam)
-            throw new NotFoundError("Team", "Player does not have a team");
+        if (!playerTeam) return null;
         return playerTeam;
     }
 
@@ -287,7 +290,7 @@ export class ConGame {
     getPlayerTeammate(playerId: Player["socketId"]) {
         const player = this.getPlayer(playerId);
         const playerTeam = this.getPlayerTeam(playerId);
-        const teammateId = playerTeam.getTeammateId(player.userId);
+        const teammateId = playerTeam?.getTeammateId(player.userId);
 
         if (!teammateId) {
             throw new NotFoundError(
@@ -857,7 +860,7 @@ export class ActiveConGame extends ConGame {
     }
 
     getDayBreakCards(playerId: Player["socketId"]): SpaceOption[] {
-        return this.getPlayerTeam(playerId).getDayBreakCards();
+        return this.getPlayerTeam(playerId)?.getDayBreakCards() || [];
     }
 
     /**
@@ -866,8 +869,8 @@ export class ActiveConGame extends ConGame {
      * @param spaceOption
      */
     activateDayBreak(playerId: Player["socketId"], spaceOption: SpaceOption) {
-        const abilityResult =
-            this.getPlayerTeam(playerId).activateDayBreak(spaceOption);
+        const abilityResult = this.getPlayerTeam(playerId)?.activateDayBreak(spaceOption) || null;
+        if (!abilityResult) return;
         processAbility(this, abilityResult);
     }
 
@@ -890,6 +893,7 @@ export class ActiveConGame extends ConGame {
                 : this.currentItemShopCards;
         const player = this.getPlayer(playerId);
         const playerTeam = this.getPlayerTeam(playerId);
+        if (!playerTeam) return;
         const card = currentShopCards[shopIndex];
         const cost = card.price;
         if (playerTeam.getGold() < cost) throw new NotEnoughGoldError();

@@ -1,27 +1,18 @@
 import express from 'express';
 import { InvalidSpaceError } from '../../custom-errors';
 import { ActivateDayBreakData, activateDayBreakSchema, AllSpaceOptionsSchema, ExitGameData, ExitGameEvent, exitGameSchema, GetDayBreakCardsData, GetDayBreakCardsEvent, getDayBreakCardsSchema, LeaveGameData, leaveGameSchema, PlayerLeftData, PlayerLeftEvent } from '@shared-types';
-import { UserSocketManager } from 'src/services/UserSocketManager';
 import { asyncHandler } from 'src/middleware/asyncHandler';
 import { getSocketId } from '../../lib/utilities/common';
 import { Request, Response } from 'express';
 import { requireHostForGameExit } from 'src/middleware/hostOnly';
 import { validateRequestBody } from 'src/lib/utilities/routes';
-import { GameStateManager, GameEventEmitter } from '../../services';
-import { deleteUserActiveGames, getUserProfilesByGameId } from 'src/lib/utilities/db';
+import { GameEventEmitter } from '../../services';
+import { deleteUserActiveGames } from 'src/lib/utilities/db';
+import { gameStateManager, getUpdatedUsers, userSocketManager } from 'src/lib/utilities/game-routes';
 
-const gameStateManager = GameStateManager.getInstance();
-const userSocketManager = UserSocketManager.getInstance();
 
 export default function createGameplayRouter(gameEventEmitter: GameEventEmitter) {
   const router = express.Router();
-
-  // get the current users in the game
-  router.get('/:gameId/current-users', asyncHandler(async (req: Request, res: Response) => {
-    const gameId = req.params.gameId;
-    const currentUsers = await getUserProfilesByGameId(gameId);
-    res.json(currentUsers);
-  }));
 
   // GET /api/games/gameplay/:gameId/current-phase
   router.get(
@@ -54,9 +45,9 @@ export default function createGameplayRouter(gameEventEmitter: GameEventEmitter)
     
     await gameStateManager.removePlayerFromGame(gameId, socketId);
     await deleteUserActiveGames(userId, gameId);
-    const currentUsers = await getUserProfilesByGameId(gameId);
     userSocketManager.leaveGameRoom(userId, gameId);
-    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, { updatedUsers: currentUsers } as PlayerLeftData);
+    const data: PlayerLeftData = await getUpdatedUsers(gameId);
+    gameEventEmitter.emitToOtherPlayersInRoom(gameId, socketId, PlayerLeftEvent, data);
     res.status(200).json({ message: 'Game left successfully' });
   }));
 

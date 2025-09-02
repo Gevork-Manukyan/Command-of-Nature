@@ -3,6 +3,11 @@ import { ActiveConGame } from "../models";
 import { InternalServerError, InvalidCardTypeError } from "../custom-errors";
 import { ElementalCard, AbilityAction, AbilityResult } from "@shared-types";
 
+function getTeam(game: ActiveConGame, player: AbilityResult['player']) {
+    const team = game.getPlayerTeam(player.userId);
+    if (!team) throw new InternalServerError("Team not found");
+    return team;
+}
 
 export function processAbility(game: ActiveConGame, AbilityResult: AbilityResult[]) {
     const { type, player, amount, fieldTarget, handTarget, discardTarget } = AbilityResult[0];
@@ -62,7 +67,8 @@ export function processAbility(game: ActiveConGame, AbilityResult: AbilityResult
  */
 function collectGold(game: ActiveConGame, player: AbilityResult['player'], amount: AbilityResult['amount']) {
     if (amount === undefined) throw new InternalServerError("Amount of gold to collect is not defined");
-    game.getPlayerTeam(player.userId).addGold(amount);
+    const team = getTeam(game, player);
+    team.addGold(amount);
 }
 
 /**
@@ -76,7 +82,7 @@ function dealDamage(game: ActiveConGame, player: AbilityResult['player'], fieldT
     if (fieldTarget === undefined) throw new InternalServerError("Field target is not defined");
     if (amount === undefined) throw new InternalServerError("Amount of damage to deal is not defined");
 
-    const playerTeam = game.getPlayerTeam(player.userId);
+    const playerTeam = getTeam(game, player);
     const targetTeam = fieldTarget.team === 'self' ? playerTeam : game.getOpposingTeam(playerTeam);
     fieldTarget.position.forEach(position => {
         targetTeam.damageCardAtPosition(position, amount);
@@ -97,7 +103,8 @@ function moveToDiscardFromField(game: ActiveConGame, player: AbilityResult['play
     if (fieldTarget.team === 'enemy') throw new InternalServerError("Cannot move enemy card to discard");
 
     fieldTarget.position.forEach(position => {
-        const removedCard = game.getPlayerTeam(player.userId).getBattlefield().removeCard(position);
+        const team = getTeam(game, player);
+        const removedCard = team.getBattlefield().removeCard(position);
         player.addCardToDiscardPile(removedCard);
     });
 }
@@ -120,7 +127,9 @@ function moveToFieldFromDiscard(game: ActiveConGame, player: AbilityResult['play
     if (!isElementalCard(targetCard)) throw new InvalidCardTypeError("Card is not an ElementalCard");
     
     const removedCard = player.removeCardFromDiscardPile(targetIndex) as ElementalCard;
-    game.getPlayerTeam(player.userId).getBattlefield().addCard(removedCard, fieldTarget.position[0]);
+
+    const team = getTeam(game, player);
+    team.getBattlefield().addCard(removedCard, fieldTarget.position[0]);
 }
 
 /**
@@ -132,7 +141,8 @@ function swapFieldPosition(game: ActiveConGame, player: AbilityResult['player'],
     if (fieldTarget === undefined) throw new InternalServerError("Field target is not defined");
     if (fieldTarget.position.length !== 2) throw new InternalServerError("Field target position is not two positions");
 
-    game.getPlayerTeam(player.userId).getBattlefield().swapCards(fieldTarget.position[0], fieldTarget.position[1]);
+    const team = getTeam(game, player);
+    team.getBattlefield().swapCards(fieldTarget.position[0], fieldTarget.position[1]);
 }
 
 /**
@@ -184,7 +194,8 @@ function moveToHandFromField(game: ActiveConGame, player: AbilityResult['player'
     if (fieldTarget === undefined) throw new InternalServerError("Field target is not defined");
 
     fieldTarget.position.forEach(position => {
-        const removedCard = game.getPlayerTeam(player.userId).getBattlefield().removeCard(position);
+        const team = getTeam(game, player);
+        const removedCard = team.getBattlefield().removeCard(position);
         player.addCardToHand(removedCard);
     });
 }
@@ -208,7 +219,8 @@ function moveToFieldFromHand(game: ActiveConGame, player: AbilityResult['player'
     if (!isElementalCard(targetCard)) throw new InvalidCardTypeError("Card is not an ElementalCard");
     
     const removedCard = player.removeCardFromHand(targetIndex) as ElementalCard;
-    game.getPlayerTeam(player.userId).getBattlefield().addCard(removedCard, fieldTarget.position[0]);
+    const team = getTeam(game, player);
+    team.getBattlefield().addCard(removedCard, fieldTarget.position[0]);
 }
 
 /**
@@ -223,7 +235,8 @@ function addShield(game: ActiveConGame, player: AbilityResult['player'], fieldTa
     if (fieldTarget.team === 'enemy') throw new InternalServerError("Cannot add shield to enemy card");
 
     fieldTarget.position.forEach(position => {
-        game.getPlayerTeam(player.userId).getBattlefield().addShieldToCardAtPosition(position, amount);
+        const team = getTeam(game, player);
+        team.getBattlefield().addShieldToCardAtPosition(position, amount);
     });
 }
 
@@ -239,7 +252,8 @@ function addBoost(game: ActiveConGame, player: AbilityResult['player'], fieldTar
     if (fieldTarget.team === 'enemy') throw new InternalServerError("Cannot add boost to enemy card");
 
     fieldTarget.position.forEach(position => {
-        game.getPlayerTeam(player.userId).getBattlefield().addBoostToCardAtPosition(position, amount);
+        const team = getTeam(game, player);
+        team.getBattlefield().addBoostToCardAtPosition(position, amount);
     });
 }
 
@@ -260,7 +274,8 @@ function removeAllDamage(game: ActiveConGame, player: AbilityResult['player'], f
     if (fieldTarget === undefined) throw new InternalServerError("Field target is not defined");
 
     fieldTarget.position.forEach(position => {
-        game.getPlayerTeam(player.userId).getBattlefield().clearDamage(position);
+        const team = getTeam(game, player);
+        team.getBattlefield().clearDamage(position);
     });
 }
 

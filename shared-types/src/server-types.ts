@@ -34,7 +34,7 @@ import {
 } from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
 import { SageSchema } from "./card-types";
-import { UserProfileSchema } from "./types";
+import { UserSetupSchema } from "./types";
 
 export const registerUserSocketSchema = z.object({
     userId: z.string(),
@@ -60,11 +60,11 @@ export const rejoinGameSchema = z.object({
 });
 
 export const playerJoinedSchema = z.object({
-    updatedUsers: z.array(UserProfileSchema),
+    userSetupData: z.array(UserSetupSchema),
 });
 
 export const playerRejoinedSchema = z.object({
-    updatedUsers: z.array(UserProfileSchema),
+    userSetupData: z.array(UserSetupSchema),
 });
 
 export const allPlayersJoinedSchema = z.object({
@@ -90,6 +90,10 @@ export const allSagesSelectedSchema = z.object({
     userId: z.string(),
 });
 
+export const userSetupDataResponseSchema = z.object({
+    userSetupData: z.array(UserSetupSchema),
+});
+
 export const toggleReadyStatusSchema = z.object({
     userId: z.string(),
 });
@@ -108,7 +112,7 @@ export const teamJoinedSchema = z.object({
     updatedTeams: z.object({
         1: z.array(z.string()),
         2: z.array(z.string()),
-    })
+    }),
 });
 
 export const clearTeamsSchema = z.object({
@@ -119,7 +123,7 @@ export const teamsClearedSchema = z.object({
     updatedTeams: z.object({
         1: z.array(z.string()),
         2: z.array(z.string()),
-    })
+    }),
 });
 
 export const allTeamsJoinedSchema = z.object({
@@ -163,7 +167,7 @@ export const leaveGameSchema = z.object({
 });
 
 export const playerLeftSchema = z.object({
-    updatedUsers: z.array(UserProfileSchema),
+    userSetupData: z.array(UserSetupSchema),
 });
 
 export const getDayBreakCardsSchema = z.object({
@@ -219,6 +223,7 @@ export type SelectSageData = z.infer<typeof selectSageSchema>;
 export type GetSelectedSagesData = z.infer<typeof getSelectedSagesSchema>;
 export type SageSelectedData = z.infer<typeof sageSelectedSchema>;
 export type AllSagesSelectedData = z.infer<typeof allSagesSelectedSchema>;
+export type UserSetupDataResponse = z.infer<typeof userSetupDataResponseSchema>;
 export type ToggleReadyStatusData = z.infer<typeof toggleReadyStatusSchema>;
 export type ReadyStatusToggledData = z.infer<typeof readyStatusToggledSchema>;
 export type JoinTeamData = z.infer<typeof joinTeamSchema>;

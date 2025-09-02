@@ -2,6 +2,7 @@
 
 import { ErrorScreen } from "@/components/error/error-screen";
 import JoiningGame from "@/components/game/setup/joining-game";
+import ReadyUp from "@/components/game/setup/ready-up";
 import SageSelection from "@/components/game/setup/sage-selection";
 import TeamSelection from "@/components/game/setup/team-selection";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
@@ -25,6 +26,9 @@ export default function GameSetupPage() {
 
             {/* Team Formation */}
             {currentPhase === State.JOINING_TEAMS && <TeamSelection />}
+
+            {/* Ready Up */}
+            {currentPhase === State.READY_UP && <ReadyUp />}
 
             {/* Action Buttons */}
             {/* <div className="flex justify-center gap-4">

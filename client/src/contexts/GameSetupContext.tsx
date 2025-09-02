@@ -34,6 +34,9 @@ import {
     teamJoinedSchema,
     TeamsClearedData,
     teamsClearedSchema,
+    ReadyStatusToggledData,
+    readyStatusToggledSchema,
+    userSetupDataResponseSchema,
 } from "@shared-types";
 import {
     allPlayersJoined,
@@ -41,19 +44,15 @@ import {
     allTeamsJoined,
     clearTeams,
     getCurrentPhase,
-    getCurrentUsers,
     getSelectedSages,
-    getTeams,
+    getUserSetupData,
     joinTeam,
     selectSage,
+    toggleReady,
 } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
-import { UserProfile } from "@shared-types";
-
-type Teams = {
-    [key in 1 | 2]: UserProfile[];
-};
+import { UserSetup } from "@shared-types";
 
 type GameSetupContextType = {
     error: string;
@@ -62,8 +61,7 @@ type GameSetupContextType = {
     isHost: boolean;
     selectedSage: Sage | null;
     availableSages: { [key in Sage]: boolean };
-    userPlayers: UserProfile[];
-    teams: Teams;
+    userPlayers: UserSetup[];
     handleAllPlayersJoined: () => Promise<void>;
     fetchSelectedSages: () => Promise<void>;
     handleSageConfirm: (sage: Sage) => Promise<void>;
@@ -71,6 +69,7 @@ type GameSetupContextType = {
     handleTeamJoin: (team: 1 | 2) => Promise<void>;
     handleClearTeams: () => Promise<void>;
     handleAllTeamsJoined: () => Promise<void>;
+    handleToggleReady: () => Promise<void>;
 };
 
 const GameSetupContext = createContext<GameSetupContextType | undefined>(
@@ -81,18 +80,48 @@ type GameSetupProviderProps = {
     children: React.ReactNode;
 };
 
-function getUpdatedTeamProfiles(
-    userPlayers: UserProfile[],
+function updateSetupSageData(
+    userPlayers: UserSetup[],
+    userId: string,
+    sage: Sage
+): UserSetup[] {
+    return userPlayers.map((user) => {
+        if (user.userId === userId) {
+            return { ...user, sage };
+        }
+        return user;
+    });
+}
+
+function updateSetupTeamData(
+    userPlayers: UserSetup[],
     updatedTeams: { [key in 1 | 2]: string[] }
-) {
-    return {
-        1: updatedTeams[1].map(
-            (userId) => userPlayers.find((user) => user.userId === userId)!
-        ),
-        2: updatedTeams[2].map(
-            (userId) => userPlayers.find((user) => user.userId === userId)!
-        ),
-    };
+): UserSetup[] {
+    return userPlayers.map((user) => {
+        const userId = user.userId;
+
+        if (updatedTeams[1].includes(userId)) {
+            return { ...user, team: 1 };
+        }
+        if (updatedTeams[2].includes(userId)) {
+            return { ...user, team: 2 };
+        }
+
+        return { ...user, team: null };
+    });
+}
+
+function updateSetupReadyStatusData(
+    userPlayers: UserSetup[],
+    userId: string,
+    isReady: boolean
+): UserSetup[] {
+    return userPlayers.map((user) => {
+        if (user.userId === userId) {
+            return { ...user, isReady };
+        }
+        return user;
+    });
 }
 
 export function GameSetupProvider({ children }: GameSetupProviderProps) {
@@ -106,8 +135,8 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const userId = session?.user.id!;
 
     // Game Related State
-    const [userPlayers, setUserPlayers] = useState<UserProfile[]>([]);
     const [currentPhase, setCurrentPhase] = useState<State | null>(null);
+    const [userPlayers, setUserPlayers] = useState<UserSetup[]>([]);
     const [selectedSage, setSelectedSage] = useState<Sage | null>(null);
     const [availableSages, setAvailableSages] = useState<{
         [key in Sage]: boolean;
@@ -117,23 +146,13 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         Porella: true,
         Torrent: true,
     });
-    const [teams, setTeams] = useState<Teams>({
-        1: [],
-        2: [],
-    });
 
     // Fetch the current phase and states
     useEffect(() => {
         const fetchSetupData = async () => {
-            const currentUsers = await getCurrentUsers(gameId);
-            setUserPlayers(currentUsers);
-
-            const updatedTeams = await getTeams(gameId);
-            const updatedTeamProfiles = getUpdatedTeamProfiles(
-                currentUsers,
-                updatedTeams
-            );
-            setTeams(updatedTeamProfiles);
+            const userSetupData = await getUserSetupData(gameId, userId);
+            const validatedUserSetupData = userSetupDataResponseSchema.parse(userSetupData);
+            setUserPlayers(validatedUserSetupData.userSetupData);
         };
         fetchSetupData();
 
@@ -164,12 +183,12 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         // -------------- SOCKET EVENT HANDLERS --------------
         const handleSocketPlayerJoined = (data: PlayerJoinedData) => {
             const validatedData = playerJoinedSchema.parse(data);
-            setUserPlayers(validatedData.updatedUsers);
+            setUserPlayers(validatedData.userSetupData);
         };
 
         const handleSocketPlayerLeft = (data: PlayerLeftData) => {
             const validatedData = playerLeftSchema.parse(data);
-            setUserPlayers(validatedData.updatedUsers);
+            setUserPlayers(validatedData.userSetupData);
         };
 
         const handleSocketAllPlayersJoined = (data: NextStateData) => {
@@ -180,6 +199,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         const handleSocketSageSelected = (data: SageSelectedData) => {
             const parsedData = sageSelectedSchema.parse(data);
             setAvailableSages(parsedData.availableSages);
+            setUserPlayers((prev) => updateSetupSageData(prev, parsedData.userId, parsedData.sage));
         };
 
         const handleSocketAllSagesSelected = (data: NextStateData) => {
@@ -189,20 +209,12 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
 
         const handleSocketTeamJoined = (data: TeamJoinedData) => {
             const validatedData = teamJoinedSchema.parse(data);
-            const updatedTeamProfiles = getUpdatedTeamProfiles(
-                userPlayers,
-                validatedData.updatedTeams
-            );
-            setTeams(updatedTeamProfiles);
+            setUserPlayers((prev) => updateSetupTeamData(prev, validatedData.updatedTeams));
         };
 
         const handleSocketClearTeams = (data: TeamsClearedData) => {
             const validatedData = teamsClearedSchema.parse(data);
-            const updatedTeamProfiles = getUpdatedTeamProfiles(
-                userPlayers,
-                validatedData.updatedTeams
-            );
-            setTeams(updatedTeamProfiles);
+            setUserPlayers((prev) => updateSetupTeamData(prev, validatedData.updatedTeams));
         };
 
         const handleSocketAllTeamsJoined = (data: NextStateData) => {
@@ -210,7 +222,12 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setCurrentPhase(validatedData.nextState);
         };
 
-        const handleSocketReadyStatusToggled = () => {};
+        const handleSocketReadyStatusToggled = (
+            data: ReadyStatusToggledData
+        ) => {
+            const validatedData = readyStatusToggledSchema.parse(data);
+            setUserPlayers((prev) => updateSetupReadyStatusData(prev, validatedData.userId, validatedData.isReady));
+        };
 
         const handleSocketStartGame = () => {};
 
@@ -232,33 +249,54 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         socketService.on(AllPlayersJoinedEvent, handleSocketAllPlayersJoined);
         socketService.on(SageSelectedEvent, handleSocketSageSelected);
         socketService.on(AllSagesSelectedEvent, handleSocketAllSagesSelected);
-        socketService.on(ReadyStatusToggledEvent, handleSocketReadyStatusToggled);
+        socketService.on(
+            ReadyStatusToggledEvent,
+            handleSocketReadyStatusToggled
+        );
         socketService.on(TeamJoinedEvent, handleSocketTeamJoined);
         socketService.on(ClearTeamsEvent, handleSocketClearTeams);
         socketService.on(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
         socketService.on(StartGameEvent, handleSocketStartGame);
         socketService.on(PickWarriorsEvent, handleSocketPickWarriors);
         socketService.on(SwapWarriorsEvent, handleSocketSwapWarriors);
-        socketService.on(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
+        socketService.on(
+            PlayerFinishedSetupEvent,
+            handleSocketPlayerFinishedSetup
+        );
         socketService.on(CancelSetupEvent, handleSocketCancelSetup);
         socketService.on(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
 
         return () => {
             socketService.off(PlayerJoinedEvent, handleSocketPlayerJoined);
             socketService.off(PlayerLeftEvent, handleSocketPlayerLeft);
-            socketService.off(AllPlayersJoinedEvent, handleSocketAllPlayersJoined);
+            socketService.off(
+                AllPlayersJoinedEvent,
+                handleSocketAllPlayersJoined
+            );
             socketService.off(SageSelectedEvent, handleSocketSageSelected);
-            socketService.off(AllSagesSelectedEvent, handleSocketAllSagesSelected);
-            socketService.off(ReadyStatusToggledEvent,handleSocketReadyStatusToggled);
+            socketService.off(
+                AllSagesSelectedEvent,
+                handleSocketAllSagesSelected
+            );
+            socketService.off(
+                ReadyStatusToggledEvent,
+                handleSocketReadyStatusToggled
+            );
             socketService.off(TeamJoinedEvent, handleSocketTeamJoined);
             socketService.off(ClearTeamsEvent, handleSocketClearTeams);
             socketService.off(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
             socketService.off(StartGameEvent, handleSocketStartGame);
             socketService.off(PickWarriorsEvent, handleSocketPickWarriors);
             socketService.off(SwapWarriorsEvent, handleSocketSwapWarriors);
-            socketService.off( PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
+            socketService.off(
+                PlayerFinishedSetupEvent,
+                handleSocketPlayerFinishedSetup
+            );
             socketService.off(CancelSetupEvent, handleSocketCancelSetup);
-            socketService.off(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
+            socketService.off(
+                AllPlayersSetupEvent,
+                handleSocketAllPlayersSetup
+            );
         };
     }, [currentGameSession, router, userPlayers]);
 
@@ -284,6 +322,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
 
             // set the selected sage to the new sage
             setSelectedSage(sage);
+            setUserPlayers((prev) => updateSetupSageData(prev, userId, sage));
         } catch (err) {
             console.error("Failed to select sage:", err);
             setError(
@@ -317,6 +356,10 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         await allTeamsJoined(gameId, { userId });
     };
 
+    const handleToggleReady = async () => {
+        await toggleReady(gameId, { userId });
+    };
+
     return (
         <GameSetupContext.Provider
             value={{
@@ -327,7 +370,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
                 selectedSage,
                 availableSages,
                 userPlayers,
-                teams,
                 handleAllPlayersJoined,
                 fetchSelectedSages,
                 handleSageConfirm,
@@ -335,6 +377,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
                 handleTeamJoin,
                 handleClearTeams,
                 handleAllTeamsJoined,
+                handleToggleReady,
             }}
         >
             {children}

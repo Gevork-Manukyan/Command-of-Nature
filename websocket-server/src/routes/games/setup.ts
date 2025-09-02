@@ -1,5 +1,5 @@
 import express from "express";
-import { GameEventEmitter, GameStateManager } from "../../services";
+import { GameEventEmitter } from "../../services";
 import { ValidationError } from "../../custom-errors";
 import {
     AllSagesSelectedEvent,
@@ -25,7 +25,6 @@ import {
     playerFinishedSetupSchema,
     PlayerJoinedData,
     PlayerJoinedEvent,
-    UserProfile,
     PlayerRejoinedData,
     PlayerRejoinedEvent,
     ReadyStatusToggledData,
@@ -45,12 +44,9 @@ import {
     toggleReadyStatusSchema,
     AllPlayersJoinedEvent,
     State,
-    AllPlayersJoinedData,
     NextStateData,
-    ClearTeamsData,
     TeamsClearedData,
 } from "@shared-types";
-import { UserSocketManager } from "../../services/UserSocketManager";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
 import { Request, Response } from "express";
@@ -66,12 +62,7 @@ import {
     validateRequestQuery,
 } from "src/lib/utilities/routes";
 import { ConGame } from "src/models";
-import {
-    getUserProfilesByGameId,
-} from "src/lib/utilities/db";
-
-const gameStateManager = GameStateManager.getInstance();
-const userSocketManager = UserSocketManager.getInstance();
+import { gameStateManager, getUpdatedUsers, userSocketManager } from 'src/lib/utilities/game-routes';
 
 function createGameListing(game: ConGame): GameListing {
     return {
@@ -92,6 +83,13 @@ function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
+
+    // GET /api/games/setup/:gameId/user-setup-data
+    router.get('/:gameId/user-setup-data', asyncHandler(async (req: Request, res: Response) => {
+        const gameId = req.params.gameId;
+        const response = await getUpdatedUsers(gameId);
+        res.json(response);
+    }));
 
     // POST /api/games/setup/create
     router.post(
@@ -145,12 +143,13 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     );
 
                     userSocketManager.joinGameRoom(userId, gameId);
-                    const currentUsers = await getUserProfilesByGameId(gameId);
+
+                    const data: PlayerJoinedData = await getUpdatedUsers(gameId);
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
                         socketId,
                         PlayerJoinedEvent,
-                        { updatedUsers: currentUsers } as PlayerJoinedData
+                        data
                     );
                 }
             );
@@ -170,18 +169,18 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 req
             );
             const socketId = getSocketId(userId);
-
+            
             await gameStateManager.playerRejoinedGame(gameId, userId, socketId);
-            const currentUsers = await getUserProfilesByGameId(gameId);
             const game = gameStateManager.getGame(gameId);
             const gameListing = createGameListing(game);
 
             userSocketManager.joinGameRoom(userId, gameId);
+            const data: PlayerRejoinedData = await getUpdatedUsers(gameId);
             gameEventEmitter.emitToOtherPlayersInRoom(
                 gameId,
                 socketId,
                 PlayerRejoinedEvent,
-                { updatedUsers: currentUsers } as PlayerRejoinedData
+                data
             );
             res.json(gameListing);
         })
@@ -194,14 +193,17 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
 
-            await gameStateManager.verifyAndProcessAllPlayersJoinedEvent(gameId, async () => {
-                await gameStateManager.allPlayersJoined(gameId);
-                gameEventEmitter.emitToAllPlayers(
-                    gameId,
-                    AllPlayersJoinedEvent,
-                    { nextState: State.SAGE_SELECTION } as NextStateData
-                );
-            });
+            await gameStateManager.verifyAndProcessAllPlayersJoinedEvent(
+                gameId,
+                async () => {
+                    await gameStateManager.allPlayersJoined(gameId);
+                    gameEventEmitter.emitToAllPlayers(
+                        gameId,
+                        AllPlayersJoinedEvent,
+                        { nextState: State.SAGE_SELECTION } as NextStateData
+                    );
+                }
+            );
 
             res.status(200).json({
                 message: "All players joined successfully",
@@ -299,15 +301,20 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
-            await gameStateManager.verifyAndProcessJoinTeamEvent(gameId, async () => {
-                const updatedGame = await gameStateManager.joinTeam(gameId, socketId, team);
-                const updatedTeams = getTeams(updatedGame);
-                gameEventEmitter.emitToAllPlayers(
-                    gameId,
-                    TeamJoinedEvent,
-                    { updatedTeams } as TeamJoinedData
-                );
-            });
+            await gameStateManager.verifyAndProcessJoinTeamEvent(
+                gameId,
+                async () => {
+                    const updatedGame = await gameStateManager.joinTeam(
+                        gameId,
+                        socketId,
+                        team
+                    );
+                    const updatedTeams = getTeams(updatedGame);
+                    gameEventEmitter.emitToAllPlayers(gameId, TeamJoinedEvent, {
+                        updatedTeams,
+                    } as TeamJoinedData);
+                }
+            );
 
             res.status(200).json({ message: "Team joined successfully" });
         })
@@ -320,31 +327,20 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
 
-            await gameStateManager.verifyAndProcessClearTeamsEvent(gameId, async () => {
-                gameStateManager.getGame(gameId).clearTeams();
-                gameEventEmitter.emitToAllPlayers(
-                    gameId, 
-                    ClearTeamsEvent, 
-                    { updatedTeams: { 1: [], 2: [] } } as TeamsClearedData
-                );
-            });
+            await gameStateManager.verifyAndProcessClearTeamsEvent(
+                gameId,
+                async () => {
+                    gameStateManager.getGame(gameId).clearTeams();
+                    gameEventEmitter.emitToAllPlayers(gameId, ClearTeamsEvent, {
+                        updatedTeams: { 1: [], 2: [] },
+                    } as TeamsClearedData);
+                }
+            );
 
             res.status(200).json({ message: "Teams cleared successfully" });
         })
     );
 
-    // GET /api/games/setup/:gameId/teams
-    router.get(
-        "/:gameId/teams",
-        asyncHandler(async (req: Request, res: Response) => {
-            const gameId = req.params.gameId;
-            const game = gameStateManager.getGame(gameId);
-            const teams = getTeams(game);
-            res.json(teams);
-        })
-    );
-
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/all-teams-joined
     router.post(
         "/:gameId/all-teams-joined",
@@ -359,6 +355,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
                         AllTeamsJoinedEvent,
+                        { nextState: State.READY_UP } as NextStateData
                     );
                 }
             );
@@ -387,9 +384,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         socketId
                     );
 
-                    gameEventEmitter.emitToOtherPlayersInRoom(
+                    gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        socketId,
                         ReadyStatusToggledEvent,
                         { userId, isReady } as ReadyStatusToggledData
                     );
@@ -449,7 +445,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     const game = gameStateManager.getGame(gameId);
                     const player = game.getPlayer(socketId);
 
-                    game.getPlayerTeam(player.userId).chooseWarriors(
+                    const team = game.getPlayerTeam(player.userId)
+                    if (!team) {
+                        throw new ValidationError("Player not on team", "player");
+                    }
+                    
+                    team.chooseWarriors(
                         player,
                         parsedChoices
                     );
@@ -484,7 +485,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 async () => {
                     const game = gameStateManager.getGame(gameId);
                     const player = game.getPlayer(socketId);
-                    game.getPlayerTeam(player.userId).swapWarriors(player);
+                    const team = game.getPlayerTeam(player.userId)
+                    if (!team) {
+                        throw new ValidationError("Player not on team", "player");
+                    }
+
+                    team.swapWarriors(player);
 
                     gameEventEmitter.emitToTeammate(
                         game,

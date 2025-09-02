@@ -4,7 +4,11 @@ import NextPhaseButton from "./components/NextPhaseButton";
 import { Button } from "@/components/shadcn-ui/button";
 
 export default function TeamSelection() {
-    const { handleTeamJoin, isHost, handleAllTeamsJoined, numPlayersTotal, teams, handleClearTeams } = useGameSetupContext();
+    const { handleTeamJoin, isHost, handleAllTeamsJoined, numPlayersTotal, handleClearTeams, userPlayers } = useGameSetupContext();
+    const teams = {
+        1: userPlayers.filter((user) => user.team === 1),
+        2: userPlayers.filter((user) => user.team === 2),
+    }
 
     return (
         <>
