@@ -1,33 +1,59 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import H3 from "./components/h3";
+import NextPhaseButton from "./components/NextPhaseButton";
+import { Button } from "@/components/shadcn-ui/button";
 
 export default function TeamSelection() {
-    const { handleTeamJoin } = useGameSetupContext();
-    
+    const { handleTeamJoin, isHost, handleAllTeamsJoined, numPlayersTotal, teams, handleClearTeams } = useGameSetupContext();
+
     return (
-        <div className="mb-8">
-            <H3>Teams</H3>
+        <>
+        <H3>Teams</H3>
+        <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-8">
                 <div className="p-4 border rounded-lg">
                     <h4 className="font-medium mb-2">Team 1</h4>
                     
-                    <button
+                    <Button
                         onClick={() => handleTeamJoin(1)}
-                        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="variant-default"
+                        disabled={numPlayersTotal / 2 <= teams[1].length}
                     >
                         Join Team 1
-                    </button>
+                    </Button>
+                    {teams[1].map((user) => (
+                        <div key={user.userId}>{user.username}</div>
+                    ))}
                 </div>
                 <div className="p-4 border rounded-lg">
                     <h4 className="font-medium mb-2">Team 2</h4>
-                    <button
+                    <Button
                         onClick={() => handleTeamJoin(2)}
-                        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="variant-default"
+                        disabled={numPlayersTotal / 2 <= teams[2].length}
                     >
                         Join Team 2
-                    </button>
+                    </Button>
+                    {teams[2].map((user) => (
+                        <div key={user.userId}>{user.username}</div>
+                    ))}
                 </div>
             </div>
+
+            {isHost && handleAllTeamsJoined && (
+                <div className="flex flex-row justify-center gap-4">
+                    <Button onClick={handleClearTeams} variant="destructive">
+                        Clear Teams
+                    </Button>
+                    <NextPhaseButton 
+                        onClick={handleAllTeamsJoined} 
+                        disabled={numPlayersTotal !== (teams[1].length + teams[2].length)}
+                        >
+                        All Teams Joined
+                    </NextPhaseButton>
+                </div>
+            )}
         </div>
+        </>
     );
 }

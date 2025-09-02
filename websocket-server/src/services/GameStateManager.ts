@@ -208,6 +208,7 @@ export class GameStateManager {
         const game = this.getGame(gameId);
         game.joinTeam(socketId, team);
         await this.saveGame(game);
+        return game;
     }
 
     /**

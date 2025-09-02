@@ -30,6 +30,7 @@ import {
     PlayerLeftEvent,
     GetSelectedSagesEvent,
     AllPlayersJoinedEvent,
+    TeamsClearedEvent,
 } from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
 import { SageSchema } from "./card-types";
@@ -104,12 +105,21 @@ export const joinTeamSchema = z.object({
 });
 
 export const teamJoinedSchema = z.object({
-    userId: z.string(),
-    team: z.union([z.literal(1), z.literal(2)]),
+    updatedTeams: z.object({
+        1: z.array(z.string()),
+        2: z.array(z.string()),
+    })
 });
 
 export const clearTeamsSchema = z.object({
     userId: z.string(),
+});
+
+export const teamsClearedSchema = z.object({
+    updatedTeams: z.object({
+        1: z.array(z.string()),
+        2: z.array(z.string()),
+    })
 });
 
 export const allTeamsJoinedSchema = z.object({
@@ -182,6 +192,7 @@ export const EventSchemas = {
     [JoinTeamEvent]: joinTeamSchema,
     [TeamJoinedEvent]: teamJoinedSchema,
     [ClearTeamsEvent]: clearTeamsSchema,
+    [TeamsClearedEvent]: teamsClearedSchema,
     [AllTeamsJoinedEvent]: allTeamsJoinedSchema,
     [StartGameEvent]: startGameSchema,
     [ChooseWarriorsEvent]: chooseWarriorsSchema,
@@ -213,6 +224,7 @@ export type ReadyStatusToggledData = z.infer<typeof readyStatusToggledSchema>;
 export type JoinTeamData = z.infer<typeof joinTeamSchema>;
 export type TeamJoinedData = z.infer<typeof teamJoinedSchema>;
 export type ClearTeamsData = z.infer<typeof clearTeamsSchema>;
+export type TeamsClearedData = z.infer<typeof teamsClearedSchema>;
 export type AllTeamsJoinedData = z.infer<typeof allTeamsJoinedSchema>;
 export type StartGameData = z.infer<typeof startGameSchema>;
 export type ChooseWarriorsData = z.infer<typeof chooseWarriorsSchema>;
@@ -242,6 +254,7 @@ export type SocketEventMap = {
     [JoinTeamEvent]: JoinTeamData;
     [TeamJoinedEvent]: TeamJoinedData;
     [ClearTeamsEvent]: ClearTeamsData;
+    [TeamsClearedEvent]: TeamsClearedData;
     [AllTeamsJoinedEvent]: AllTeamsJoinedData;
     [StartGameEvent]: StartGameData;
     [ChooseWarriorsEvent]: ChooseWarriorsData;

@@ -20,6 +20,7 @@ export const ReadyStatusToggledEvent = "ready-status-toggled";
 export const JoinTeamEvent = "join-team";
 export const TeamJoinedEvent = "team-joined";
 export const ClearTeamsEvent = "clear-teams";
+export const TeamsClearedEvent = "teams-cleared";
 export const AllTeamsJoinedEvent = "all-teams-joined";
 export const StartGameEvent = "start-game";
 export const PickWarriorsEvent = "pick-warriors";       // Server sends to client; time to pick warriors

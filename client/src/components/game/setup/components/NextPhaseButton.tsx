@@ -1,3 +1,4 @@
+import { Button } from "@/components/shadcn-ui/button";
 import { cn } from "@/lib/client/utils";
 
 type NextPhaseButtonProps = {
@@ -9,12 +10,12 @@ type NextPhaseButtonProps = {
 
 export default function NextPhaseButton({ children, className, onClick, disabled }: NextPhaseButtonProps) {
     return (
-        <button
+        <Button
             onClick={onClick}
-            className={cn("px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed", className)}
+            className={cn(className)}
             disabled={disabled}
         >
             {children}
-        </button>
+        </Button>
     )
 }

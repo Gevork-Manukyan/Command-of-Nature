@@ -47,6 +47,8 @@ import {
     State,
     AllPlayersJoinedData,
     NextStateData,
+    ClearTeamsData,
+    TeamsClearedData,
 } from "@shared-types";
 import { UserSocketManager } from "../../services/UserSocketManager";
 import { asyncHandler } from "src/middleware/asyncHandler";
@@ -78,6 +80,13 @@ function createGameListing(game: ConGame): GameListing {
         isPrivate: game.isPrivate,
         numPlayersTotal: game.numPlayersTotal,
         numCurrentPlayers: game.players.length,
+    };
+}
+
+function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
+    return {
+        1: game.team1.userIds,
+        2: game.team2.userIds,
     };
 }
 
@@ -279,7 +288,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/join-team
     router.post(
         "/:gameId/join-team",
@@ -291,25 +299,20 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
 
-            await gameStateManager.verifyAndProcessJoinTeamEvent(
-                gameId,
-                async () => {
-                    await gameStateManager.joinTeam(gameId, socketId, team);
-
-                    gameEventEmitter.emitToOtherPlayersInRoom(
-                        gameId,
-                        socketId,
-                        TeamJoinedEvent,
-                        { userId, team } as TeamJoinedData
-                    );
-                }
-            );
+            await gameStateManager.verifyAndProcessJoinTeamEvent(gameId, async () => {
+                const updatedGame = await gameStateManager.joinTeam(gameId, socketId, team);
+                const updatedTeams = getTeams(updatedGame);
+                gameEventEmitter.emitToAllPlayers(
+                    gameId,
+                    TeamJoinedEvent,
+                    { updatedTeams } as TeamJoinedData
+                );
+            });
 
             res.status(200).json({ message: "Team joined successfully" });
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/clear-teams
     router.post(
         "/:gameId/clear-teams",
@@ -317,15 +320,27 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
 
-            await gameStateManager.verifyAndProcessClearTeamsEvent(
-                gameId,
-                async () => {
-                    gameStateManager.getGame(gameId).clearTeams();
-                    gameEventEmitter.emitToAllPlayers(gameId, ClearTeamsEvent);
-                }
-            );
+            await gameStateManager.verifyAndProcessClearTeamsEvent(gameId, async () => {
+                gameStateManager.getGame(gameId).clearTeams();
+                gameEventEmitter.emitToAllPlayers(
+                    gameId, 
+                    ClearTeamsEvent, 
+                    { updatedTeams: { 1: [], 2: [] } } as TeamsClearedData
+                );
+            });
 
             res.status(200).json({ message: "Teams cleared successfully" });
+        })
+    );
+
+    // GET /api/games/setup/:gameId/teams
+    router.get(
+        "/:gameId/teams",
+        asyncHandler(async (req: Request, res: Response) => {
+            const gameId = req.params.gameId;
+            const game = gameStateManager.getGame(gameId);
+            const teams = getTeams(game);
+            res.json(teams);
         })
     );
 
@@ -344,7 +359,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
                         AllTeamsJoinedEvent,
-                        { nextState: State.WARRIOR_SELECTION } as NextStateData
                     );
                 }
             );

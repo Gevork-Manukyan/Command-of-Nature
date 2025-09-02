@@ -2,6 +2,7 @@ import { z } from "zod";
 import { State } from "./gamestate-types";
 
 export const UserProfileSchema = z.object({
+    userId: z.string(),
     username: z.string(),
 });
 

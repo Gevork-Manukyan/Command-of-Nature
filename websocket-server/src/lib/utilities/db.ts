@@ -34,6 +34,7 @@ export async function getUserProfilesByGameId(
     }
 
     return users.map((userGame) => ({
+        userId: userGame.user.id,
         username: userGame.user.username,
     }));
 }

@@ -8,7 +8,7 @@ import NextPhaseButton from "./components/NextPhaseButton";
 
 export default function SageSelection() {
     const { 
-        numberOfPlayers,
+        numPlayersTotal,
         isHost,
         selectedSage,
         availableSages,
@@ -77,7 +77,7 @@ export default function SageSelection() {
                 {isHost && handleAllSagesSelected && (
                     <NextPhaseButton
                         onClick={handleAllSagesSelected}
-                        disabled={numberOfPlayers !== Object.values(availableSages).filter((isSageSelected) => isSageSelected).length}
+                        disabled={numPlayersTotal !== Object.values(availableSages).filter((isSageSelected) => isSageSelected).length}
                     >
                         All Sages Selected
                     </NextPhaseButton>
