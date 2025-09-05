@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CardSchema, ElementalCardSchema, ItemCardSchema } from "./card-classes";
-import { SageSchema } from "./card-types";
+import { OptionalAbilityCardSchema, SageSchema } from "./card-types";
 import { DecklistSchema } from "./Decklist";
 import { SpaceOptionsSchema } from "./space-options";
 
@@ -14,14 +14,14 @@ export const PlayerSchema = z.object({
     sage: SageSchema.nullable(),
     decklist: DecklistSchema.nullable(),
     level: z.number(),
-    hand: z.array(CardSchema),
-    deck: z.array(CardSchema),
-    discardPile: z.array(CardSchema),
+    hand: z.array(CardSchema.merge(OptionalAbilityCardSchema)),
+    deck: z.array(CardSchema.merge(OptionalAbilityCardSchema)),
+    discardPile: z.array(CardSchema.merge(OptionalAbilityCardSchema)),
 });
 
 export const BattlefieldSpaceSchema = z.lazy(() => z.object({
       spaceNumber: SpaceOptionsSchema,
-      value: ElementalCardSchema.nullable(),
+      value: ElementalCardSchema.merge(OptionalAbilityCardSchema).nullable(),
       connections: z.object({
           TL: SpaceOptionsSchema.nullable(),
           T: SpaceOptionsSchema.nullable(),
@@ -47,7 +47,7 @@ export const TeamSchema = z.object({
     teamSize: z.literal(1).or(z.literal(2)),
     gold: z.number().default(0),
     maxGold: z.literal(12).or(z.literal(20)),
-    removedCards: z.array(CardSchema),
+    removedCards: z.array(CardSchema.merge(OptionalAbilityCardSchema)),
 });
 
 export const ConGameSchema = z.object({
@@ -67,8 +67,8 @@ export const ConGameSchema = z.object({
         first: z.number(),
         second: z.number(),
     }),
-    creatureShop: z.array(ElementalCardSchema),
-    itemShop: z.array(ItemCardSchema),
+    creatureShop: z.array(ElementalCardSchema.merge(OptionalAbilityCardSchema)),
+    itemShop: z.array(ItemCardSchema.merge(OptionalAbilityCardSchema)),
 });
 
 export const ActiveConGameSchema = ConGameSchema.extend({

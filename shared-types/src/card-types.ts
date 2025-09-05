@@ -12,3 +12,6 @@ export type ItemType = z.infer<typeof ItemTypeSchema>;
 
 export const RowRequirementSchema = z.array(z.union([z.literal(1), z.literal(2), z.literal(3)]));
 export const AbilitySchema = z.function().args().returns(z.array(AbilityResultSchema));
+export const OptionalAbilityCardSchema = z.object({
+    ability: AbilitySchema.optional(),
+});

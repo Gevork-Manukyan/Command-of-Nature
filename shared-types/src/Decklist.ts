@@ -3,37 +3,36 @@ import {
     ElementalSageCard,
     ElementalSageCardSchema,
 } from "./card-classes/ElementalSageCard";
-import { ElementalChampionCard, ElementalChampionCardSchema } from "./card-classes/ElementalChampionCard";
-import { ElementalWarriorCard, ElementalWarriorCardSchema } from "./card-classes/ElementalWarriorCard";
-import { ElementalStarterCard, ElementalStarterCardSchema } from "./card-classes/ElementalStarterCard";
+import {
+    ElementalChampionCard,
+    ElementalChampionCardSchema,
+} from "./card-classes/ElementalChampionCard";
+import {
+    ElementalWarriorCard,
+    ElementalWarriorCardSchema,
+} from "./card-classes/ElementalWarriorCard";
+import {
+    ElementalStarterCard,
+    ElementalStarterCardSchema,
+} from "./card-classes/ElementalStarterCard";
 import { ItemCard, ItemCardSchema } from "./card-classes/ItemCard";
-import { AbilitySchema } from "./card-types";
+import { OptionalAbilityCardSchema } from "./card-types";
 import { reconstructCard, reconstructCards } from "./card-reconstruction";
 
 export const DecklistSchema = z.object({
-    sage: ElementalSageCardSchema.extend({
-        ability: AbilitySchema.optional(),
-    }),
+    sage: ElementalSageCardSchema.merge(OptionalAbilityCardSchema),
     champions: z.object({
-        level4: ElementalChampionCardSchema.extend({
-            ability: AbilitySchema.optional(),
-        }),
-        level6: ElementalChampionCardSchema.extend({
-            ability: AbilitySchema.optional(),
-        }),
-        level8: ElementalChampionCardSchema.extend({
-            ability: AbilitySchema.optional(),
-        }),
+        level4: ElementalChampionCardSchema.merge(OptionalAbilityCardSchema),
+        level6: ElementalChampionCardSchema.merge(OptionalAbilityCardSchema),
+        level8: ElementalChampionCardSchema.merge(OptionalAbilityCardSchema),
     }),
-    warriors: z.array(ElementalWarriorCardSchema.extend({
-        ability: AbilitySchema.optional(),
-    })),
-    basic: ElementalStarterCardSchema.extend({
-        ability: AbilitySchema.optional(),
-    }),
-    items: z.array(ItemCardSchema.extend({
-        ability: AbilitySchema.optional(),
-    })),
+    warriors: z.array(
+        ElementalWarriorCardSchema.merge(OptionalAbilityCardSchema)
+    ),
+    basic: ElementalStarterCardSchema.merge(OptionalAbilityCardSchema),
+    items: z.array(
+        ItemCardSchema.merge(OptionalAbilityCardSchema)
+    ),
 });
 
 export type DecklistType = z.infer<typeof DecklistSchema>;
@@ -52,11 +51,19 @@ export class Decklist {
     protected constructor(params: DecklistType) {
         this.sage = reconstructCard(params.sage) as ElementalSageCard;
         this.champions = {
-            level4: reconstructCard(params.champions.level4) as ElementalChampionCard,
-            level6: reconstructCard(params.champions.level6) as ElementalChampionCard,
-            level8: reconstructCard(params.champions.level8) as ElementalChampionCard,
+            level4: reconstructCard(
+                params.champions.level4
+            ) as ElementalChampionCard,
+            level6: reconstructCard(
+                params.champions.level6
+            ) as ElementalChampionCard,
+            level8: reconstructCard(
+                params.champions.level8
+            ) as ElementalChampionCard,
         };
-        this.warriors = reconstructCards(params.warriors) as ElementalWarriorCard[];
+        this.warriors = reconstructCards(
+            params.warriors
+        ) as ElementalWarriorCard[];
         this.basic = reconstructCard(params.basic) as ElementalStarterCard;
         this.items = reconstructCards(params.items) as ItemCard[];
     }
