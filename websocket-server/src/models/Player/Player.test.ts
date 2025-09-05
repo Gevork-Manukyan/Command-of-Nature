@@ -1,7 +1,7 @@
 import { NotFoundError, ValidationError } from "../../custom-errors";
 import { Player } from "../../models";
-import { ALL_CARDS, TwigDeck } from "../../constants";
-const { Cedar, Gravel, Timber, CloseStrike, FarStrike, TwigCharm, NaturalRestoration } = ALL_CARDS;
+import { ALL_CARDS, CARD_NAMES } from "@shared-types";
+import { TwigDeck } from "../../constants/decklists";
 
 const testPlayerId = "testId123"
 const testSocketId = "socket123"
@@ -42,24 +42,24 @@ describe("level getter and setters", () => {
 describe("hand getter and setters", () => {
     test("should correctly set the player's hand", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToHand(Cedar());
-        expect(player.hand).toContainEqual(Cedar());
+        player.addCardToHand(ALL_CARDS[CARD_NAMES.CEDAR]());
+        expect(player.hand).toContainEqual(ALL_CARDS[CARD_NAMES.CEDAR]());
     });
 });
 
 describe("deck getter and setters", () => {
     test("should correctly set the player's deck", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToDeck(Cedar());
-        expect(player.deck).toContainEqual(Cedar());
+        player.addCardToDeck(ALL_CARDS[CARD_NAMES.CEDAR]());
+        expect(player.deck).toContainEqual(ALL_CARDS[CARD_NAMES.CEDAR]());
     });
 });
 
 describe("discard pile getter and setters", () => {
     test("should correctly set the player's discard pile", () => {
         const player = new Player(testPlayerId, testSocketId);
-        player.addCardToDiscardPile(Cedar());
-        expect(player.discardPile).toContainEqual(Cedar());
+        player.addCardToDiscardPile(ALL_CARDS[CARD_NAMES.CEDAR]());
+        expect(player.discardPile).toContainEqual(ALL_CARDS[CARD_NAMES.CEDAR]());
     });
 });
 
@@ -107,23 +107,23 @@ describe("toggleReady method", () => {
 describe("addCardsToDeck", () => {
     test("should add a single card (using addCardToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardToDeck(Cedar())
-        expect(player.deck).toStrictEqual([Cedar()])
+        player.addCardToDeck(ALL_CARDS[CARD_NAMES.CEDAR]())
+        expect(player.deck).toStrictEqual([ALL_CARDS[CARD_NAMES.CEDAR]()])
         done()
     })
 
     test("should add a single card (using addCardsToDeck)", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardsToDeck([Cedar()])
-        expect(player.deck).toContain(Cedar())
+        player.addCardsToDeck([ALL_CARDS[CARD_NAMES.CEDAR]()])
+        expect(player.deck).toContain(ALL_CARDS[CARD_NAMES.CEDAR]())
         done()
     })
 
     test("should add a multiple cards", (done) => {
         const player = new Player(testPlayerId, testSocketId)
-        player.addCardsToDeck([Cedar(), Gravel()])
-        expect(player.deck).toContainEqual(Cedar())
-        expect(player.deck).toContainEqual(Gravel())
+        player.addCardsToDeck([ALL_CARDS[CARD_NAMES.CEDAR](), ALL_CARDS[CARD_NAMES.GRAVEL]()])
+        expect(player.deck).toContainEqual(ALL_CARDS[CARD_NAMES.CEDAR]())
+        expect(player.deck).toContainEqual(ALL_CARDS[CARD_NAMES.GRAVEL]())
         done()
     })
 })
@@ -142,7 +142,7 @@ describe("initDeck method", () => {
         player.initDeck()
 
         expect(player.decklist).toStrictEqual(TwigDeck)
-        expect(player.deck).toStrictEqual([Timber, CloseStrike, CloseStrike, FarStrike, NaturalRestoration, TwigCharm])
+        expect(player.deck).toStrictEqual([ALL_CARDS[CARD_NAMES.TIMBER](), ALL_CARDS[CARD_NAMES.CLOSE_STRIKE](), ALL_CARDS[CARD_NAMES.CLOSE_STRIKE](), ALL_CARDS[CARD_NAMES.FAR_STRIKE](), ALL_CARDS[CARD_NAMES.NATURAL_RESTORATION](), ALL_CARDS[CARD_NAMES.TWIG_CHARM]()])
         done()
     })
 })

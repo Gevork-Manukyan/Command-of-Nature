@@ -1,7 +1,6 @@
 import { NullSpaceError, ValidationError } from "../../custom-errors";
 import { Battlefield } from "./Battlefield";
-import { ALL_CARDS } from "../../constants";
-const { AcornSquire, Timber } = ALL_CARDS;
+import { ALL_CARDS, CARD_NAMES } from "@shared-types";
 
 describe("Battlefield class", () => {
     let mockBattlefield: Battlefield;
@@ -41,13 +40,13 @@ describe("Battlefield class", () => {
 
     describe("addCard method", () => {
         test("should add a card to an empty space", () => {
-            mockBattlefield.addCard(Timber(), 1);
-            expect(mockBattlefield.getCard(1)).toBe(Timber());
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 1);
+            expect(mockBattlefield.getCard(1)).toBe(ALL_CARDS[CARD_NAMES.TIMBER]());
         });
 
         test("should throw an error when adding a card to a non-empty space", () => {
-            mockBattlefield.addCard(Timber(), 1);
-            expect(() => mockBattlefield.addCard(Timber(), 1)).toThrow(
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 1);
+            expect(() => mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 1)).toThrow(
                 ValidationError
             );
         });
@@ -55,10 +54,10 @@ describe("Battlefield class", () => {
 
     describe("removeCard method", () => {
         test("should remove a card from a space", () => {
-            mockBattlefield.addCard(Timber(), 1);
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 1);
             const removedCard = mockBattlefield.removeCard(1);
             expect(mockBattlefield.getCard(1)).toBe(null);
-            expect(removedCard).toBe(Timber());
+            expect(removedCard).toBe(ALL_CARDS[CARD_NAMES.TIMBER]());
         });
 
         test("should throw an error if removing card from empty space", () => {
@@ -68,15 +67,15 @@ describe("Battlefield class", () => {
 
     describe("swapCards method", () => {
         test("should swap two cards between spaces", () => {
-            mockBattlefield.addCard(Timber(), 1);
-            mockBattlefield.addCard(AcornSquire(), 6);
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 1);
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.ACORN_SQUIRE](), 6);
             mockBattlefield.swapCards(1, 6);
-            expect(mockBattlefield.getCard(1)).toBe(AcornSquire());
-            expect(mockBattlefield.getCard(6)).toBe(Timber());
+            expect(mockBattlefield.getCard(1)).toBe(ALL_CARDS[CARD_NAMES.ACORN_SQUIRE]());
+            expect(mockBattlefield.getCard(6)).toBe(ALL_CARDS[CARD_NAMES.TIMBER]());
         });
 
         test("should throw an error if either space is empty", () => {
-            mockBattlefield.addCard(Timber(), 3);
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 3);
 
             expect(() => mockBattlefield.swapCards(3, 6)).toThrow(
                 NullSpaceError
@@ -90,7 +89,7 @@ describe("Battlefield class", () => {
         });
 
         test("should throw an error if swapping a space with itself", () => {
-            mockBattlefield.addCard(Timber(), 3);
+            mockBattlefield.addCard(ALL_CARDS[CARD_NAMES.TIMBER](), 3);
             expect(() => mockBattlefield.swapCards(1, 1)).toThrow(
                 ValidationError
             );

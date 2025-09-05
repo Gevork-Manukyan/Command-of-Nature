@@ -10,7 +10,7 @@ import {
     ItemCard,
     ItemStarterCard,
 } from "./card-classes";
-import { CARD_NAMES } from "../../websocket-server/src/constants/card-names";
+import { CARD_NAMES } from "./card-names";
 
 export const SAGES = {
     CEDAR: "Cedar",
@@ -34,7 +34,7 @@ export const ITEM_TYPES = {
 
 export const ALL_CARDS = {
     // ------------ SAGES ------------
-    Cedar: () =>
+    [CARD_NAMES.CEDAR]: () =>
         ElementalSageCard.from({
             name: CARD_NAMES.CEDAR,
             sage: SAGES.CEDAR,
@@ -51,7 +51,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Gravel: () =>
+    [CARD_NAMES.GRAVEL]: () =>
         ElementalSageCard.from({
             name: CARD_NAMES.GRAVEL,
             sage: SAGES.GRAVEL,
@@ -68,7 +68,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Porella: () =>
+    [CARD_NAMES.PORELLA]: () =>
         ElementalSageCard.from({
             name: CARD_NAMES.PORELLA,
             sage: SAGES.PORELLA,
@@ -85,7 +85,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Torrent: () =>
+    [CARD_NAMES.TORRENT]: () =>
         ElementalSageCard.from({
             name: CARD_NAMES.TORRENT,
             sage: SAGES.TORRENT,
@@ -104,7 +104,7 @@ export const ALL_CARDS = {
 
     // ------------ CHAMPIONS ------------
     // *** Twigs ***
-    VixVanguard: () =>
+    [CARD_NAMES.VIX_VANGUARD]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.VIX_VANGUARD,
             price: 1,
@@ -121,7 +121,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    HornedHollow: () =>
+    [CARD_NAMES.HORNED_HOLLOW]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.HORNED_HOLLOW,
             price: 1,
@@ -138,7 +138,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    CalamityLeopard: () =>
+    [CARD_NAMES.CALAMITY_LEOPARD]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.CALAMITY_LEOPARD,
             price: 1,
@@ -156,7 +156,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Pebbles ***
-    JadeTitan: () =>
+    [CARD_NAMES.JADE_TITAN]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.JADE_TITAN,
             price: 1,
@@ -173,7 +173,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    BoulderhideBrute: () =>
+    [CARD_NAMES.BOULDERHIDE_BRUTE]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.BOULDERHIDE_BRUTE,
             price: 1,
@@ -190,7 +190,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    OxenAvenger: () =>
+    [CARD_NAMES.OXEN_AVENGER]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.OXEN_AVENGER,
             price: 1,
@@ -208,7 +208,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Leafs ***
-    AgileAssailant: () =>
+    [CARD_NAMES.AGILE_ASSAILANT]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.AGILE_ASSAILANT,
             price: 1,
@@ -225,7 +225,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    BogBlight: () =>
+    [CARD_NAMES.BOG_BLIGHT]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.BOG_BLIGHT,
             price: 1,
@@ -242,7 +242,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    KomodoKin: () =>
+    [CARD_NAMES.KOMODO_KIN]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.KOMODO_KIN,
             price: 1,
@@ -260,7 +260,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Droplets ***
-    TideTurner: () =>
+    [CARD_NAMES.TIDE_TURNER]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.TIDE_TURNER,
             price: 1,
@@ -277,7 +277,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    KingCrustacean: () =>
+    [CARD_NAMES.KING_CRUSTACEAN]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.KING_CRUSTACEAN,
             price: 1,
@@ -294,7 +294,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    FrostfallEmperor: () =>
+    [CARD_NAMES.FROSTFALL_EMPEROR]: () =>
         ElementalChampionCard.from({
             name: CARD_NAMES.FROSTFALL_EMPEROR,
             price: 1,
@@ -313,7 +313,7 @@ export const ALL_CARDS = {
 
     // ------------ BASICS ------------
     // *** Twigs ***
-    Timber: () =>
+    [CARD_NAMES.TIMBER]: () =>
         ElementalStarterCard.from({
             name: CARD_NAMES.TIMBER,
             price: 1,
@@ -326,7 +326,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Bruce: () =>
+    [CARD_NAMES.BRUCE]: () =>
         ElementalCard.from({
             name: CARD_NAMES.BRUCE,
             price: 2,
@@ -339,7 +339,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Willow: () =>
+    [CARD_NAMES.WILLOW]: () =>
         ElementalCard.from({
             name: CARD_NAMES.WILLOW,
             price: 1,
@@ -353,7 +353,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Pebbles ***
-    Cobble: () =>
+    [CARD_NAMES.COBBLE]: () =>
         ElementalStarterCard.from({
             name: CARD_NAMES.COBBLE,
             price: 1,
@@ -366,7 +366,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Flint: () =>
+    [CARD_NAMES.FLINT]: () =>
         ElementalCard.from({
             name: CARD_NAMES.FLINT,
             price: 1,
@@ -379,7 +379,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Rocco: () =>
+    [CARD_NAMES.ROCCO]: () =>
         ElementalCard.from({
             name: CARD_NAMES.ROCCO,
             price: 2,
@@ -393,7 +393,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Leafs ***
-    Sprout: () =>
+    [CARD_NAMES.SPROUT]: () =>
         ElementalStarterCard.from({
             name: CARD_NAMES.SPROUT,
             price: 1,
@@ -406,7 +406,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Herbert: () =>
+    [CARD_NAMES.HERBERT]: () =>
         ElementalCard.from({
             name: CARD_NAMES.HERBERT,
             price: 2,
@@ -419,7 +419,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Mush: () =>
+    [CARD_NAMES.MUSH]: () =>
         ElementalCard.from({
             name: CARD_NAMES.MUSH,
             price: 1,
@@ -433,7 +433,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Droplets ***
-    Dribble: () =>
+    [CARD_NAMES.DRIBBLE]: () =>
         ElementalStarterCard.from({
             name: CARD_NAMES.DRIBBLE,
             price: 1,
@@ -446,7 +446,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Dewy: () =>
+    [CARD_NAMES.DEWY]: () =>
         ElementalCard.from({
             name: CARD_NAMES.DEWY,
             price: 2,
@@ -459,7 +459,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    Wade: () =>
+    [CARD_NAMES.WADE]: () =>
         ElementalCard.from({
             name: CARD_NAMES.WADE,
             img: "",
@@ -474,7 +474,7 @@ export const ALL_CARDS = {
 
     // ------------ WARRIORS ------------
     // *** Twigs ***
-    AcornSquire: () =>
+    [CARD_NAMES.ACORN_SQUIRE]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.ACORN_SQUIRE,
             img: "",
@@ -490,7 +490,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    QuillThornback: () =>
+    [CARD_NAMES.QUILL_THORNBACK]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.QUILL_THORNBACK,
             img: "",
@@ -506,7 +506,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    SlumberJack: () =>
+    [CARD_NAMES.SLUMBER_JACK]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.SLUMBER_JACK,
             img: "",
@@ -522,7 +522,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    CamouChameleon: () =>
+    [CARD_NAMES.CAMOU_CHAMELEON]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.CAMOU_CHAMELEON,
             img: "",
@@ -538,7 +538,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    LumberClaw: () =>
+    [CARD_NAMES.LUMBER_CLAW]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.LUMBER_CLAW,
             img: "",
@@ -554,7 +554,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    PineSnapper: () =>
+    [CARD_NAMES.PINE_SNAPPER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.PINE_SNAPPER,
             img: "",
@@ -570,7 +570,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    SplinterStinger: () =>
+    [CARD_NAMES.SPLINTER_STINGER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.SPLINTER_STINGER,
             img: "",
@@ -586,7 +586,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    TwineFeline: () =>
+    [CARD_NAMES.TWINE_FELINE]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.TWINE_FELINE,
             img: "",
@@ -602,7 +602,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    OakLumbertron: () =>
+    [CARD_NAMES.OAK_LUMBERTRON]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.OAK_LUMBERTRON,
             img: "",
@@ -619,7 +619,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Pebbles ***
-    GeoWeasel: () =>
+    [CARD_NAMES.GEO_WEASEL]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.GEO_WEASEL,
             img: "",
@@ -635,7 +635,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    GraniteRampart: () =>
+    [CARD_NAMES.GRANITE_RAMPART]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.GRANITE_RAMPART,
             img: "",
@@ -651,7 +651,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    OnyxBearer: () =>
+    [CARD_NAMES.ONYX_BEARER]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.ONYX_BEARER,
             img: "",
@@ -667,7 +667,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    CackleRipclaw: () =>
+    [CARD_NAMES.CACKLE_RIPCLAW]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.CACKLE_RIPCLAW,
             img: "",
@@ -683,7 +683,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    Redstone: () =>
+    [CARD_NAMES.REDSTONE]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.REDSTONE,
             img: "",
@@ -699,7 +699,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    RubyGuardian: () =>
+    [CARD_NAMES.RUBY_GUARDIAN]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.RUBY_GUARDIAN,
             img: "",
@@ -715,7 +715,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    RunePuma: () =>
+    [CARD_NAMES.RUNE_PUMA]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.RUNE_PUMA,
             img: "",
@@ -731,7 +731,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    StoneDefender: () =>
+    [CARD_NAMES.STONE_DEFENDER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.STONE_DEFENDER,
             img: "",
@@ -747,7 +747,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    TerrainTumbler: () =>
+    [CARD_NAMES.TERRAIN_TUMBLER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.TERRAIN_TUMBLER,
             img: "",
@@ -764,7 +764,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Leafs ***
-    BotanicFangs: () =>
+    [CARD_NAMES.BOTANIC_FANGS]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.BOTANIC_FANGS,
             img: "",
@@ -780,7 +780,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    PetalMage: () =>
+    [CARD_NAMES.PETAL_MAGE]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.PETAL_MAGE,
             img: "",
@@ -796,7 +796,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    ThornFencer: () =>
+    [CARD_NAMES.THORN_FENCER]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.THORN_FENCER,
             img: "",
@@ -812,7 +812,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    BambooBerserker: () =>
+    [CARD_NAMES.BAMBOO_BERSERKER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.BAMBOO_BERSERKER,
             img: "",
@@ -828,7 +828,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    ForageThumper: () =>
+    [CARD_NAMES.FORAGE_THUMPER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.FORAGE_THUMPER,
             img: "",
@@ -844,7 +844,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    HummingHerald: () =>
+    [CARD_NAMES.HUMMING_HERALD]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.HUMMING_HERALD,
             img: "",
@@ -860,7 +860,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    IguanaGuard: () =>
+    [CARD_NAMES.IGUANA_GUARD]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.IGUANA_GUARD,
             img: "",
@@ -876,7 +876,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    MossViper: () =>
+    [CARD_NAMES.MOSS_VIPER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.MOSS_VIPER,
             img: "",
@@ -892,7 +892,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    ShrubBeetle: () =>
+    [CARD_NAMES.SHRUB_BEETLE]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.SHRUB_BEETLE,
             img: "",
@@ -909,7 +909,7 @@ export const ALL_CARDS = {
         }),
 
     // *** Droplets ***
-    CoastalCoyote: () =>
+    [CARD_NAMES.COASTAL_COYOTE]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.COASTAL_COYOTE,
             img: "",
@@ -925,7 +925,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    RiptideTiger: () =>
+    [CARD_NAMES.RIPTIDE_TIGER]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.RIPTIDE_TIGER,
             img: "",
@@ -941,7 +941,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    RiverRogue: () =>
+    [CARD_NAMES.RIVER_ROGUE]: () =>
         ElementalWarriorStarterCard.from({
             name: CARD_NAMES.RIVER_ROGUE,
             img: "",
@@ -957,7 +957,7 @@ export const ALL_CARDS = {
             damageCount: 0,
         }),
 
-    CurrentConjurer: () =>
+    [CARD_NAMES.CURRENT_CONJURER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.CURRENT_CONJURER,
             img: "",
@@ -973,7 +973,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    RoamingRazor: () =>
+    [CARD_NAMES.ROAMING_RAZOR]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.ROAMING_RAZOR,
             img: "",
@@ -989,7 +989,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    SplashBasilisk: () =>
+    [CARD_NAMES.SPLASH_BASILISK]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.SPLASH_BASILISK,
             img: "",
@@ -1005,7 +1005,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    SurgesphereMonk: () =>
+    [CARD_NAMES.SURGESPHERE_MONK]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.SURGESPHERE_MONK,
             img: "",
@@ -1021,7 +1021,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    TyphoonFist: () =>
+    [CARD_NAMES.TYPHOON_FIST]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.TYPHOON_FIST,
             img: "",
@@ -1037,7 +1037,7 @@ export const ALL_CARDS = {
             isDayBreak: false,
         }),
 
-    WhirlWhipper: () =>
+    [CARD_NAMES.WHIRL_WHIPPER]: () =>
         ElementalWarriorCard.from({
             name: CARD_NAMES.WHIRL_WHIPPER,
             img: "",
@@ -1054,7 +1054,7 @@ export const ALL_CARDS = {
         }),
 
     // ------------ ATTACKS ------------
-    CloseStrike: () =>
+    [CARD_NAMES.CLOSE_STRIKE]: () =>
         ItemAttackStarterCard.from({
             name: CARD_NAMES.CLOSE_STRIKE,
             img: "",
@@ -1064,7 +1064,7 @@ export const ALL_CARDS = {
             rowRequirement: [1],
         }),
 
-    FarStrike: () =>
+    [CARD_NAMES.FAR_STRIKE]: () =>
         ItemAttackStarterCard.from({
             name: CARD_NAMES.FAR_STRIKE,
             img: "",
@@ -1074,7 +1074,7 @@ export const ALL_CARDS = {
             rowRequirement: [1, 2],
         }),
 
-    DistantDoubleStrike: () =>
+    [CARD_NAMES.DISTANT_DOUBLE_STRIKE]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.DISTANT_DOUBLE_STRIKE,
             img: "",
@@ -1084,7 +1084,7 @@ export const ALL_CARDS = {
             rowRequirement: [1, 2],
         }),
 
-    FarsightFrenzy: () =>
+    [CARD_NAMES.FARSIGHT_FRENZY]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.FARSIGHT_FRENZY,
             img: "",
@@ -1094,7 +1094,7 @@ export const ALL_CARDS = {
             rowRequirement: [1, 2, 3],
         }),
 
-    FocusedFury: () =>
+    [CARD_NAMES.FOCUSED_FURY]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.FOCUSED_FURY,
             img: "",
@@ -1104,7 +1104,7 @@ export const ALL_CARDS = {
             rowRequirement: [1],
         }),
 
-    MagicEtherStrike: () =>
+    [CARD_NAMES.MAGIC_ETHER_STRIKE]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.MAGIC_ETHER_STRIKE,
             img: "",
@@ -1114,7 +1114,7 @@ export const ALL_CARDS = {
             rowRequirement: [1],
         }),
 
-    NaturesWrath: () =>
+    [CARD_NAMES.NATURES_WRATH]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.NATURES_WRATH,
             img: "",
@@ -1124,7 +1124,7 @@ export const ALL_CARDS = {
             rowRequirement: [1],
         }),
 
-    PrimitiveStrike: () =>
+    [CARD_NAMES.PRIMITIVE_STRIKE]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.PRIMITIVE_STRIKE,
             img: "",
@@ -1134,7 +1134,7 @@ export const ALL_CARDS = {
             rowRequirement: [1, 2],
         }),
 
-    ProjectileBlast: () =>
+    [CARD_NAMES.PROJECTILE_BLAST]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.PROJECTILE_BLAST,
             img: "",
@@ -1144,7 +1144,7 @@ export const ALL_CARDS = {
             rowRequirement: [1, 2],
         }),
 
-    ReinforcedImpact: () =>
+    [CARD_NAMES.REINFORCED_IMPACT]: () =>
         ItemAttackCard.from({
             name: CARD_NAMES.REINFORCED_IMPACT,
             img: "",
@@ -1155,7 +1155,7 @@ export const ALL_CARDS = {
         }),
 
     // ------------ INSTANTS ------------
-    DropletCharm: () =>
+    [CARD_NAMES.DROPLET_CHARM]: () =>
         ItemStarterCard.from({
             name: CARD_NAMES.DROPLET_CHARM,
             img: "",
@@ -1164,7 +1164,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    LeafCharm: () =>
+    [CARD_NAMES.LEAF_CHARM]: () =>
         ItemStarterCard.from({
             name: CARD_NAMES.LEAF_CHARM,
             img: "",
@@ -1173,7 +1173,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    PebbleCharm: () =>
+    [CARD_NAMES.PEBBLE_CHARM]: () =>
         ItemStarterCard.from({
             name: CARD_NAMES.PEBBLE_CHARM,
             img: "",
@@ -1182,7 +1182,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    TwigCharm: () =>
+    [CARD_NAMES.TWIG_CHARM]: () =>
         ItemStarterCard.from({
             name: CARD_NAMES.TWIG_CHARM,
             img: "",
@@ -1191,7 +1191,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    NaturalRestoration: () =>
+    [CARD_NAMES.NATURAL_RESTORATION]: () =>
         ItemStarterCard.from({
             name: CARD_NAMES.NATURAL_RESTORATION,
             img: "",
@@ -1200,7 +1200,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    MeleeShield: () =>
+    [CARD_NAMES.MELEE_SHIELD]: () =>
         ItemCard.from({
             name: CARD_NAMES.MELEE_SHIELD,
             img: "",
@@ -1209,7 +1209,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    NaturalDefense: () =>
+    [CARD_NAMES.NATURAL_DEFENSE]: () =>
         ItemCard.from({
             name: CARD_NAMES.NATURAL_DEFENSE,
             img: "",
@@ -1218,7 +1218,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.INSTANT,
         }),
 
-    RangedBarrier: () =>
+    [CARD_NAMES.RANGED_BARRIER]: () =>
         ItemCard.from({
             name: CARD_NAMES.RANGED_BARRIER,
             img: "",
@@ -1228,7 +1228,7 @@ export const ALL_CARDS = {
         }),
 
     // ------------ UTILITIES ------------
-    ElementalIncantation: () =>
+    [CARD_NAMES.ELEMENTAL_INCANTATION]: () =>
         ItemCard.from({
             name: CARD_NAMES.ELEMENTAL_INCANTATION,
             img: "",
@@ -1237,7 +1237,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.UTILITY,
         }),
 
-    ElementalSwap: () =>
+    [CARD_NAMES.ELEMENTAL_SWAP]: () =>
         ItemCard.from({
             name: CARD_NAMES.ELEMENTAL_SWAP,
             img: "",
@@ -1246,7 +1246,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.UTILITY,
         }),
 
-    ExchangeOfNature: () =>
+    [CARD_NAMES.EXCHANGE_OF_NATURE]: () =>
         ItemCard.from({
             name: CARD_NAMES.EXCHANGE_OF_NATURE,
             img: "",
@@ -1255,7 +1255,7 @@ export const ALL_CARDS = {
             itemType: ITEM_TYPES.UTILITY,
         }),
 
-    Obliterate: () =>
+    [CARD_NAMES.OBLITERATE]: () =>
         ItemCard.from({
             name: CARD_NAMES.OBLITERATE,
             img: "",
