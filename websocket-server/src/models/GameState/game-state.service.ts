@@ -2,6 +2,7 @@ import { GameState } from "./GameState";
 import { NotFoundError } from "../../custom-errors";
 import { TransitionEvent } from "../../../../shared-types/src/gamestate-types";
 import { prisma } from "../../lib/prisma";
+import { GameState as GameStatePrisma } from "@prisma/client";
 
 /**
  * Service class for managing GameState instances in the database
@@ -10,7 +11,7 @@ import { prisma } from "../../lib/prisma";
 export class GameStateService {
     constructor() {}
 
-    async createGameState(gameId: string): Promise<GameState> {
+    async createGameState(gameId: string): Promise<GameStatePrisma> {
         const gameState = new GameState(gameId);
         const doc = await prisma.gameState.create({
             data: {
@@ -18,10 +19,10 @@ export class GameStateService {
                 currentTransition: gameState.getCurrentTransition(),
             },
         });
-        return GameState.fromPrisma(doc);
+        return doc;
     }
 
-    async findGameStateById(id: string): Promise<GameState> {
+    async findGameStateById(id: string): Promise<GameStatePrisma> {
         const doc = await prisma.gameState.findUnique({
             where: {
                 id: id,
@@ -35,10 +36,10 @@ export class GameStateService {
             );
         }
 
-        return GameState.fromPrisma(doc);
+        return doc;
     }
 
-    async findGameStateByGameId(gameId: string): Promise<GameState> {
+    async findGameStateByGameId(gameId: string): Promise<GameStatePrisma> {
         const doc = await prisma.gameState.findUnique({
             where: {
                 gameId: gameId,
@@ -52,10 +53,10 @@ export class GameStateService {
             );
         }
 
-        return GameState.fromPrisma(doc);
+        return doc;
     }
 
-    async updateGameState(id: string, updates: GameState): Promise<GameState> {
+    async updateGameState(id: string, updates: GameState): Promise<GameStatePrisma> {
         const doc = await prisma.gameState.update({
             where: { id: id },
             data: updates.toPrismaObject(),
@@ -68,13 +69,13 @@ export class GameStateService {
             );
         }
 
-        return GameState.fromPrisma(doc);
+        return doc;
     }
 
     async updateGameStateByGameId(
         gameId: string,
         updates: GameState
-    ): Promise<GameState> {
+    ): Promise<GameStatePrisma> {
         const doc = await prisma.gameState.update({
             where: { gameId: gameId },
             data: updates.toPrismaObject(),
@@ -87,16 +88,7 @@ export class GameStateService {
             );
         }
 
-        return GameState.fromPrisma(doc);
-    }
-
-    async processGameStateEvent(
-        id: string,
-        event: TransitionEvent
-    ): Promise<GameState> {
-        const gameState = await this.findGameStateById(id);
-        gameState.processEvent(event);
-        return this.updateGameState(id, gameState);
+        return doc;
     }
 
     async deleteGameState(id: string): Promise<void> {

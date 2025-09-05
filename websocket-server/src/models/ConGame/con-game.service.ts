@@ -2,6 +2,7 @@ import { ConGame, ActiveConGame } from "./ConGame";
 import { NotFoundError } from "../../custom-errors";
 import { prisma } from "../../lib/prisma";
 import { Player } from "../Player/Player";
+import { ConGame as ConGamePrisma } from "@prisma/client";
 
 /**
  * Service class for managing ConGame instances in the database
@@ -15,7 +16,7 @@ export class ConGameService {
         gameName: ConGame["gameName"],
         isPrivate: ConGame["isPrivate"],
         password: ConGame["password"]
-    ): Promise<ConGame> {
+    ): Promise<ConGamePrisma> {
         const game = new ConGame(numPlayers, gameName, isPrivate, password);
 
         try {
@@ -23,29 +24,28 @@ export class ConGameService {
                 data: game.toPrismaObject(),
             });
             game.setId(doc.id);
+            return doc;
         } catch (error) {
             throw new Error("Failed to create game");
         }
-
-        return game;
     }
 
-    async findAllGames(): Promise<ConGame[]> {
+    async findAllGames(): Promise<ConGamePrisma[]> {
         const games = await prisma.conGame.findMany();
-        return games.map((game) => ConGame.fromPrisma(game));
+        return games;
     }
 
-    async findAllActiveGames(): Promise<ActiveConGame[]> {
+    async findAllActiveGames(): Promise<ConGamePrisma[]> {
         const games = await prisma.conGame.findMany({
             where: {
                 isActive: true,
             },
         });
 
-        return games.map((game) => ActiveConGame.fromPrisma(game));
+        return games;
     }
 
-    async findGameById(id: string): Promise<ConGame> {
+    async findGameById(id: string): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.findUnique({
             where: {
                 id: id,
@@ -56,10 +56,10 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ConGame.fromPrisma(doc);
+        return doc;
     }
 
-    async findActiveGameById(id: string): Promise<ActiveConGame> {
+    async findActiveGameById(id: string): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.findUnique({
             where: {
                 id: id,
@@ -70,10 +70,10 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ActiveConGame.fromPrisma(doc);
+        return doc;
     }
 
-    async updateGame(id: string, game: ConGame): Promise<ConGame> {
+    async updateGame(id: string, game: ConGame): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.update({
             where: { id: id },
             data: game.toPrismaObject(),
@@ -83,13 +83,10 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ConGame.fromPrisma(doc);
+        return doc;
     }
 
-    async updateActiveGameState(
-        id: string,
-        game: ActiveConGame
-    ): Promise<ActiveConGame> {
+    async updateActiveGameState(id: string, game: ActiveConGame): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.update({
             where: { id: id },
             data: game.toPrismaObject(),
@@ -99,10 +96,10 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ActiveConGame.fromPrisma(doc);
+        return doc;
     }
 
-    async addPlayerToGame(id: string, player: Player): Promise<ConGame> {
+    async addPlayerToGame(id: string, player: Player): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.update({
             where: { id: id },
             data: { players: { push: player.toPrismaObject() } },
@@ -112,10 +109,10 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ConGame.fromPrisma(doc);
+        return doc;
     }
 
-    async removePlayerFromGame(id: string, playerId: string): Promise<ConGame> {
+    async removePlayerFromGame(id: string, playerId: string): Promise<ConGamePrisma> {
         // TODO: make sure this is correct
         const doc = await prisma.conGame.update({
             where: { id: id },
@@ -126,7 +123,7 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ConGame.fromPrisma(doc);
+        return doc;
     }
 
     async updateShopCards(
@@ -135,7 +132,7 @@ export class ConGameService {
             currentCreatureShopCards?: any[];
             currentItemShopCards?: any[];
         }
-    ): Promise<ConGame> {
+    ): Promise<ConGamePrisma> {
         const doc = await prisma.conGame.update({
             where: { id: id },
             data: updates,
@@ -145,7 +142,7 @@ export class ConGameService {
             throw new NotFoundError("ConGame", `Game with id ${id} not found`);
         }
 
-        return ConGame.fromPrisma(doc);
+        return doc;
     }
 
     async deleteGame(id: string): Promise<void> {
@@ -158,13 +155,11 @@ export class ConGameService {
         }
     }
 
-    async findGamesByStatus(isActive: boolean): Promise<ConGame[]> {
+    async findGamesByStatus(isActive: boolean): Promise<ConGamePrisma[]> {
         const games = await prisma.conGame.findMany({
             where: { isActive: isActive },
         });
 
-        return games.map((game) =>
-            isActive ? ActiveConGame.fromPrisma(game) : ConGame.fromPrisma(game)
-        );
+        return games;
     }
 }

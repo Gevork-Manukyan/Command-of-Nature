@@ -52,7 +52,9 @@ export class GameDatabaseService {
                 savedGame.id
             );
 
-            return { game: savedGame, state: savedGameState };
+            const newGame = ConGame.fromPrisma(savedGame);
+            const newGameState = GameState.fromPrisma(savedGameState);
+            return { game: newGame, state: newGameState };
         } catch (error) {
             console.error("Failed to save new game:", error);
             throw error;
@@ -67,7 +69,8 @@ export class GameDatabaseService {
     async saveGame(game: ConGame): Promise<ConGame> {
         console.debug("Saving game:", game.id);
         try {
-            return await this.conGameService.updateGame(game.id, game);
+            await this.conGameService.updateGame(game.id, game);
+            return game;
         } catch (error) {
             console.error("Failed to save game:", error);
             throw error;
@@ -84,10 +87,10 @@ export class GameDatabaseService {
         gameState: GameState
     ): Promise<GameState> {
         try {
-            return await this.gameStateService.updateGameStateByGameId(
+            return GameState.fromPrisma(await this.gameStateService.updateGameStateByGameId(
                 gameId,
                 gameState
-            );
+            ));
         } catch (error) {
             console.error("Failed to save game state:", error);
             throw error;
@@ -98,21 +101,22 @@ export class GameDatabaseService {
      * Gets a game by ID from the database
      */
     async findGameById(gameId: string): Promise<ConGame> {
-        return this.conGameService.findGameById(gameId);
+        return ConGame.fromPrisma(await this.conGameService.findGameById(gameId));
     }
 
     /**
      * Gets all games from the database
      */
     async findAllGames(): Promise<ConGame[]> {
-        return this.conGameService.findAllGames();
+        const games = await this.conGameService.findAllGames();
+        return games.map((game) => ConGame.fromPrisma(game));
     }
 
     /**
      * Gets a game state by game ID from the database
      */
     async findGameStateByGameId(gameId: string): Promise<GameState> {
-        return this.gameStateService.findGameStateByGameId(gameId);
+        return GameState.fromPrisma(await this.gameStateService.findGameStateByGameId(gameId));
     }
 
     /**
