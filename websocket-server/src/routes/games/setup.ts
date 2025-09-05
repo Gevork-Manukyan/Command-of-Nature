@@ -405,23 +405,18 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         requireHostForAllPlayersSetup,
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
-            console.log("Starting game");
 
             await gameStateManager.verifyAndProcessAllPlayersReadyEvent(
                 gameId,
                 async () => {
-                    console.log("Here 1")
                     await gameStateManager.startGame(gameId);
-                    console.log("Here 2")
                     const game = gameStateManager.getGame(gameId);
-                    console.log("Here 3")
                     // gameEventEmitter.emitPickWarriors(game.players);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
                         StartGameEvent,
                         { nextState: State.WARRIOR_SELECTION } as NextStateData
                     );
-                    console.log("Here 4")
                 }
             );
 
