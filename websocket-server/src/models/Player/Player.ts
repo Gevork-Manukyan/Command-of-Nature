@@ -101,7 +101,7 @@ export class Player {
         this.sage = sage;
     }
 
-    setDecklist(decklist: Decklist) {
+    setDecklist(decklist: Decklist | null) {
         this.decklist = decklist;
     }
 
@@ -233,13 +233,6 @@ export class Player {
             discardPile,
         } = validatedPlayer;
 
-        if (!decklist) {
-            throw new NotFoundError(
-                "Decklist",
-                "Player does not have a decklist"
-            );
-        }
-
         const player = new Player(userId, socketId, isGameHost);
         Object.assign(player, {
             isReady,
@@ -249,7 +242,11 @@ export class Player {
             level,
         });
 
-        player.setDecklistData(decklist);
+        if (decklist) {
+            player.setDecklistData(decklist);
+        } else {
+            player.setDecklist(null);
+        }
         player.hand = reconstructCards(hand) as Card[];
         player.deck = reconstructCards(deck) as Card[];
         player.discardPile = reconstructCards(discardPile) as Card[];
