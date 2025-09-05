@@ -93,6 +93,10 @@ export async function startGame(gameId: string, data: StartGameData) {
     return getSetupUrlWithGameId("/start", gameId, data, "POST");
 }
 
+export async function isGameStarted(gameId: string) {
+    return getSetupUrlWithGameId("/is-started", gameId, {}, "GET");
+}
+
 export async function chooseWarriors(gameId: string, data: ChooseWarriorsData) {
     return getSetupUrlWithGameId("/choose-warriors", gameId, data, "POST");
 }

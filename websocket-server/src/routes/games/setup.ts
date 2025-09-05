@@ -63,7 +63,11 @@ import {
     validateRequestQuery,
 } from "src/lib/utilities/routes";
 import { ConGame } from "src/models";
-import { gameStateManager, getUpdatedUsers, userSocketManager } from 'src/lib/utilities/game-routes';
+import {
+    gameStateManager,
+    getUpdatedUsers,
+    userSocketManager,
+} from "src/lib/utilities/game-routes";
 
 function createGameListing(game: ConGame): GameListing {
     return {
@@ -86,11 +90,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
 
     // GET /api/games/setup/:gameId/user-setup-data
-    router.get('/:gameId/user-setup-data', asyncHandler(async (req: Request, res: Response) => {
-        const gameId = req.params.gameId;
-        const response = await getUpdatedUsers(gameId);
-        res.json(response);
-    }));
+    router.get(
+        "/:gameId/user-setup-data",
+        asyncHandler(async (req: Request, res: Response) => {
+            const gameId = req.params.gameId;
+            const response = await getUpdatedUsers(gameId);
+            res.json(response);
+        })
+    );
 
     // POST /api/games/setup/create
     router.post(
@@ -398,7 +405,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/start
     router.post(
         "/:gameId/start",
@@ -411,16 +417,29 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 async () => {
                     await gameStateManager.startGame(gameId);
                     const game = gameStateManager.getGame(gameId);
+                    // TODO: when / if i need this
                     // gameEventEmitter.emitPickWarriors(game.players);
-                    gameEventEmitter.emitToAllPlayers(
-                        gameId,
-                        StartGameEvent,
-                        { nextState: State.WARRIOR_SELECTION } as NextStateData
-                    );
+                    gameEventEmitter.emitToAllPlayers(gameId, StartGameEvent, {
+                        nextState: State.WARRIOR_SELECTION,
+                    } as NextStateData);
                 }
             );
 
             res.status(200).json({ message: "Game started successfully" });
+        })
+    );
+
+    // GET /api/games/setup/:gameId/is-started
+    router.get(
+        "/:gameId/is-started",
+        asyncHandler(async (req: Request, res: Response) => {
+            const gameId = req.params.gameId;
+            try {
+                const game = gameStateManager.getGame(gameId);
+                res.status(200).json({ isStarted: game.isStarted });
+            } catch (e) {
+                res.status(404).json({ isStarted: false });
+            }
         })
     );
 
@@ -449,15 +468,15 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     const game = gameStateManager.getGame(gameId);
                     const player = game.getPlayer(socketId);
 
-                    const team = game.getPlayerTeam(player.userId)
+                    const team = game.getPlayerTeam(player.userId);
                     if (!team) {
-                        throw new ValidationError("Player not on team", "player");
+                        throw new ValidationError(
+                            "Player not on team",
+                            "player"
+                        );
                     }
-                    
-                    team.chooseWarriors(
-                        player,
-                        parsedChoices
-                    );
+
+                    team.chooseWarriors(player, parsedChoices);
 
                     gameEventEmitter.emitToTeammate(
                         game,
@@ -489,9 +508,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 async () => {
                     const game = gameStateManager.getGame(gameId);
                     const player = game.getPlayer(socketId);
-                    const team = game.getPlayerTeam(player.userId)
+                    const team = game.getPlayerTeam(player.userId);
                     if (!team) {
-                        throw new ValidationError("Player not on team", "player");
+                        throw new ValidationError(
+                            "Player not on team",
+                            "player"
+                        );
                     }
 
                     team.swapWarriors(player);
