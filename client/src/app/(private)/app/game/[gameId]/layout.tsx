@@ -10,6 +10,7 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import { useSession } from "next-auth/react";
 import { rejoinGame as rejoinGameApi } from "@/services/game-api";
 import { isUserInGame } from "@/actions/user-actions";
+import { CurrentPhaseProvider } from "@/contexts/CurrentPhaseContext";
 
 export default function GameLayout({
     children,
@@ -124,7 +125,9 @@ export default function GameLayout({
                     </button>
                 </div>
             </section>
-            {children}
+            <CurrentPhaseProvider>
+                {children}
+            </CurrentPhaseProvider>
         </div>
     );
 }

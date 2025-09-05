@@ -14,7 +14,6 @@ import {
     ElementalCard,
     ItemCard,
     SpaceOption,
-    Decklist,
     SageSchema,
 } from "@shared-types";
 import { drawCardFromDeck } from "../../lib";
@@ -487,13 +486,11 @@ export class ConGame {
      */
     initGame() {
         this.validateAllPlayersReady();
-
         this.initPlayerDecks();
         this.initPlayerHands();
         this.initPlayerFields();
         this.initCreatureShop();
         this.initItemShop();
-
         this.setStarted(true);
     }
 
@@ -517,7 +514,6 @@ export class ConGame {
     initPlayerFields() {
         const team1Decklists = this.getTeamDecklists(this.team1);
         const team2Decklists = this.getTeamDecklists(this.team2);
-
         this.team1.initBattlefield(team1Decklists);
         this.team2.initBattlefield(team2Decklists);
     }
@@ -527,19 +523,16 @@ export class ConGame {
             team.isPlayerOnTeam(player.userId)
         );
         const decklists = teamPlayers.map((player) => player.decklist);
-
         // Filter out null values and ensure we have valid decklists
         const validDecklists = decklists.filter(
-            (decklist): decklist is Decklist => decklist !== null
+            (decklist) => decklist !== null
         );
-
         if (validDecklists.length !== teamPlayers.length) {
             throw new ValidationError(
                 `Not all players in team have decklists set`,
                 "decklists"
             );
         }
-
         return validDecklists;
     }
 

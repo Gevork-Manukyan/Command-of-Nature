@@ -402,8 +402,7 @@ export class Battlefield {
      * @returns The Battlefield instance
      */
     static fromPrisma(battlefieldJson: JsonValue): Battlefield {
-        const { fieldArray, numPlayersOnTeam } =
-            BattlefieldSchema.parse(battlefieldJson);
+        const { fieldArray, numPlayersOnTeam } = BattlefieldSchema.parse(battlefieldJson);
         const battlefield = new Battlefield(numPlayersOnTeam);
 
         battlefield.fieldArray = fieldArray.map((space) =>

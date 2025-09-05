@@ -1,5 +1,5 @@
-import { BattlefieldSpace } from './BattlefieldSpace';
-import { ALL_CARDS } from '../../constants/cards';
+import { BattlefieldSpace } from "./BattlefieldSpace";
+import { ALL_CARDS } from "../../../../shared-types/src/cards";
 const { Timber } = ALL_CARDS;
 
 describe("BattlefieldSpace class", () => {
@@ -28,12 +28,14 @@ describe("BattlefieldSpace class", () => {
         const state = space.getBattlefieldSpaceState();
         expect(state).toEqual({
             spaceNumber: 1,
-            value: Timber
+            value: Timber,
         });
     });
 
     test("should validate day break activation correctly", () => {
         const space = new BattlefieldSpace(1, null);
-        expect(() => space.validateDayBreakActivation()).toThrow("Cannot activate Day Break on an empty space");
+        expect(() => space.validateDayBreakActivation()).toThrow(
+            "Cannot activate Day Break on an empty space"
+        );
     });
-}); 
+});

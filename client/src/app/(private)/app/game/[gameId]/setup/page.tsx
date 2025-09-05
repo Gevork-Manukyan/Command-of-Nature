@@ -5,11 +5,13 @@ import JoiningGame from "@/components/game/setup/joining-game";
 import ReadyUp from "@/components/game/setup/ready-up";
 import SageSelection from "@/components/game/setup/sage-selection";
 import TeamSelection from "@/components/game/setup/team-selection";
+import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { State } from "@shared-types";
 
 export default function GameSetupPage() {
-    const { error, currentPhase } = useGameSetupContext();
+    const { error } = useGameSetupContext();
+    const { currentPhase } = useCurrentPhaseContext();
 
     if (error) {
         return <ErrorScreen message={error} />;

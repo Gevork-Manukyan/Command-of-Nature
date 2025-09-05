@@ -7,17 +7,33 @@ import { ElementalChampionCard, ElementalChampionCardSchema } from "./card-class
 import { ElementalWarriorCard, ElementalWarriorCardSchema } from "./card-classes/ElementalWarriorCard";
 import { ElementalStarterCard, ElementalStarterCardSchema } from "./card-classes/ElementalStarterCard";
 import { ItemCard, ItemCardSchema } from "./card-classes/ItemCard";
+import { AbilitySchema } from "./card-types";
+import { reconstructCard, reconstructCards } from "./card-reconstruction";
 
 export const DecklistSchema = z.object({
-    sage: ElementalSageCardSchema,
-    champions: z.object({
-        level4: ElementalChampionCardSchema,
-        level6: ElementalChampionCardSchema,
-        level8: ElementalChampionCardSchema,
+    sage: ElementalSageCardSchema.extend({
+        ability: AbilitySchema.optional(),
     }),
-    warriors: z.array(ElementalWarriorCardSchema),
-    basic: ElementalStarterCardSchema,
-    items: z.array(ItemCardSchema),
+    champions: z.object({
+        level4: ElementalChampionCardSchema.extend({
+            ability: AbilitySchema.optional(),
+        }),
+        level6: ElementalChampionCardSchema.extend({
+            ability: AbilitySchema.optional(),
+        }),
+        level8: ElementalChampionCardSchema.extend({
+            ability: AbilitySchema.optional(),
+        }),
+    }),
+    warriors: z.array(ElementalWarriorCardSchema.extend({
+        ability: AbilitySchema.optional(),
+    })),
+    basic: ElementalStarterCardSchema.extend({
+        ability: AbilitySchema.optional(),
+    }),
+    items: z.array(ItemCardSchema.extend({
+        ability: AbilitySchema.optional(),
+    })),
 });
 
 export type DecklistType = z.infer<typeof DecklistSchema>;
@@ -34,17 +50,15 @@ export class Decklist {
     items: ItemCard[];
 
     protected constructor(params: DecklistType) {
-        this.sage = ElementalSageCard.from(params.sage);
+        this.sage = reconstructCard(params.sage) as ElementalSageCard;
         this.champions = {
-            level4: ElementalChampionCard.from(params.champions.level4),
-            level6: ElementalChampionCard.from(params.champions.level6),
-            level8: ElementalChampionCard.from(params.champions.level8),
+            level4: reconstructCard(params.champions.level4) as ElementalChampionCard,
+            level6: reconstructCard(params.champions.level6) as ElementalChampionCard,
+            level8: reconstructCard(params.champions.level8) as ElementalChampionCard,
         };
-        this.warriors = params.warriors.map((warrior) =>
-            ElementalWarriorCard.from(warrior)
-        );
-        this.basic = ElementalStarterCard.from(params.basic);
-        this.items = params.items.map((item) => ItemCard.from(item));
+        this.warriors = reconstructCards(params.warriors) as ElementalWarriorCard[];
+        this.basic = reconstructCard(params.basic) as ElementalStarterCard;
+        this.items = reconstructCards(params.items) as ItemCard[];
     }
 
     static from(data: unknown): Decklist {

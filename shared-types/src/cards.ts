@@ -9,8 +9,8 @@ import {
     ItemAttackStarterCard,
     ItemCard,
     ItemStarterCard,
-} from "@shared-types";
-import { CARD_NAMES } from "./card-names";
+} from "./card-classes";
+import { CARD_NAMES } from "../../websocket-server/src/constants/card-names";
 
 export const SAGES = {
     CEDAR: "Cedar",

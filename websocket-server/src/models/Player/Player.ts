@@ -1,11 +1,14 @@
+import { NotFoundError, ValidationError } from "../../custom-errors";
 import {
-    NotFoundError,
-    ValidationError,
-} from "../../custom-errors";
-import { Card, Sage, Decklist } from "@shared-types";
+    Card,
+    Sage,
+    Decklist,
+    DecklistType,
+} from "@shared-types";
 import { drawCardFromDeck, getSageDecklist } from "../../lib";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { PlayerSchema } from "@shared-types";
+import { reconstructCards } from "@shared-types/card-reconstruction";
 
 /**
  * Represents a player in the Command of Nature game
@@ -102,6 +105,10 @@ export class Player {
         this.decklist = decklist;
     }
 
+    setDecklistData(decklist: DecklistType) {
+        this.decklist = Decklist.from(decklist);
+    }
+
     levelUp() {
         if (this.level === 8) return;
         this.level += 1;
@@ -161,6 +168,7 @@ export class Player {
             );
 
         const decklist = getSageDecklist(this.sage);
+        this.setDecklist(decklist);
         const basicStarter = decklist.basic;
         this.addCardsToDeck([basicStarter, ...decklist.items]);
     }
@@ -209,6 +217,8 @@ export class Player {
      * @returns The Player instance
      */
     static fromPrisma(playerJson: JsonValue): Player {
+        // TODO: the problem is when a card is stored in the db it is stripped of the ability function (which is defined in the cards.ts file)
+        // so when the card is read from the db, the ability funciton is not defined and idk how to determine what that specific cards ability is
         const validatedPlayer = PlayerSchema.parse(playerJson);
         const {
             userId,
@@ -225,20 +235,26 @@ export class Player {
             discardPile,
         } = validatedPlayer;
 
-        const player = new Player(userId, socketId, isGameHost);
+        if (!decklist) {
+            throw new NotFoundError(
+                "Decklist",
+                "Player does not have a decklist"
+            );
+        }
 
-        // Set up properties
+        const player = new Player(userId, socketId, isGameHost);
         Object.assign(player, {
             isReady,
             isSetup,
             hasChosenWarriors,
             sage,
-            decklist,
             level,
-            hand,
-            deck,
-            discardPile,
         });
+
+        player.setDecklistData(decklist);
+        player.hand = reconstructCards(hand) as Card[];
+        player.deck = reconstructCards(deck) as Card[];
+        player.discardPile = reconstructCards(discardPile) as Card[];
 
         return player;
     }
