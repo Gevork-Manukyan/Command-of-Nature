@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { Card, CardSchema } from "./Card";
-import { AbilitySchema } from "../card-types";
+import { AbilitySchema, ItemTypeSchema } from "../card-types";
 
 export const ItemCardSchema = CardSchema.extend({
     ability: AbilitySchema,
-    itemType: z.enum(["attack", "utility", "instant"]),
+    itemType: ItemTypeSchema,
 })
 
 type ItemCardType = z.infer<typeof ItemCardSchema>;

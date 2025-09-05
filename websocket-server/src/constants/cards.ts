@@ -10,16 +10,37 @@ import {
     ItemCard,
     ItemStarterCard,
 } from "@shared-types";
+import { CARD_NAMES } from "./card-names";
+
+export const SAGES = {
+    CEDAR: "Cedar",
+    GRAVEL: "Gravel",
+    PORELLA: "Porella",
+    TORRENT: "Torrent",
+} as const;
+
+export const ELEMENTS = {
+    TWIG: "twig",
+    PEBBLE: "pebble",
+    LEAF: "leaf",
+    DROPLET: "droplet",
+} as const;
+
+export const ITEM_TYPES = {
+    ATTACK: "attack",
+    UTILITY: "utility",
+    INSTANT: "instant",
+} as const;
 
 export const ALL_CARDS = {
     // ------------ SAGES ------------
     Cedar: () =>
         ElementalSageCard.from({
-            name: "Cedar",
-            sage: "Cedar",
+            name: CARD_NAMES.CEDAR,
+            sage: SAGES.CEDAR,
             img: "",
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 12,
             ability: () => [],
@@ -32,11 +53,11 @@ export const ALL_CARDS = {
 
     Gravel: () =>
         ElementalSageCard.from({
-            name: "Gravel",
-            sage: "Gravel",
+            name: CARD_NAMES.GRAVEL,
+            sage: SAGES.GRAVEL,
             img: "",
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 3,
             health: 12,
             ability: () => [],
@@ -49,11 +70,11 @@ export const ALL_CARDS = {
 
     Porella: () =>
         ElementalSageCard.from({
-            name: "Porella",
-            sage: "Porella",
+            name: CARD_NAMES.PORELLA,
+            sage: SAGES.PORELLA,
             img: "",
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 3,
             health: 12,
             ability: () => [],
@@ -66,11 +87,11 @@ export const ALL_CARDS = {
 
     Torrent: () =>
         ElementalSageCard.from({
-            name: "Torrent",
-            sage: "Torrent",
+            name: CARD_NAMES.TORRENT,
+            sage: SAGES.TORRENT,
             img: "",
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 3,
             health: 12,
             ability: () => [],
@@ -85,10 +106,10 @@ export const ALL_CARDS = {
     // *** Twigs ***
     VixVanguard: () =>
         ElementalChampionCard.from({
-            name: "Vix Vanguard",
+            name: CARD_NAMES.VIX_VANGUARD,
             price: 1,
             img: "",
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 6,
             ability: () => [],
@@ -102,10 +123,10 @@ export const ALL_CARDS = {
 
     HornedHollow: () =>
         ElementalChampionCard.from({
-            name: "Horned Hollow",
+            name: CARD_NAMES.HORNED_HOLLOW,
             price: 1,
             img: "",
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 6,
             health: 4,
             ability: () => [],
@@ -119,10 +140,10 @@ export const ALL_CARDS = {
 
     CalamityLeopard: () =>
         ElementalChampionCard.from({
-            name: "Calamity Leopard",
+            name: CARD_NAMES.CALAMITY_LEOPARD,
             price: 1,
             img: "",
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 8,
             ability: () => [],
@@ -137,10 +158,10 @@ export const ALL_CARDS = {
     // *** Pebbles ***
     JadeTitan: () =>
         ElementalChampionCard.from({
-            name: "Jade Titan",
+            name: CARD_NAMES.JADE_TITAN,
             price: 1,
             img: "",
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 3,
             health: 5,
             ability: () => [],
@@ -154,10 +175,10 @@ export const ALL_CARDS = {
 
     BoulderhideBrute: () =>
         ElementalChampionCard.from({
-            name: "Boulderhide Brute",
+            name: CARD_NAMES.BOULDERHIDE_BRUTE,
             price: 1,
             img: "",
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 6,
             health: 6,
             ability: () => [],
@@ -171,10 +192,10 @@ export const ALL_CARDS = {
 
     OxenAvenger: () =>
         ElementalChampionCard.from({
-            name: "Oxen Avenger",
+            name: CARD_NAMES.OXEN_AVENGER,
             price: 1,
             img: "",
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 8,
             health: 7,
             ability: () => [],
@@ -189,10 +210,10 @@ export const ALL_CARDS = {
     // *** Leafs ***
     AgileAssailant: () =>
         ElementalChampionCard.from({
-            name: "Agile Assailant",
+            name: CARD_NAMES.AGILE_ASSAILANT,
             price: 1,
             img: "",
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 3,
             health: 5,
             ability: () => [],
@@ -206,10 +227,10 @@ export const ALL_CARDS = {
 
     BogBlight: () =>
         ElementalChampionCard.from({
-            name: "Bog Blight",
+            name: CARD_NAMES.BOG_BLIGHT,
             price: 1,
             img: "",
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 4,
             health: 5,
             ability: () => [],
@@ -223,10 +244,10 @@ export const ALL_CARDS = {
 
     KomodoKin: () =>
         ElementalChampionCard.from({
-            name: "Komodo Kin",
+            name: CARD_NAMES.KOMODO_KIN,
             price: 1,
             img: "",
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 8,
             health: 6,
             ability: () => [],
@@ -241,10 +262,10 @@ export const ALL_CARDS = {
     // *** Droplets ***
     TideTurner: () =>
         ElementalChampionCard.from({
-            name: "Tide Turner",
+            name: CARD_NAMES.TIDE_TURNER,
             price: 1,
             img: "",
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 4,
             health: 4,
             ability: () => [],
@@ -258,10 +279,10 @@ export const ALL_CARDS = {
 
     KingCrustacean: () =>
         ElementalChampionCard.from({
-            name: "King Crustacean",
+            name: CARD_NAMES.KING_CRUSTACEAN,
             price: 1,
             img: "",
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 3,
             health: 7,
             ability: () => [],
@@ -275,10 +296,10 @@ export const ALL_CARDS = {
 
     FrostfallEmperor: () =>
         ElementalChampionCard.from({
-            name: "Frostfall Emperor",
+            name: CARD_NAMES.FROSTFALL_EMPEROR,
             price: 1,
             img: "",
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 2,
             health: 12,
             ability: () => [],
@@ -294,9 +315,9 @@ export const ALL_CARDS = {
     // *** Twigs ***
     Timber: () =>
         ElementalStarterCard.from({
-            name: "Timber",
+            name: CARD_NAMES.TIMBER,
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             img: "",
             attack: 2,
             health: 2,
@@ -307,9 +328,9 @@ export const ALL_CARDS = {
 
     Bruce: () =>
         ElementalCard.from({
-            name: "Bruce",
+            name: CARD_NAMES.BRUCE,
             price: 2,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             img: "",
             attack: 3,
             health: 3,
@@ -320,9 +341,9 @@ export const ALL_CARDS = {
 
     Willow: () =>
         ElementalCard.from({
-            name: "Willow",
+            name: CARD_NAMES.WILLOW,
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             img: "",
             attack: 1,
             health: 3,
@@ -334,9 +355,9 @@ export const ALL_CARDS = {
     // *** Pebbles ***
     Cobble: () =>
         ElementalStarterCard.from({
-            name: "Cobble",
+            name: CARD_NAMES.COBBLE,
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             img: "",
             attack: 2,
             health: 2,
@@ -347,9 +368,9 @@ export const ALL_CARDS = {
 
     Flint: () =>
         ElementalCard.from({
-            name: "Flint",
+            name: CARD_NAMES.FLINT,
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             img: "",
             attack: 1,
             health: 3,
@@ -360,9 +381,9 @@ export const ALL_CARDS = {
 
     Rocco: () =>
         ElementalCard.from({
-            name: "Rocco",
+            name: CARD_NAMES.ROCCO,
             price: 2,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             img: "",
             attack: 3,
             health: 3,
@@ -374,9 +395,9 @@ export const ALL_CARDS = {
     // *** Leafs ***
     Sprout: () =>
         ElementalStarterCard.from({
-            name: "Sprout",
+            name: CARD_NAMES.SPROUT,
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             img: "",
             attack: 2,
             health: 2,
@@ -387,9 +408,9 @@ export const ALL_CARDS = {
 
     Herbert: () =>
         ElementalCard.from({
-            name: "Herbert",
+            name: CARD_NAMES.HERBERT,
             price: 2,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             img: "",
             attack: 3,
             health: 3,
@@ -400,9 +421,9 @@ export const ALL_CARDS = {
 
     Mush: () =>
         ElementalCard.from({
-            name: "Mush",
+            name: CARD_NAMES.MUSH,
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             img: "",
             attack: 1,
             health: 3,
@@ -414,9 +435,9 @@ export const ALL_CARDS = {
     // *** Droplets ***
     Dribble: () =>
         ElementalStarterCard.from({
-            name: "Dribble",
+            name: CARD_NAMES.DRIBBLE,
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             img: "",
             attack: 2,
             health: 2,
@@ -427,9 +448,9 @@ export const ALL_CARDS = {
 
     Dewy: () =>
         ElementalCard.from({
-            name: "Dewy",
+            name: CARD_NAMES.DEWY,
             price: 2,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             img: "",
             attack: 3,
             health: 3,
@@ -440,10 +461,10 @@ export const ALL_CARDS = {
 
     Wade: () =>
         ElementalCard.from({
-            name: "Wade",
+            name: CARD_NAMES.WADE,
             img: "",
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 1,
             health: 3,
             shieldCount: 0,
@@ -455,10 +476,10 @@ export const ALL_CARDS = {
     // *** Twigs ***
     AcornSquire: () =>
         ElementalWarriorStarterCard.from({
-            name: "Acorn Squire",
+            name: CARD_NAMES.ACORN_SQUIRE,
             img: "",
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 2,
             health: 3,
             ability: () => [],
@@ -471,10 +492,10 @@ export const ALL_CARDS = {
 
     QuillThornback: () =>
         ElementalWarriorStarterCard.from({
-            name: "Quill Thornback",
+            name: CARD_NAMES.QUILL_THORNBACK,
             img: "",
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 4,
             ability: () => [],
@@ -487,10 +508,10 @@ export const ALL_CARDS = {
 
     SlumberJack: () =>
         ElementalWarriorStarterCard.from({
-            name: "Slumber Jack",
+            name: CARD_NAMES.SLUMBER_JACK,
             img: "",
             price: 1,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -503,10 +524,10 @@ export const ALL_CARDS = {
 
     CamouChameleon: () =>
         ElementalWarriorCard.from({
-            name: "Camou Chameleon",
+            name: CARD_NAMES.CAMOU_CHAMELEON,
             img: "",
             price: 7,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 4,
             health: 5,
             ability: () => [],
@@ -519,10 +540,10 @@ export const ALL_CARDS = {
 
     LumberClaw: () =>
         ElementalWarriorCard.from({
-            name: "Lumber Claw",
+            name: CARD_NAMES.LUMBER_CLAW,
             img: "",
             price: 4,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -535,10 +556,10 @@ export const ALL_CARDS = {
 
     PineSnapper: () =>
         ElementalWarriorCard.from({
-            name: "Pine Snapper",
+            name: CARD_NAMES.PINE_SNAPPER,
             img: "",
             price: 3,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -551,10 +572,10 @@ export const ALL_CARDS = {
 
     SplinterStinger: () =>
         ElementalWarriorCard.from({
-            name: "Splinter Stinger",
+            name: CARD_NAMES.SPLINTER_STINGER,
             img: "",
             price: 5,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 5,
             ability: () => [],
@@ -567,10 +588,10 @@ export const ALL_CARDS = {
 
     TwineFeline: () =>
         ElementalWarriorCard.from({
-            name: "TwineFeline",
+            name: CARD_NAMES.TWINE_FELINE,
             img: "",
             price: 5,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 3,
             health: 5,
             ability: () => [],
@@ -583,10 +604,10 @@ export const ALL_CARDS = {
 
     OakLumbertron: () =>
         ElementalWarriorCard.from({
-            name: "Oak Lumbertron",
+            name: CARD_NAMES.OAK_LUMBERTRON,
             img: "",
             price: 9,
-            element: "twig",
+            element: ELEMENTS.TWIG,
             attack: 6,
             health: 6,
             ability: () => [],
@@ -600,10 +621,10 @@ export const ALL_CARDS = {
     // *** Pebbles ***
     GeoWeasel: () =>
         ElementalWarriorStarterCard.from({
-            name: "Geo Weasel",
+            name: CARD_NAMES.GEO_WEASEL,
             img: "",
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -616,10 +637,10 @@ export const ALL_CARDS = {
 
     GraniteRampart: () =>
         ElementalWarriorStarterCard.from({
-            name: "Granite Rampart",
+            name: CARD_NAMES.GRANITE_RAMPART,
             img: "",
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 2,
             health: 3,
             ability: () => [],
@@ -632,10 +653,10 @@ export const ALL_CARDS = {
 
     OnyxBearer: () =>
         ElementalWarriorStarterCard.from({
-            name: "Onyx Bearer",
+            name: CARD_NAMES.ONYX_BEARER,
             img: "",
             price: 1,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 3,
             health: 4,
             ability: () => [],
@@ -648,10 +669,10 @@ export const ALL_CARDS = {
 
     CackleRipclaw: () =>
         ElementalWarriorCard.from({
-            name: "Cackle Ripclaw",
+            name: CARD_NAMES.CACKLE_RIPCLAW,
             img: "",
             price: 4,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -664,10 +685,10 @@ export const ALL_CARDS = {
 
     Redstone: () =>
         ElementalWarriorCard.from({
-            name: "Redstone",
+            name: CARD_NAMES.REDSTONE,
             img: "",
             price: 4,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 3,
             health: 3,
             ability: () => [],
@@ -680,10 +701,10 @@ export const ALL_CARDS = {
 
     RubyGuardian: () =>
         ElementalWarriorCard.from({
-            name: "Ruby Guardian",
+            name: CARD_NAMES.RUBY_GUARDIAN,
             img: "",
             price: 3,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 2,
             health: 3,
             ability: () => [],
@@ -696,10 +717,10 @@ export const ALL_CARDS = {
 
     RunePuma: () =>
         ElementalWarriorCard.from({
-            name: "Rune Puma",
+            name: CARD_NAMES.RUNE_PUMA,
             img: "",
             price: 5,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 3,
             health: 3,
             ability: () => [],
@@ -712,10 +733,10 @@ export const ALL_CARDS = {
 
     StoneDefender: () =>
         ElementalWarriorCard.from({
-            name: "Stone Defender",
+            name: CARD_NAMES.STONE_DEFENDER,
             img: "",
             price: 8,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 7,
             health: 5,
             ability: () => [],
@@ -728,10 +749,10 @@ export const ALL_CARDS = {
 
     TerrainTumbler: () =>
         ElementalWarriorCard.from({
-            name: "Terrain Tumbler",
+            name: CARD_NAMES.TERRAIN_TUMBLER,
             img: "",
             price: 5,
-            element: "pebble",
+            element: ELEMENTS.PEBBLE,
             attack: 2,
             health: 6,
             ability: () => [],
@@ -745,10 +766,10 @@ export const ALL_CARDS = {
     // *** Leafs ***
     BotanicFangs: () =>
         ElementalWarriorStarterCard.from({
-            name: "Botanic Fangs",
+            name: CARD_NAMES.BOTANIC_FANGS,
             img: "",
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 3,
             health: 4,
             ability: () => [],
@@ -761,10 +782,10 @@ export const ALL_CARDS = {
 
     PetalMage: () =>
         ElementalWarriorStarterCard.from({
-            name: "Petal Mage",
+            name: CARD_NAMES.PETAL_MAGE,
             img: "",
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 2,
             health: 3,
             ability: () => [],
@@ -777,10 +798,10 @@ export const ALL_CARDS = {
 
     ThornFencer: () =>
         ElementalWarriorStarterCard.from({
-            name: "Thorn Fencer",
+            name: CARD_NAMES.THORN_FENCER,
             img: "",
             price: 1,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -793,10 +814,10 @@ export const ALL_CARDS = {
 
     BambooBerserker: () =>
         ElementalWarriorCard.from({
-            name: "Bamboo Berserker",
+            name: CARD_NAMES.BAMBOO_BERSERKER,
             img: "",
             price: 9,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 6,
             health: 6,
             ability: () => [],
@@ -809,10 +830,10 @@ export const ALL_CARDS = {
 
     ForageThumper: () =>
         ElementalWarriorCard.from({
-            name: "Forage Thumper",
+            name: CARD_NAMES.FORAGE_THUMPER,
             img: "",
             price: 5,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 2,
             health: 5,
             ability: () => [],
@@ -825,10 +846,10 @@ export const ALL_CARDS = {
 
     HummingHerald: () =>
         ElementalWarriorCard.from({
-            name: "Humming Herald",
+            name: CARD_NAMES.HUMMING_HERALD,
             img: "",
             price: 5,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 4,
             health: 3,
             ability: () => [],
@@ -841,10 +862,10 @@ export const ALL_CARDS = {
 
     IguanaGuard: () =>
         ElementalWarriorCard.from({
-            name: "Iguana Guard",
+            name: CARD_NAMES.IGUANA_GUARD,
             img: "",
             price: 5,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 3,
             health: 4,
             ability: () => [],
@@ -857,10 +878,10 @@ export const ALL_CARDS = {
 
     MossViper: () =>
         ElementalWarriorCard.from({
-            name: "Moss Viper",
+            name: CARD_NAMES.MOSS_VIPER,
             img: "",
             price: 5,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 4,
             health: 2,
             ability: () => [],
@@ -873,10 +894,10 @@ export const ALL_CARDS = {
 
     ShrubBeetle: () =>
         ElementalWarriorCard.from({
-            name: "Shrub Beetle",
+            name: CARD_NAMES.SHRUB_BEETLE,
             img: "",
             price: 3,
-            element: "leaf",
+            element: ELEMENTS.LEAF,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -890,10 +911,10 @@ export const ALL_CARDS = {
     // *** Droplets ***
     CoastalCoyote: () =>
         ElementalWarriorStarterCard.from({
-            name: "Coastal Coyote",
+            name: CARD_NAMES.COASTAL_COYOTE,
             img: "",
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 3,
             health: 3,
             ability: () => [],
@@ -906,10 +927,10 @@ export const ALL_CARDS = {
 
     RiptideTiger: () =>
         ElementalWarriorStarterCard.from({
-            name: "Riptide Tiger",
+            name: CARD_NAMES.RIPTIDE_TIGER,
             img: "",
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -922,10 +943,10 @@ export const ALL_CARDS = {
 
     RiverRogue: () =>
         ElementalWarriorStarterCard.from({
-            name: "River Rogue",
+            name: CARD_NAMES.RIVER_ROGUE,
             img: "",
             price: 1,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -938,10 +959,10 @@ export const ALL_CARDS = {
 
     CurrentConjurer: () =>
         ElementalWarriorCard.from({
-            name: "Current Conjurer",
+            name: CARD_NAMES.CURRENT_CONJURER,
             img: "",
             price: 3,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -954,10 +975,10 @@ export const ALL_CARDS = {
 
     RoamingRazor: () =>
         ElementalWarriorCard.from({
-            name: "Roaming Razor",
+            name: CARD_NAMES.ROAMING_RAZOR,
             img: "",
             price: 8,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 5,
             health: 8,
             ability: () => [],
@@ -970,10 +991,10 @@ export const ALL_CARDS = {
 
     SplashBasilisk: () =>
         ElementalWarriorCard.from({
-            name: "Splash Basilisk",
+            name: CARD_NAMES.SPLASH_BASILISK,
             img: "",
             price: 5,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 3,
             health: 5,
             ability: () => [],
@@ -986,10 +1007,10 @@ export const ALL_CARDS = {
 
     SurgesphereMonk: () =>
         ElementalWarriorCard.from({
-            name: "Surgesphere Monk",
+            name: CARD_NAMES.SURGESPHERE_MONK,
             img: "",
             price: 3,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 1,
             health: 4,
             ability: () => [],
@@ -1002,10 +1023,10 @@ export const ALL_CARDS = {
 
     TyphoonFist: () =>
         ElementalWarriorCard.from({
-            name: "Typhoon Fist",
+            name: CARD_NAMES.TYPHOON_FIST,
             img: "",
             price: 4,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 2,
             health: 4,
             ability: () => [],
@@ -1018,10 +1039,10 @@ export const ALL_CARDS = {
 
     WhirlWhipper: () =>
         ElementalWarriorCard.from({
-            name: "Whirl Whipper",
+            name: CARD_NAMES.WHIRL_WHIPPER,
             img: "",
             price: 4,
-            element: "droplet",
+            element: ELEMENTS.DROPLET,
             attack: 3,
             health: 4,
             ability: () => [],
@@ -1035,211 +1056,211 @@ export const ALL_CARDS = {
     // ------------ ATTACKS ------------
     CloseStrike: () =>
         ItemAttackStarterCard.from({
-            name: "Close Strike",
+            name: CARD_NAMES.CLOSE_STRIKE,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1],
         }),
 
     FarStrike: () =>
         ItemAttackStarterCard.from({
-            name: "Far Strike",
+            name: CARD_NAMES.FAR_STRIKE,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1, 2],
         }),
 
     DistantDoubleStrike: () =>
         ItemAttackCard.from({
-            name: "Distant Double Strike",
+            name: CARD_NAMES.DISTANT_DOUBLE_STRIKE,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1, 2],
         }),
 
     FarsightFrenzy: () =>
         ItemAttackCard.from({
-            name: "Farsight Frenzy",
+            name: CARD_NAMES.FARSIGHT_FRENZY,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1, 2, 3],
         }),
 
     FocusedFury: () =>
         ItemAttackCard.from({
-            name: "Focused Fury",
+            name: CARD_NAMES.FOCUSED_FURY,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1],
         }),
 
     MagicEtherStrike: () =>
         ItemAttackCard.from({
-            name: "Magic Ether Strike",
+            name: CARD_NAMES.MAGIC_ETHER_STRIKE,
             img: "",
             price: 5,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1],
         }),
 
     NaturesWrath: () =>
         ItemAttackCard.from({
-            name: "Nature's Wrath",
+            name: CARD_NAMES.NATURES_WRATH,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1],
         }),
 
     PrimitiveStrike: () =>
         ItemAttackCard.from({
-            name: "Primitive Strike",
+            name: CARD_NAMES.PRIMITIVE_STRIKE,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1, 2],
         }),
 
     ProjectileBlast: () =>
         ItemAttackCard.from({
-            name: "Projectile Blast",
+            name: CARD_NAMES.PROJECTILE_BLAST,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1, 2],
         }),
 
     ReinforcedImpact: () =>
         ItemAttackCard.from({
-            name: "Reinforced Impact",
+            name: CARD_NAMES.REINFORCED_IMPACT,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "attack",
+            itemType: ITEM_TYPES.ATTACK,
             rowRequirement: [1],
         }),
 
     // ------------ INSTANTS ------------
     DropletCharm: () =>
         ItemStarterCard.from({
-            name: "Droplet Charm",
+            name: CARD_NAMES.DROPLET_CHARM,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     LeafCharm: () =>
         ItemStarterCard.from({
-            name: "Leaf Charm",
+            name: CARD_NAMES.LEAF_CHARM,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     PebbleCharm: () =>
         ItemStarterCard.from({
-            name: "Pebble Charm",
+            name: CARD_NAMES.PEBBLE_CHARM,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     TwigCharm: () =>
         ItemStarterCard.from({
-            name: "Twig Charm",
+            name: CARD_NAMES.TWIG_CHARM,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     NaturalRestoration: () =>
         ItemStarterCard.from({
-            name: "Natural Restoration",
+            name: CARD_NAMES.NATURAL_RESTORATION,
             img: "",
             price: 1,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     MeleeShield: () =>
         ItemCard.from({
-            name: "Melee Shield",
+            name: CARD_NAMES.MELEE_SHIELD,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     NaturalDefense: () =>
         ItemCard.from({
-            name: "Natural Defense",
+            name: CARD_NAMES.NATURAL_DEFENSE,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     RangedBarrier: () =>
         ItemCard.from({
-            name: "Ranged Barrier",
+            name: CARD_NAMES.RANGED_BARRIER,
             img: "",
             price: 3,
             ability: () => [],
-            itemType: "instant",
+            itemType: ITEM_TYPES.INSTANT,
         }),
 
     // ------------ UTILITIES ------------
     ElementalIncantation: () =>
         ItemCard.from({
-            name: "Elemental Incantation",
+            name: CARD_NAMES.ELEMENTAL_INCANTATION,
             img: "",
             price: 5,
             ability: () => [],
-            itemType: "utility",
+            itemType: ITEM_TYPES.UTILITY,
         }),
 
     ElementalSwap: () =>
         ItemCard.from({
-            name: "Elemental Swap",
+            name: CARD_NAMES.ELEMENTAL_SWAP,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "utility",
+            itemType: ITEM_TYPES.UTILITY,
         }),
 
     ExchangeOfNature: () =>
         ItemCard.from({
-            name: "Exchange of Nature",
+            name: CARD_NAMES.EXCHANGE_OF_NATURE,
             img: "",
             price: 2,
             ability: () => [],
-            itemType: "utility",
+            itemType: ITEM_TYPES.UTILITY,
         }),
 
     Obliterate: () =>
         ItemCard.from({
-            name: "Obliterate",
+            name: CARD_NAMES.OBLITERATE,
             img: "",
             price: 5,
             ability: () => [],
-            itemType: "utility",
+            itemType: ITEM_TYPES.UTILITY,
         }),
 };
