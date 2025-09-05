@@ -406,7 +406,7 @@ export class Battlefield {
         const battlefield = new Battlefield(numPlayersOnTeam);
 
         battlefield.fieldArray = fieldArray.map((space) =>
-            BattlefieldSpace.fromPrisma(space)
+            BattlefieldSpace.fromPrisma(space as JsonValue)
         );
 
         return battlefield;

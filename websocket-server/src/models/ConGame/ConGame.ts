@@ -23,6 +23,7 @@ import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
 import { ConGame as ConGamePrisma } from "@prisma/client";
 import { reconstructCards } from "@shared-types/card-reconstruction";
+import { JsonValue } from "@prisma/client/runtime/library";
 
 type ShopIndex = 0 | 1 | 2;
 
@@ -625,11 +626,11 @@ export class ConGame {
         );
 
         // Convert players to Player instances if they aren't already
-        const players = data.players.map((player) => Player.fromPrisma(player));
+        const players = data.players.map((player) => Player.fromPrisma(player as JsonValue));
 
         // Convert teams to Team instances if they aren't already
-        const team1 = Team.fromPrisma(data.team1);
-        const team2 = Team.fromPrisma(data.team2);
+        const team1 = Team.fromPrisma(data.team1 as JsonValue);
+        const team2 = Team.fromPrisma(data.team2 as JsonValue);
 
         // Convert shops to proper card instances
         const creatureShop = reconstructCards(data.creatureShop) as ElementalCard[];

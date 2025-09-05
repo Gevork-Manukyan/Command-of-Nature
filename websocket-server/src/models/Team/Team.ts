@@ -382,7 +382,7 @@ export class Team {
     team.gold = gold;
     team.maxGold = maxGold;
     team.removedCards = reconstructCards(removedCards) as Card[];
-    team.battlefield = Battlefield.fromPrisma(battlefield);
+    team.battlefield = Battlefield.fromPrisma(battlefield as JsonValue);
     return team;
   }
 
