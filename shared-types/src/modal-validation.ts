@@ -19,7 +19,7 @@ export const PlayerSchema = z.object({
     discardPile: z.array(CardSchema),
 });
 
-export const BattlefieldSpaceSchema = z.lazy((): z.ZodType<any> => z.object({
+export const BattlefieldSpaceSchema = z.lazy(() => z.object({
       spaceNumber: SpaceOptionsSchema,
       value: ElementalCardSchema.nullable(),
       connections: z.object({

@@ -9,6 +9,7 @@ import { Battlefield } from "../Battlefield/Battlefield";
 import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { TeamSchema } from "@shared-types";
 import { Player } from "../Player/Player";
+import { reconstructCards } from "@shared-types/card-reconstruction";
 
 /**
  * Represents a team in the Command of Nature game
@@ -380,7 +381,7 @@ export class Team {
     team.userIds = userIds;
     team.gold = gold;
     team.maxGold = maxGold;
-    team.removedCards = removedCards.map((card) => Card.from(card));
+    team.removedCards = reconstructCards(removedCards) as Card[];
     team.battlefield = Battlefield.fromPrisma(battlefield);
     return team;
   }

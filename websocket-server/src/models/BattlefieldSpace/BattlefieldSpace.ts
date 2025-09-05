@@ -7,6 +7,7 @@ import {
 } from "@shared-types";
 import { JsonValue } from "@prisma/client/runtime/library";
 import { BattlefieldSpaceSchema } from "@shared-types";
+import { reconstructCard } from "@shared-types/card-reconstruction";
 
 export type Direction = "TL" | "T" | "TR" | "L" | "R" | "BL" | "B" | "BR";
 
@@ -108,9 +109,9 @@ export class BattlefieldSpace {
      * @returns The BattlefieldSpace instance
      */
     static fromPrisma(battlefieldSpaceJson: JsonValue): BattlefieldSpace {
-        const { spaceNumber, value, connections } =
-            BattlefieldSpaceSchema.parse(battlefieldSpaceJson);
-        const newSpace = new BattlefieldSpace(spaceNumber, value);
+        const { spaceNumber, value, connections } = BattlefieldSpaceSchema.parse(battlefieldSpaceJson);
+        const validatedValue = value ? reconstructCard(value) as ElementalCard : null;
+        const newSpace = new BattlefieldSpace(spaceNumber, validatedValue);
         newSpace.connections = connections;
         return newSpace;
     }

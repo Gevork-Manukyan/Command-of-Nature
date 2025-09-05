@@ -217,8 +217,6 @@ export class Player {
      * @returns The Player instance
      */
     static fromPrisma(playerJson: JsonValue): Player {
-        // TODO: the problem is when a card is stored in the db it is stripped of the ability function (which is defined in the cards.ts file)
-        // so when the card is read from the db, the ability funciton is not defined and idk how to determine what that specific cards ability is
         const validatedPlayer = PlayerSchema.parse(playerJson);
         const {
             userId,

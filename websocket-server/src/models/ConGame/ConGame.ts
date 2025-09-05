@@ -21,6 +21,7 @@ import { Player } from "../Player/Player";
 import { Team } from "../Team/Team";
 import { ALL_CARDS, processAbility } from "../../constants";
 import { ConGame as ConGamePrisma } from "@prisma/client";
+import { reconstructCards } from "@shared-types/card-reconstruction";
 
 const {
     BambooBerserker,
@@ -679,6 +680,12 @@ export class ConGame {
         const team1 = Team.fromPrisma(data.team1);
         const team2 = Team.fromPrisma(data.team2);
 
+        // Convert shops to proper card instances
+        const creatureShop = reconstructCards(data.creatureShop) as ElementalCard[];
+        const itemShop = reconstructCards(data.itemShop) as ItemCard[];
+        const currentCreatureShopCards = reconstructCards(data.currentCreatureShopCards) as ElementalCard[];
+        const currentItemShopCards = reconstructCards(data.currentItemShopCards) as ItemCard[];
+
         // Copy all properties
         Object.assign(game, {
             isStarted: data.isStarted,
@@ -689,10 +696,10 @@ export class ConGame {
             team1,
             team2,
             teamOrder: data.teamOrder,
-            creatureShop: data.creatureShop,
-            itemShop: data.itemShop,
-            currentCreatureShopCards: data.currentCreatureShopCards,
-            currentItemShopCards: data.currentItemShopCards,
+            creatureShop,
+            itemShop,
+            currentCreatureShopCards,
+            currentItemShopCards,
         });
 
         return game;
