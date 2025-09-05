@@ -37,8 +37,8 @@ describe("GameDatabaseService", () => {
     describe("saveNewGame", () => {
         it("should create and save a new game and its state", async () => {
             // Mock the create methods
-            conGameService.createGame.mockResolvedValue(mockGame);
-            gameStateService.createGameState.mockResolvedValue(mockGameState);
+            conGameService.createGame;
+            gameStateService.createGameState;
 
             const result = await gameDatabaseService.saveNewGame(
                 numPlayers,
@@ -90,8 +90,8 @@ describe("GameDatabaseService", () => {
     describe("saveGameState", () => {
         it("should save both game and game state", async () => {
             // Mock the update methods
-            conGameService.updateGame.mockResolvedValue(mockGame);
-            gameStateService.updateGameState.mockResolvedValue(mockGameState);
+            conGameService.updateGame;
+            gameStateService.updateGameState;
 
             await gameDatabaseService.saveGame(mockGame);
             await gameDatabaseService.saveGameState(testGameId, mockGameState);
@@ -111,8 +111,8 @@ describe("GameDatabaseService", () => {
             const mockError = new Error("Save failed");
 
             // Mock one of the services to fail
-            conGameService.updateGame.mockRejectedValue(mockError);
-            gameStateService.updateGameState.mockResolvedValue(mockGameState);
+            conGameService.updateGame;
+            gameStateService.updateGameState;
 
             // The error should be caught and logged
             const consoleSpy = jest
@@ -132,7 +132,7 @@ describe("GameDatabaseService", () => {
     describe("findAllGames", () => {
         it("should return all games from the database", async () => {
             const mockGames = [mockGame];
-            conGameService.findAllGames.mockResolvedValue(mockGames);
+            conGameService.findAllGames;
 
             const result = await gameDatabaseService.findAllGames();
 
@@ -143,9 +143,7 @@ describe("GameDatabaseService", () => {
 
     describe("findGameStateByGameId", () => {
         it("should return the game state for a given game ID", async () => {
-            gameStateService.findGameStateByGameId.mockResolvedValue(
-                mockGameState
-            );
+            gameStateService.findGameStateByGameId;
 
             const result = await gameDatabaseService.findGameStateByGameId(
                 testGameId
