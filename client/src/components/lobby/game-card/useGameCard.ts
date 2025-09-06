@@ -38,9 +38,44 @@ export function useGameCard(
             });
             router.push(`/app/game/${response.id}`);
             updateCurrentSession(response);
-        } catch (err) {
-            toast.error('This game no longer exists or is no longer available.');
-            refreshGames();
+        } catch (err: any) {
+            console.log("Error in handleJoinClick:", err);
+            if (err.status == 422 && err.field === "password") {
+                toast.error(
+                    err.message || "Incorrect password. Please try again."
+                );
+                setPassword("");
+                setShowPasswordInput(true);
+            } else if (err.errorCode === "NOT_FOUND") {
+                toast.error("This game no longer exists or has been deleted.");
+                refreshGames();
+            } else if (
+                err.errorCode === "CONFLICT_ERROR" &&
+                err.message?.includes("full")
+            ) {
+                toast.error(
+                    "This game is already full and cannot accept more players."
+                );
+                refreshGames();
+            } else if (
+                err.errorCode === "CONFLICT_ERROR" &&
+                err.message?.includes("started")
+            ) {
+                toast.error(
+                    "This game has already started and cannot accept new players."
+                );
+                refreshGames();
+            } else if (
+                err.errorCode === "VALIDATION_ERROR" &&
+                err.field === "userId"
+            ) {
+                toast.error("You are already in this game.");
+            } else {
+                toast.error(
+                    err.message || "Failed to join game. Please try again."
+                );
+                refreshGames();
+            }
         } finally {
             setIsJoining(false);
         }

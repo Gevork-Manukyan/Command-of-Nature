@@ -40,8 +40,27 @@ export async function gameApiFetch(
 
     const response = await fetch(url, fetchOptions);
 
-    if (!response.ok)
-        throw new Error(`Game API Error (${endpoint}): ${response.statusText}`);
+    if (!response.ok) {
+        let errorData;
+        try {
+            errorData = await response.json();
+        } catch {
+            errorData = {
+                error: "Network Error",
+                message: response.statusText,
+                code: "NETWORK_ERROR",
+            };
+        }
+
+        const error = new Error(errorData.message || response.statusText);
+        Object.assign(error, {
+            errorType: errorData.error,
+            errorCode: errorData.code,
+            field: errorData.field,
+            status: response.status,
+        });
+        throw error;
+    }
     const responseData = await response.json();
     return responseData;
 }

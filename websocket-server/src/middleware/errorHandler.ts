@@ -1,11 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import {
-    ValidationError,
-    NotFoundError,
-    InvalidSpaceError,
-    HostOnlyActionError,
-    GameConflictError,
-} from "../custom-errors";
+import { ValidationError, NotFoundError, InvalidSpaceError, HostOnlyActionError, GameConflictError, IncorrectPasswordError, GameNotFoundError, GameFullError, GameAlreadyStartedError } from "src/custom-errors";
 
 export interface ApiError extends Error {
     status?: number;
@@ -24,6 +18,7 @@ export function errorHandler(
         return res.status(err.status).json({
             error: "Validation Error",
             message: err.message,
+            code: err.code,
             field: err.field,
         });
     }
@@ -32,6 +27,7 @@ export function errorHandler(
         return res.status(err.status).json({
             error: "Not Found",
             message: err.message,
+            code: err.code,
         });
     }
 
@@ -39,6 +35,7 @@ export function errorHandler(
         return res.status(err.status).json({
             error: "Invalid Space Error",
             message: err.message,
+            code: err.code,
         });
     }
 
@@ -54,6 +51,46 @@ export function errorHandler(
         return res.status(err.status).json({
             error: "Game Conflict",
             message: err.message,
+            code: err.code,
+        });
+    }
+
+    if (err instanceof IncorrectPasswordError) {
+        console.log("IncorrectPasswordError details:", {
+            status: err.status,
+            message: err.message,
+            code: err.code,
+            field: err.field,
+        });
+        return res.status(err.status).json({
+            error: "Incorrect Password",
+            message: err.message,
+            code: err.code,
+            field: err.field,
+        });
+    }
+
+    if (err instanceof GameNotFoundError) {
+        return res.status(err.status || 404).json({
+            error: "Game Not Found",
+            message: err.message,
+            code: err.code,
+        });
+    }
+
+    if (err instanceof GameFullError) {
+        return res.status(err.status).json({
+            error: "Game Full",
+            message: err.message,
+            code: err.code,
+        });
+    }
+
+    if (err instanceof GameAlreadyStartedError) {
+        return res.status(err.status).json({
+            error: "Game Already Started",
+            message: err.message,
+            code: err.code,
         });
     }
 
@@ -64,5 +101,7 @@ export function errorHandler(
     res.status(status).json({
         error: "Server Error",
         message,
+        code: err.code,
+        field: err.field,
     });
 }

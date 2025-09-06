@@ -1,10 +1,10 @@
 import { Sage } from "@shared-types";
 import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo } from "../types";
-import { ValidationError, GameConflictError } from "../custom-errors";
 import { GameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../../../shared-types/src/gamestate-types";
 import { updateUserActiveGames } from "src/lib/utilities/db";
+import { IncorrectPasswordError, ValidationError, GameFullError, GameAlreadyStartedError, GameNotFoundError, GameConflictError } from "src/custom-errors";
 
 type EventProcessor = () => Promise<void>;
 
@@ -66,7 +66,7 @@ export class GameStateManager {
     ): Promise<void> {
         const game = this.getGame(gameId);
         if (game.isPrivate && password !== game.password) {
-            throw new ValidationError("Incorrect password", "password");
+            throw new IncorrectPasswordError();
         }
 
         // Check if player already exists with same socket ID
@@ -92,7 +92,11 @@ export class GameStateManager {
         }
 
         if (game.players.length >= game.numPlayersTotal) {
-            throw new ValidationError("Cannot add more players", "players");
+            throw new GameFullError();
+        }
+
+        if (game.isStarted) {
+            throw new GameAlreadyStartedError();
         }
 
         await updateUserActiveGames(userId, gameId);
@@ -301,7 +305,7 @@ export class GameStateManager {
      */
     getGame(gameId: gameId): ConGame {
         const gameState = this.currentGames[gameId];
-        if (!gameState) throw new GameConflictError(gameId);
+        if (!gameState) throw new GameNotFoundError(gameId);
         return gameState.game;
     }
 
