@@ -14,13 +14,14 @@ type LobbyContextType = {
     currentGames: GameListing[];
     showModal: boolean;
     setShowModal: (showModal: boolean) => void;
-}
+    refreshGames: () => Promise<void>;
+};
 
 const LobbyContext = createContext<LobbyContextType | null>(null);
 
 type LobbyProviderProps = {
     children: React.ReactNode;
-}
+};
 
 export function LobbyProvider({ children }: LobbyProviderProps) {
     const [currentGames, setCurrentGames] = useState<GameListing[]>([]);
@@ -28,44 +29,52 @@ export function LobbyProvider({ children }: LobbyProviderProps) {
     const [isFetchingGames, setIsFetchingGames] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
     const { currentGameSession } = useGameSessionContext();
-    const [error, setError] = useState<string>('');
-    
+    const [error, setError] = useState<string>("");
+
     // Fetch all games from the server
     useEffect(() => {
-        const fetchGames = async () => {
-            try {
-                setIsFetchingGames(true);
-                const games = await getGameListings(false);
-                setCurrentGames(games);
-            } catch (err) {
-                setError('Failed to fetch games');
-            } finally {
-                setIsFetchingGames(false);
-            }
-        };
         fetchGames();
     }, []);
 
+    const fetchGames = async () => {
+        try {
+            setIsFetchingGames(true);
+            const games = await getGameListings(false);
+            setCurrentGames(games);
+        } catch (err) {
+            setError("Failed to fetch games");
+        } finally {
+            setIsFetchingGames(false);
+        }
+    };
+
+    const refreshGames = async () => {
+        await fetchGames();
+    };
+
     return (
-        <LobbyContext.Provider value={{
-            currentGameSession,
-            error,
-            isFetchingGames,
-            isJoining,
-            setIsJoining,
-            currentGames,
-            showModal,
-            setShowModal,
-        }}>
+        <LobbyContext.Provider
+            value={{
+                currentGameSession,
+                error,
+                isFetchingGames,
+                isJoining,
+                setIsJoining,
+                currentGames,
+                showModal,
+                setShowModal,
+                refreshGames,
+            }}
+        >
             {children}
         </LobbyContext.Provider>
-    )
+    );
 }
 
 export function useLobbyContext() {
     const context = useContext(LobbyContext);
     if (!context) {
-        throw new Error('useLobbyContext must be used within a LobbyProvider');
+        throw new Error("useLobbyContext must be used within a LobbyProvider");
     }
     return context;
 }

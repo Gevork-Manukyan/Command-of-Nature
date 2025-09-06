@@ -7,7 +7,7 @@ import { ConflictError, CustomError, ValidationError } from "./BaseError";
  */
 export class GameConflictError extends ConflictError {
     constructor(gameId: gameId, message?: string) {
-        super(message || `Game with id ${gameId} not found or in invalid state`);
+        super(message || `Game with id ${gameId} not found or has been deleted`);
     }
 }
 
