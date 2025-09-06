@@ -229,7 +229,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
 
         const handleSocketStartGame = (data: NextStateData) => {
             updateCurrentPhase(data);
-            router.push(`/app/game/${gameId}`);
         };
 
         // const handleSocketPickWarriors = () => {};

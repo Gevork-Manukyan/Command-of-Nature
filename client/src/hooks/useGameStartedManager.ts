@@ -10,11 +10,11 @@ const SETUP_PHASES = new Set([
     State.SAGE_SELECTION,
     State.JOINING_TEAMS,
     State.READY_UP,
-    State.WARRIOR_SELECTION,
-    State.SETUP_COMPLETE,
 ]);
 
 const GAMEPLAY_PHASES = new Set([
+    State.WARRIOR_SELECTION,
+    State.SETUP_COMPLETE,
     State.PHASE1,
     State.PHASE2,
     State.PHASE3,
