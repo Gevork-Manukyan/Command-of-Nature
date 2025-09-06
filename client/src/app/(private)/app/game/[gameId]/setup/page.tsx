@@ -5,13 +5,30 @@ import JoiningGame from "@/components/game/setup/joining-game";
 import ReadyUp from "@/components/game/setup/ready-up";
 import SageSelection from "@/components/game/setup/sage-selection";
 import TeamSelection from "@/components/game/setup/team-selection";
+import { LoadingScreen } from "@/components/loading/loading-screen";
 import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
+import { useGameStartedManager } from "@/hooks/useGameStartedManager";
 import { State } from "@shared-types";
+import { useParams } from "next/navigation";
 
 export default function GameSetupPage() {
     const { error } = useGameSetupContext();
     const { currentPhase } = useCurrentPhaseContext();
+    const params = useParams();
+    const gameId = params.gameId as string;
+    const { isSetupPhase } = useGameStartedManager(gameId);
+    
+    // Show loading while phase is being determined
+    if (currentPhase === null) {
+        return <LoadingScreen />
+    }
+
+    // Only render if we're actually in a setup phase
+    // The useGameStartedManager hook will handle redirecting to setup
+    if (!isSetupPhase) {
+        return null; 
+    }
 
     if (error) {
         return <ErrorScreen message={error} />;
