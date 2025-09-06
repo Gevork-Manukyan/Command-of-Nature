@@ -5,7 +5,7 @@ import {
     ValidationError,
     NotFoundError,
 } from "./BaseError";
-import { gameId } from "src/types";
+import { gameId } from "../types";
 
 /**
  * When the game with the given ID does not exist
