@@ -160,17 +160,17 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
 
     // Check if user is the host
     useEffect(() => {
-        const checkIsHost = async () => {
-            if (!userId || !currentGameSession) return;
-            const isHost = await isPlayerHostOfGame(
-                userId,
-                currentGameSession.id
-            );
-            setIsHost(isHost);
-        };
         checkIsHost();
     }, [currentGameSession, userId]);
 
+    const checkIsHost = async () => {
+        if (!userId || !currentGameSession) return;
+        const isHost = await isPlayerHostOfGame(
+            userId,
+            currentGameSession.id
+        );
+        setIsHost(isHost);
+    };
 
     function updateCurrentPhase(data: NextStateData) {
         const validatedData = NextStateDataSchema.parse(data);
@@ -190,6 +190,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         const handleSocketPlayerLeft = (data: PlayerLeftData) => {
             const validatedData = playerLeftSchema.parse(data);
             setUserPlayers(validatedData.userSetupData);
+            checkIsHost();
         };
 
         const handleSocketAllPlayersJoined = (data: NextStateData) => {
@@ -243,7 +244,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         //     router.push(`/app/game/${gameId}`);
         // };
 
-        // Register event listeners
+        // -------------- REGISTER SOCKET EVENT LISTENERS --------------
         socketService.on(PlayerJoinedEvent, handleSocketPlayerJoined);
         socketService.on(PlayerLeftEvent, handleSocketPlayerLeft);
         socketService.on(AllPlayersJoinedEvent, handleSocketAllPlayersJoined);
@@ -267,6 +268,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         // socketService.on(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
 
         return () => {
+            // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
             socketService.off(PlayerJoinedEvent, handleSocketPlayerJoined);
             socketService.off(PlayerLeftEvent, handleSocketPlayerLeft);
             socketService.off(
