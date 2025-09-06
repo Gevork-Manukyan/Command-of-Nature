@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { ValidationError, NotFoundError, InvalidSpaceError, HostOnlyActionError } from "../custom-errors";
+import {
+    ValidationError,
+    NotFoundError,
+    InvalidSpaceError,
+    HostOnlyActionError,
+    GameConflictError,
+} from "../custom-errors";
 
 export interface ApiError extends Error {
     status?: number;
@@ -41,6 +47,13 @@ export function errorHandler(
             error: "Host Only Action",
             message: err.message,
             code: err.code,
+        });
+    }
+
+    if (err instanceof GameConflictError) {
+        return res.status(err.status).json({
+            error: "Game Conflict",
+            message: err.message,
         });
     }
 

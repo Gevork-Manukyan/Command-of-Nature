@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io';
+import { Socket } from "socket.io";
 
 export class UserSocketManager {
     private static instance: UserSocketManager;
@@ -37,6 +37,15 @@ export class UserSocketManager {
         const socket = this.getSocket(userId);
         if (socket) {
             socket.leave(gameId);
+        }
+    }
+
+    unregisterSocket(socketId: string): void {
+        for (const [userId, socket] of this.userIdToSocket.entries()) {
+            if (socket.id === socketId) {
+                this.userIdToSocket.delete(userId);
+                break;
+            }
         }
     }
 }
