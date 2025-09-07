@@ -3,8 +3,8 @@ import { ConGame, GameState, ActiveConGame, Player, Team } from "../models";
 import { gameId, GameStateInfo } from "../types";
 import { GameDatabaseService } from "./GameDatabaseService";
 import { TransitionEvent } from "../../../shared-types/src/gamestate-types";
-import { updateUserActiveGames } from "src/lib/utilities/db";
-import { IncorrectPasswordError, ValidationError, GameFullError, GameAlreadyStartedError, GameNotFoundError, GameConflictError } from "src/custom-errors";
+import { IncorrectPasswordError, ValidationError, GameFullError, GameAlreadyStartedError, GameNotFoundError, GameConflictError } from "../custom-errors";
+import { updateUserActiveGames } from "../lib/utilities/db";
 
 type EventProcessor = () => Promise<void>;
 
