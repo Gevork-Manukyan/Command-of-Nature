@@ -1,7 +1,6 @@
-import { NotFoundError } from "src/custom-errors";
+import { NotFoundError } from "../../custom-errors";
 import { prisma } from "../prisma";
 import { User } from "@prisma/client";
-import { UserSetup } from "@shared-types";
 
 export async function getUserByUserId(userId: string): Promise<User> {
     const user = await prisma.user.findUnique({
