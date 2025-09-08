@@ -48,6 +48,7 @@ import { useSession } from "next-auth/react";
 import { isPlayerHostOfGame } from "@/actions/game-actions";
 import { UserSetup } from "@shared-types";
 import { useCurrentPhaseContext } from "./CurrentPhaseContext";
+import { useIsHost } from "@/hooks/useIsHost";
 
 type GameSetupContextType = {
     error: string;
@@ -122,13 +123,13 @@ function updateSetupReadyStatusData(
 export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
-    const { setCurrentPhase } = useCurrentPhaseContext();
-    const [isHost, setIsHost] = useState(false);
-    const [error, setError] = useState<string>("");
-    const { data: session } = useSession();
     const gameId = currentGameSession?.id || "";
     const numPlayersTotal = currentGameSession?.numPlayersTotal || 0;
+    const { setCurrentPhase } = useCurrentPhaseContext();
+    const [error, setError] = useState<string>("");
+    const { data: session } = useSession();
     const userId = session?.user.id!;
+    const { isHost, checkIsHost } = useIsHost(userId);
 
     // Game Related State
     const [userPlayers, setUserPlayers] = useState<UserSetup[]>([]);
@@ -152,20 +153,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         fetchSetupData();
     }, [gameId, userId]);
 
-    // Check if user is the host
-    useEffect(() => {
-        checkIsHost();
-    }, [currentGameSession, userId]);
-
-    const checkIsHost = async () => {
-        if (!userId || !currentGameSession) return;
-        const isHost = await isPlayerHostOfGame(
-            userId,
-            currentGameSession.id
-        );
-        setIsHost(isHost);
-    };
-
     function updateCurrentPhase(data: NextStateData) {
         const validatedData = NextStateDataSchema.parse(data);
         setCurrentPhase(validatedData.nextState);
@@ -181,10 +168,10 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setUserPlayers(validatedData.userSetupData);
         };
 
-        const handleSocketPlayerLeft = (data: PlayerLeftData) => {
+        const handleSocketPlayerLeft = async (data: PlayerLeftData) => {
             const validatedData = playerLeftSchema.parse(data);
             setUserPlayers(validatedData.userSetupData);
-            checkIsHost();
+            await checkIsHost();
         };
 
         const handleSocketAllPlayersJoined = (data: NextStateData) => {
