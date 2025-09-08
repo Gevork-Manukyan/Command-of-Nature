@@ -11,16 +11,10 @@ import {
     ClearTeamsEvent,
     AllTeamsJoinedEvent,
     StartGameEvent,
-    SwapWarriorsEvent,
-    PlayerFinishedSetupEvent,
-    CancelSetupEvent,
-    AllPlayersSetupEvent,
     ReadyStatusToggledEvent,
     TeamJoinedEvent,
-    PickWarriorsEvent,
     SageSelectedData,
     sageSelectedSchema,
-    State,
     PlayerJoinedEvent,
     PlayerJoinedData,
     playerJoinedSchema,
@@ -232,18 +226,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             updateCurrentPhase(data);
         };
 
-        // const handleSocketPickWarriors = () => {};
-
-        // const handleSocketSwapWarriors = () => {};
-
-        // const handleSocketPlayerFinishedSetup = () => {};
-
-        // const handleSocketCancelSetup = () => {};
-
-        // const handleSocketAllPlayersSetup = () => {
-        //     router.push(`/app/game/${gameId}`);
-        // };
-
         // -------------- REGISTER SOCKET EVENT LISTENERS --------------
         socketService.on(PlayerJoinedEvent, handleSocketPlayerJoined);
         socketService.on(PlayerLeftEvent, handleSocketPlayerLeft);
@@ -258,14 +240,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         socketService.on(ClearTeamsEvent, handleSocketClearTeams);
         socketService.on(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
         socketService.on(StartGameEvent, handleSocketStartGame);
-        // socketService.on(PickWarriorsEvent, handleSocketPickWarriors);
-        // socketService.on(SwapWarriorsEvent, handleSocketSwapWarriors);
-        // socketService.on(
-        //     PlayerFinishedSetupEvent,
-        //     handleSocketPlayerFinishedSetup
-        // );
-        // socketService.on(CancelSetupEvent, handleSocketCancelSetup);
-        // socketService.on(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
 
         return () => {
             // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
@@ -288,17 +262,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             socketService.off(ClearTeamsEvent, handleSocketClearTeams);
             socketService.off(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
             socketService.off(StartGameEvent, handleSocketStartGame);
-            // socketService.off(PickWarriorsEvent, handleSocketPickWarriors);
-            // socketService.off(SwapWarriorsEvent, handleSocketSwapWarriors);
-            // socketService.off(
-            //     PlayerFinishedSetupEvent,
-            //     handleSocketPlayerFinishedSetup
-            // );
-            // socketService.off(CancelSetupEvent, handleSocketCancelSetup);
-            // socketService.off(
-            //     AllPlayersSetupEvent,
-            //     handleSocketAllPlayersSetup
-            // );
         };
     }, [currentGameSession, router, userPlayers]);
 
