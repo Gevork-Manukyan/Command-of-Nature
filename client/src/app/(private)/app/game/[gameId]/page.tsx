@@ -1,7 +1,9 @@
 "use client";
 
+import WarriorSelection from '@/components/game/setup/warrior-selection';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { useGameStartedManager } from '@/hooks/useGameStartedManager';
+import { State } from '@shared-types/gamestate-types';
 import { useParams } from 'next/navigation';
 
 export default function GamePage() {
@@ -22,7 +24,7 @@ export default function GamePage() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <h1>Game Page</h1>
+            {currentPhase === State.WARRIOR_SELECTION && <WarriorSelection />}
         </div>
     );
 } 

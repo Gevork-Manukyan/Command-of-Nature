@@ -45,7 +45,6 @@ import {
     toggleReady,
 } from "@/services/game-api";
 import { useSession } from "next-auth/react";
-import { isPlayerHostOfGame } from "@/actions/game-actions";
 import { UserSetup } from "@shared-types";
 import { useCurrentPhaseContext } from "./CurrentPhaseContext";
 import { useIsHost } from "@/hooks/useIsHost";

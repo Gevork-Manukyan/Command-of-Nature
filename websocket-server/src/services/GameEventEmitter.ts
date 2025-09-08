@@ -99,6 +99,7 @@ export class GameEventEmitter {
     }
 
     /**
+     * TODO: i don't think this is needed anymore
      * Emits an event to all players in the game to pick warriors
      * @param players - The players to emit to
      */
