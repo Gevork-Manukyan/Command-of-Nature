@@ -7,13 +7,10 @@ import {
 } from "./BaseError";
 import { gameId } from "../types";
 
-/**
- * When the game with the given ID does not exist
- */
 export class GameConflictError extends ConflictError {
     constructor(gameId: gameId, message?: string) {
         super(
-            message || `Game with id ${gameId} not found or has been deleted`
+            message || `Error fetching game with id ${gameId}`
         );
     }
 }

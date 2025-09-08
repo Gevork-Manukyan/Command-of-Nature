@@ -94,7 +94,8 @@ export default function createGameplayRouter(
                 res.status(200).json({ message: "Game left successfully" });
             } catch (error) {
                 if (
-                    (error instanceof NotFoundError && error.message.includes("Socket ID not found")) ||
+                    (error instanceof NotFoundError &&
+                        error.message.includes("Socket ID not found")) ||
                     error instanceof GameConflictError
                 ) {
                     try {
