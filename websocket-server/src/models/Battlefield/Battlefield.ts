@@ -29,11 +29,11 @@ export class Battlefield {
      */
     private initOnePlayerBattlefield() {
         const space_1_1 = new BattlefieldSpace(1, null);
-        const space_2_1 = new BattlefieldSpace(3, null);
-        const space_2_2 = new BattlefieldSpace(4, null);
-        const space_3_1 = new BattlefieldSpace(6, null);
-        const space_3_2 = new BattlefieldSpace(7, null);
-        const space_3_3 = new BattlefieldSpace(8, null);
+        const space_2_1 = new BattlefieldSpace(2, null);
+        const space_2_2 = new BattlefieldSpace(3, null);
+        const space_3_1 = new BattlefieldSpace(4, null);
+        const space_3_2 = new BattlefieldSpace(5, null);
+        const space_3_3 = new BattlefieldSpace(6, null);
 
         space_3_3.setConnections({
             TL: space_2_2.spaceNumber,
@@ -201,7 +201,14 @@ export class Battlefield {
      */
     private getBattlefieldSpace<T extends SpaceOption>(spaceNumber: T) {
         this.validateSpaceNumber(spaceNumber);
-        return this.fieldArray[spaceNumber - 1];
+        const fieldSpace = this.fieldArray.find((space) => space.spaceNumber === spaceNumber);
+        if (!fieldSpace) {
+            throw new ValidationError(
+                `Invalid space number: ${spaceNumber}`,
+                "INVALID_INPUT"
+            );
+        }
+        return fieldSpace;
     }
 
     /**

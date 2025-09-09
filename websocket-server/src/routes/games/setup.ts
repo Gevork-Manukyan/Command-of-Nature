@@ -468,7 +468,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/choose-warriors
     router.post(
         "/:gameId/choose-warriors",
@@ -532,7 +531,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/swap-warriors
     router.post(
         "/:gameId/swap-warriors",
@@ -551,7 +549,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     if (!player) {
                         throw new ValidationError("Player not found", "player");
                     }
-                    const team = game.getPlayerTeam(player.userId);
+                    const team = game.getPlayerTeamByUserId(player.userId);
                     if (!team) {
                         throw new ValidationError(
                             "Player not on team",
