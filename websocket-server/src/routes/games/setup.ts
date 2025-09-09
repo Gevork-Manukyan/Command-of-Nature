@@ -49,6 +49,7 @@ import {
     StartGameEvent,
     GetUserDeckWarriorsData,
     getUserDeckWarriorsSchema,
+    OptionalAbilityCardSchema,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -472,8 +473,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/choose-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, choices } = validateRequestBody<ChooseWarriorsData>(
-                chooseWarriorsSchema,
+            const { userId, choices } = validateRequestBody<Partial<ChooseWarriorsData>>(
+                chooseWarriorsSchema.merge(OptionalAbilityCardSchema),
                 req
             );
             const parsedChoices: [

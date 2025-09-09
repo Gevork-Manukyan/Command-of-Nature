@@ -29,6 +29,9 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const [userWarriorSelection, setUserWarriorSelection] = useState<
         ElementalWarriorStarterCard[]
     >([]);
+    const [selectedWarriors, setSelectedWarriors] = useState<
+        ElementalWarriorStarterCard[]
+    >([]);
 
     // -------------- SOCKET EVENT HANDLERS --------------
     const handleSocketPickWarriors = () => {};
@@ -76,10 +79,11 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 deckWarriors: unknown[];
             };
             const { deckWarriors } = response;
-            const validatedUserDeckWarriors = deckWarriors.map((warrior: unknown) =>
-                ElementalWarriorStarterCardSchema.merge(
-                    OptionalAbilityCardSchema
-                ).parse(warrior)
+            const validatedUserDeckWarriors = deckWarriors.map(
+                (warrior: unknown) =>
+                    ElementalWarriorStarterCardSchema.merge(
+                        OptionalAbilityCardSchema
+                    ).parse(warrior)
             ) as ElementalWarriorStarterCard[];
             setUserWarriorSelection(validatedUserDeckWarriors);
         };
@@ -87,8 +91,11 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     }, [gameId, userId]);
 
     // -------------- HANDLERS --------------
-    const handlePickWarriors = async () => {
-        // await chooseWarriors(gameId, );
+    const handleConfirmWarriors = async () => {
+        if (selectedWarriors.length === 2) {
+            console.log("Confirming warriors:", selectedWarriors);
+            // await chooseWarriors(gameId, selectedWarriors);
+        }
     };
 
     const handleSwapWarriors = () => {};
@@ -103,9 +110,44 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
 
     const handleAllPlayersSetup = () => {};
 
+    // -------------- WARRIOR SELECTION HANDLERS --------------
+    const toggleWarriorSelection = (warrior: ElementalWarriorStarterCard) => {
+        setSelectedWarriors((prev) => {
+            const isSelected = prev.some(
+                (selected) => selected.name === warrior.name
+            );
+
+            if (isSelected) {
+                // Remove warrior from selection
+                return prev.filter(
+                    (selected) => selected.name !== warrior.name
+                );
+            } else {
+                // Add warrior to selection if less than 2 are selected
+                if (prev.length < 2) {
+                    return [...prev, warrior];
+                }
+                // If 2 are already selected, don't add more
+                return prev;
+            }
+        });
+    };
+
+    const isWarriorSelected = (warrior: ElementalWarriorStarterCard) => {
+        return selectedWarriors.some(
+            (selected) => selected.name === warrior.name
+        );
+    };
+
+    const canSelectMore = selectedWarriors.length < 2;
+
     return {
         userWarriorSelection,
-        handlePickWarriors,
+        selectedWarriors,
+        toggleWarriorSelection,
+        isWarriorSelected,
+        canSelectMore,
+        handleConfirmWarriors,
         handleSwapWarriors,
         handlePlayerFinishedSetup,
         handleCancelSetup,
