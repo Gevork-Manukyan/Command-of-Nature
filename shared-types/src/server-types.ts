@@ -140,10 +140,7 @@ export const getUserDeckWarriorsSchema = z.object({
 
 export const chooseWarriorsSchema = z.object({
     userId: z.string(),
-    choices: z.tuple([
-        ElementalWarriorStarterCardSchema,
-        ElementalWarriorStarterCardSchema,
-    ]),
+    choices: z.tuple([z.string(), z.string()]),
 });
 
 export const swapWarriorsSchema = z.object({

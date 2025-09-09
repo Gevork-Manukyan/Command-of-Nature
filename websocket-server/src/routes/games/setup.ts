@@ -50,6 +50,7 @@ import {
     GetUserDeckWarriorsData,
     getUserDeckWarriorsSchema,
     OptionalAbilityCardSchema,
+    ALL_CARDS,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -419,9 +420,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 gameId,
                 async () => {
                     await gameStateManager.startGame(gameId);
-                    const game = gameStateManager.getGame(gameId);
-                    // TODO: when / if i need this
-                    // gameEventEmitter.emitPickWarriors(game.players);
                     gameEventEmitter.emitToAllPlayers(gameId, StartGameEvent, {
                         nextState: State.WARRIOR_SELECTION,
                     } as NextStateData);
@@ -473,16 +471,27 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/choose-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, choices } = validateRequestBody<Partial<ChooseWarriorsData>>(
-                chooseWarriorsSchema.merge(OptionalAbilityCardSchema),
+            const { userId, choices } = validateRequestBody<ChooseWarriorsData>(
+                chooseWarriorsSchema,
                 req
             );
+
+            const cardFactory1 = ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
+            const cardFactory2 = ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
+
+            if (!cardFactory1 || !cardFactory2) {
+                throw new ValidationError(
+                    "Invalid card name provided",
+                    "choices"
+                );
+            }
+
             const parsedChoices: [
                 ElementalWarriorStarterCard,
                 ElementalWarriorStarterCard
             ] = [
-                ElementalWarriorStarterCard.from(choices[0]),
-                ElementalWarriorStarterCard.from(choices[1]),
+                cardFactory1() as ElementalWarriorStarterCard,
+                cardFactory2() as ElementalWarriorStarterCard,
             ];
             const gameId = req.params.gameId;
             const socketId = getSocketId(userId);
