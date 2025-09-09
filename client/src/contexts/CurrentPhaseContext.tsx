@@ -4,10 +4,11 @@ import { getCurrentPhase } from "@/services/game-api";
 import { State } from "@shared-types/gamestate-types";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useGameSessionContext } from "./GameSessionContext";
+import { NextStateData, NextStateDataSchema } from "@shared-types";
 
 type CurrentPhaseContextType = {
     currentPhase: State | null;
-    setCurrentPhase: (phase: State) => void;
+    updateCurrentPhase: (data: NextStateData) => void;
 };
 
 const CurrentPhaseContext = createContext<CurrentPhaseContextType | undefined>(undefined);
@@ -31,8 +32,13 @@ export function CurrentPhaseProvider({ children }: CurrentPhaseProviderProps) {
         fetchCurrentPhase();
     }, [gameId])
 
+    function updateCurrentPhase(data: NextStateData) {
+        const validatedData = NextStateDataSchema.parse(data);
+        setCurrentPhase(validatedData.nextState);
+    }
+
     return (
-        <CurrentPhaseContext.Provider value={{ currentPhase, setCurrentPhase }}>
+        <CurrentPhaseContext.Provider value={{ currentPhase, updateCurrentPhase }}>
             {children}
         </CurrentPhaseContext.Provider>
     )

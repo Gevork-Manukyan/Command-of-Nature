@@ -47,6 +47,8 @@ import {
     NextStateData,
     TeamsClearedData,
     StartGameEvent,
+    GetUserDeckWarriorsData,
+    getUserDeckWarriorsSchema,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -440,6 +442,28 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             } catch (e) {
                 res.status(404).json({ isStarted: false });
             }
+        })
+    );
+
+    // GET /api/games/setup/:gameId/user-deck-warriors
+    router.get(
+        "/:gameId/user-deck-warriors",
+        asyncHandler(async (req: Request, res: Response) => {
+            const { userId } = validateRequestQuery<GetUserDeckWarriorsData>(
+                getUserDeckWarriorsSchema,
+                req
+            );
+
+            const gameId = req.params.gameId;
+            const game = gameStateManager.getGame(gameId);
+            const player = game.getPlayerByUserId(userId);
+            const deckWarriors = player?.decklist?.warriors;
+
+            if (!deckWarriors) {
+                res.status(404).json({ deckWarriors: [] });
+            }
+
+            res.status(200).json({ deckWarriors });
         })
     );
 

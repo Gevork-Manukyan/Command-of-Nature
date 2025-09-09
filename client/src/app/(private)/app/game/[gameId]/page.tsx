@@ -22,9 +22,11 @@ export default function GamePage() {
         return null; 
     }
 
+    const isSelectionPhase = (currentPhase === State.WARRIOR_SELECTION) || (currentPhase === State.SETUP_COMPLETE);
+
     return (
-        <div className="flex flex-col min-h-screen">
-            {currentPhase === State.WARRIOR_SELECTION && <WarriorSelection />}
+        <div className="flex flex-col items-center min-h-screen">
+            {isSelectionPhase && <WarriorSelection />}
         </div>
     );
 } 

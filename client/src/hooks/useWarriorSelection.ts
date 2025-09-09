@@ -7,15 +7,29 @@ import {
     CancelSetupEvent,
     AllPlayersSetupEvent,
     PickWarriorsEvent,
+    NextStateData,
+    ElementalWarriorStarterCard,
+    ElementalWarriorStarterCardSchema,
+    OptionalAbilityCardSchema,
 } from "@shared-types";
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
+import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
+import { chooseWarriors, getUserDeckWarriors } from "@/services/game-api";
 
-export function useWarriorSelection() {
+type UseWarriorSelectionProps = {
+    userId: string;
+};
+
+export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
-    const [userWarriorSelection, setUserWarriorSelection] = useState([]);
-    
+    const gameId = currentGameSession?.id!;
+    const { updateCurrentPhase } = useCurrentPhaseContext();
+    const [userWarriorSelection, setUserWarriorSelection] = useState<
+        ElementalWarriorStarterCard[]
+    >([]);
+
     // -------------- SOCKET EVENT HANDLERS --------------
     const handleSocketPickWarriors = () => {};
 
@@ -25,13 +39,18 @@ export function useWarriorSelection() {
 
     const handleSocketCancelSetup = () => {};
 
-    const handleSocketAllPlayersSetup = () => {};
+    const handleSocketAllPlayersSetup = (data: NextStateData) => {
+        updateCurrentPhase(data);
+    };
 
     useEffect(() => {
         // -------------- REGISTER SOCKET EVENT LISTENERS --------------
         socketService.on(PickWarriorsEvent, handleSocketPickWarriors);
         socketService.on(SwapWarriorsEvent, handleSocketSwapWarriors);
-        socketService.on(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
+        socketService.on(
+            PlayerFinishedSetupEvent,
+            handleSocketPlayerFinishedSetup
+        );
         socketService.on(CancelSetupEvent, handleSocketCancelSetup);
         socketService.on(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
 
@@ -39,20 +58,48 @@ export function useWarriorSelection() {
             // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
             socketService.off(PickWarriorsEvent, handleSocketPickWarriors);
             socketService.off(SwapWarriorsEvent, handleSocketSwapWarriors);
-            socketService.off(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
+            socketService.off(
+                PlayerFinishedSetupEvent,
+                handleSocketPlayerFinishedSetup
+            );
             socketService.off(CancelSetupEvent, handleSocketCancelSetup);
-            socketService.off(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
-        }
-    }, [currentGameSession, router])
+            socketService.off(
+                AllPlayersSetupEvent,
+                handleSocketAllPlayersSetup
+            );
+        };
+    }, [currentGameSession, router]);
+
+    useEffect(() => {
+        const fetchUserDeckWarriors = async () => {
+            const response = (await getUserDeckWarriors(gameId, userId)) as {
+                deckWarriors: unknown[];
+            };
+            const { deckWarriors } = response;
+            const validatedUserDeckWarriors = deckWarriors.map((warrior: unknown) =>
+                ElementalWarriorStarterCardSchema.merge(
+                    OptionalAbilityCardSchema
+                ).parse(warrior)
+            ) as ElementalWarriorStarterCard[];
+            setUserWarriorSelection(validatedUserDeckWarriors);
+        };
+        fetchUserDeckWarriors();
+    }, [gameId, userId]);
 
     // -------------- HANDLERS --------------
-    const handlePickWarriors = () => {};
+    const handlePickWarriors = async () => {
+        // await chooseWarriors(gameId, );
+    };
 
     const handleSwapWarriors = () => {};
 
-    const handlePlayerFinishedSetup = () => {};
+    const handlePlayerFinishedSetup = (data: NextStateData) => {
+        updateCurrentPhase(data);
+    };
 
-    const handleCancelSetup = () => {};
+    const handleCancelSetup = (data: NextStateData) => {
+        updateCurrentPhase(data);
+    };
 
     const handleAllPlayersSetup = () => {};
 
@@ -62,6 +109,6 @@ export function useWarriorSelection() {
         handleSwapWarriors,
         handlePlayerFinishedSetup,
         handleCancelSetup,
-        handleAllPlayersSetup
-    }
+        handleAllPlayersSetup,
+    };
 }

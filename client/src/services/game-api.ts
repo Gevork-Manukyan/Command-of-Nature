@@ -38,6 +38,10 @@ export async function getUserSetupData(gameId: string, userId: string) {
     return getSetupUrlWithGameId("/user-setup-data", gameId, { userId }, "GET");
 }
 
+export async function getUserDeckWarriors(gameId: string, userId: string) {
+    return getSetupUrlWithGameId("/user-deck-warriors", gameId, { userId }, "GET");
+}
+
 /* ------------ Setup Endpoints ------------ */
 export async function createGame(data: CreateGameData) {
     const response = await getSetupUrl("/create", data, "POST");
@@ -105,10 +109,7 @@ export async function swapWarriors(gameId: string, data: SwapWarriorsData) {
     return getSetupUrlWithGameId("/swap-warriors", gameId, data, "POST");
 }
 
-export async function finishSetup(
-    gameId: string,
-    data: PlayerFinishedSetupData
-) {
+export async function finishSetup(gameId: string, data: PlayerFinishedSetupData) {
     return getSetupUrlWithGameId("/finish-setup", gameId, data, "POST");
 }
 
@@ -116,10 +117,7 @@ export async function cancelSetup(gameId: string, data: CancelSetupData) {
     return getSetupUrlWithGameId("/cancel-setup", gameId, data, "POST");
 }
 
-export async function allPlayersSetup(
-    gameId: string,
-    data: AllPlayersSetupData
-) {
+export async function allPlayersSetup(gameId: string, data: AllPlayersSetupData) {
     return getSetupUrlWithGameId("/all-players-setup", gameId, data, "POST");
 }
 

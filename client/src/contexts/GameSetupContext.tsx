@@ -23,7 +23,6 @@ import {
     PlayerLeftEvent,
     AllPlayersJoinedEvent,
     NextStateData,
-    NextStateDataSchema,
     TeamJoinedData,
     teamJoinedSchema,
     TeamsClearedData,
@@ -124,7 +123,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id || "";
     const numPlayersTotal = currentGameSession?.numPlayersTotal || 0;
-    const { setCurrentPhase } = useCurrentPhaseContext();
+    const { updateCurrentPhase } = useCurrentPhaseContext();
     const [error, setError] = useState<string>("");
     const { data: session } = useSession();
     const userId = session?.user.id!;
@@ -142,7 +141,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         Torrent: true,
     });
 
-    // Fetch the current phase and states
+    // Fetch the current user setup data
     useEffect(() => {
         const fetchSetupData = async () => {
             const userSetupData = await getUserSetupData(gameId, userId);
@@ -151,11 +150,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         };
         fetchSetupData();
     }, [gameId, userId]);
-
-    function updateCurrentPhase(data: NextStateData) {
-        const validatedData = NextStateDataSchema.parse(data);
-        setCurrentPhase(validatedData.nextState);
-    }
 
     // Setup socket event listeners for game setup - these are the handlers for the events that are emitted by the server
     useEffect(() => {
@@ -218,10 +212,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
         socketService.on(AllPlayersJoinedEvent, handleSocketAllPlayersJoined);
         socketService.on(SageSelectedEvent, handleSocketSageSelected);
         socketService.on(AllSagesSelectedEvent, handleSocketAllSagesSelected);
-        socketService.on(
-            ReadyStatusToggledEvent,
-            handleSocketReadyStatusToggled
-        );
+        socketService.on(ReadyStatusToggledEvent, handleSocketReadyStatusToggled);
         socketService.on(TeamJoinedEvent, handleSocketTeamJoined);
         socketService.on(ClearTeamsEvent, handleSocketClearTeams);
         socketService.on(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
@@ -231,19 +222,10 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
             socketService.off(PlayerJoinedEvent, handleSocketPlayerJoined);
             socketService.off(PlayerLeftEvent, handleSocketPlayerLeft);
-            socketService.off(
-                AllPlayersJoinedEvent,
-                handleSocketAllPlayersJoined
-            );
+            socketService.off(AllPlayersJoinedEvent, handleSocketAllPlayersJoined);
             socketService.off(SageSelectedEvent, handleSocketSageSelected);
-            socketService.off(
-                AllSagesSelectedEvent,
-                handleSocketAllSagesSelected
-            );
-            socketService.off(
-                ReadyStatusToggledEvent,
-                handleSocketReadyStatusToggled
-            );
+            socketService.off(AllSagesSelectedEvent, handleSocketAllSagesSelected);
+            socketService.off(ReadyStatusToggledEvent, handleSocketReadyStatusToggled);
             socketService.off(TeamJoinedEvent, handleSocketTeamJoined);
             socketService.off(ClearTeamsEvent, handleSocketClearTeams);
             socketService.off(AllTeamsJoinedEvent, handleSocketAllTeamsJoined);
