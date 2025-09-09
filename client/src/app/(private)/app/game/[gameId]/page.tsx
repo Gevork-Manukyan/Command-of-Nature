@@ -1,6 +1,6 @@
 "use client";
 
-import WarriorSelection from '@/components/game/setup/warrior-selection';
+import WarriorSelection from '@/components/game/setup/warrior-pages/warrior-selection';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { useGameStartedManager } from '@/hooks/useGameStartedManager';
 import { State } from '@shared-types/gamestate-types';

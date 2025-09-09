@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
-import { chooseWarriors, getUserDeckWarriors } from "@/services/game-api";
+import { chooseWarriors, getUserDeckWarriors, swapWarriors } from "@/services/game-api";
 
 type UseWarriorSelectionProps = {
     userId: string;
@@ -26,12 +26,9 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id!;
     const { updateCurrentPhase } = useCurrentPhaseContext();
-    const [userWarriorSelection, setUserWarriorSelection] = useState<
-        ElementalWarriorStarterCard[]
-    >([]);
-    const [selectedWarriors, setSelectedWarriors] = useState<
-        ElementalWarriorStarterCard[]
-    >([]);
+    const [warriorSelectionState, setWarriorSelectionState] = useState<"selecting" | "swapping" | "finished">("selecting");
+    const [userWarriorSelection, setUserWarriorSelection] = useState<ElementalWarriorStarterCard[]>([]);
+    const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
 
     // -------------- SOCKET EVENT HANDLERS --------------
     const handleSocketPickWarriors = () => {};
@@ -50,10 +47,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
         // -------------- REGISTER SOCKET EVENT LISTENERS --------------
         socketService.on(PickWarriorsEvent, handleSocketPickWarriors);
         socketService.on(SwapWarriorsEvent, handleSocketSwapWarriors);
-        socketService.on(
-            PlayerFinishedSetupEvent,
-            handleSocketPlayerFinishedSetup
-        );
+        socketService.on(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
         socketService.on(CancelSetupEvent, handleSocketCancelSetup);
         socketService.on(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
 
@@ -61,18 +55,13 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
             // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
             socketService.off(PickWarriorsEvent, handleSocketPickWarriors);
             socketService.off(SwapWarriorsEvent, handleSocketSwapWarriors);
-            socketService.off(
-                PlayerFinishedSetupEvent,
-                handleSocketPlayerFinishedSetup
-            );
+            socketService.off(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
             socketService.off(CancelSetupEvent, handleSocketCancelSetup);
-            socketService.off(
-                AllPlayersSetupEvent,
-                handleSocketAllPlayersSetup
-            );
+            socketService.off(AllPlayersSetupEvent, handleSocketAllPlayersSetup);
         };
     }, [currentGameSession, router]);
 
+    // Fetch user deck warriors
     useEffect(() => {
         const fetchUserDeckWarriors = async () => {
             const response = (await getUserDeckWarriors(gameId, userId)) as {
@@ -90,7 +79,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
         fetchUserDeckWarriors();
     }, [gameId, userId]);
 
-    // -------------- HANDLERS --------------
+    // -------------- WARRIOR SELECTION HANDLERS --------------
     const handleConfirmWarriors = async () => {
         if (selectedWarriors.length === 2) {
             const warriorNames: [string, string] = [
@@ -98,22 +87,10 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 selectedWarriors[1].name,
             ];
             await chooseWarriors(gameId, { userId, choices: warriorNames });
+            setWarriorSelectionState("swapping");
         }
     };
 
-    const handleSwapWarriors = () => {};
-
-    const handlePlayerFinishedSetup = (data: NextStateData) => {
-        updateCurrentPhase(data);
-    };
-
-    const handleCancelSetup = (data: NextStateData) => {
-        updateCurrentPhase(data);
-    };
-
-    const handleAllPlayersSetup = () => {};
-
-    // -------------- WARRIOR SELECTION HANDLERS --------------
     const toggleWarriorSelection = (warrior: ElementalWarriorStarterCard) => {
         setSelectedWarriors((prev) => {
             const isSelected = prev.some(
@@ -144,12 +121,36 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
 
     const canSelectMore = selectedWarriors.length < 2;
 
+    // -------------- OTHER HANDLERS --------------
+    const handleSwapWarriors = async () => {
+        if (selectedWarriors.length === 2) {
+            await swapWarriors(gameId, { userId });
+            setSelectedWarriors((prev) => {
+                return [prev[1], prev[0]];
+            });
+        }
+    };
+
+    const handlePlayerFinishedSetup = (data: NextStateData) => {
+        updateCurrentPhase(data);
+        setWarriorSelectionState("finished");
+    };
+
+    const handleCancelSetup = (data: NextStateData) => {
+        updateCurrentPhase(data);
+        setWarriorSelectionState("selecting");
+    };
+
+    const handleAllPlayersSetup = () => {};
+
+
     return {
         userWarriorSelection,
         selectedWarriors,
+        canSelectMore,
+        warriorSelectionState,
         toggleWarriorSelection,
         isWarriorSelected,
-        canSelectMore,
         handleConfirmWarriors,
         handleSwapWarriors,
         handlePlayerFinishedSetup,

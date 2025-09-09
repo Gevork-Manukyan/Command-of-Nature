@@ -1,24 +1,19 @@
 "use client";
 
-import { useIsHost } from "@/hooks/useIsHost";
-import { useWarriorSelection } from "@/hooks/useWarriorSelection";
-import { useSession } from "next-auth/react";
-import H3 from "./components/h3";
 import { Button } from "@/components/shadcn-ui/button";
+import H3 from "../components/h3";
+import { ElementalWarriorStarterCard } from "@shared-types";
 
-export default function WarriorSelection() {
-    const { data: session } = useSession();
-    const userId = session?.user.id!;
-    const { isHost } = useIsHost(userId);
-    const {
-        userWarriorSelection,
-        selectedWarriors,
-        toggleWarriorSelection,
-        isWarriorSelected,
-        canSelectMore,
-        handleConfirmWarriors,
-    } = useWarriorSelection({ userId });
+type ChooseWarriorsProps = {
+    selectedWarriors: ElementalWarriorStarterCard[];
+    userWarriorSelection: ElementalWarriorStarterCard[];
+    isWarriorSelected: (warrior: ElementalWarriorStarterCard) => boolean;
+    canSelectMore: boolean;
+    toggleWarriorSelection: (warrior: ElementalWarriorStarterCard) => void;
+    handleConfirmWarriors: () => void;
+};
 
+export default function ChooseWarriors({ selectedWarriors, userWarriorSelection, isWarriorSelected, canSelectMore, toggleWarriorSelection, handleConfirmWarriors }: ChooseWarriorsProps) {
     return (
         <>
             <H3>Warrior Selection</H3>
@@ -69,5 +64,5 @@ export default function WarriorSelection() {
                 </div>
             )}
         </>
-    );
+    )
 }

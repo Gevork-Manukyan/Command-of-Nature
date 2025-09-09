@@ -526,7 +526,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 }
             );
 
-            res.status(200).json({ message: "Warriors chosen successfully" });
+            res.status(200).json({
+                message: "Warriors chosen successfully" 
+            });
         })
     );
 
