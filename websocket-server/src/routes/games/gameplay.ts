@@ -81,8 +81,8 @@ export default function createGameplayRouter(
             try {
                 const socketId = getSocketId(userId);
 
-                await gameStateManager.removePlayerFromGame(gameId, socketId);
                 await deleteUserActiveGames(userId, gameId);
+                await gameStateManager.removePlayerFromGame(gameId, socketId);
                 userSocketManager.leaveGameRoom(userId, gameId);
                 const data: PlayerLeftData = await getUpdatedUsers(gameId);
                 gameEventEmitter.emitToOtherPlayersInRoom(
