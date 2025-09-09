@@ -33,12 +33,12 @@ export class GameEventEmitter {
 
     /**
      * Emits an event to a player
-     * @param playerId - The player id
+     * @param socketId - The player socket id
      * @param eventName - The event name
      * @param data - The data to send
      */
-    emitToPlayer(playerId: string, eventName: string, data: any = null) {
-        this.io.to(playerId).emit(eventName, data);
+    emitToPlayer(socketId: string, eventName: string, data: any = null) {
+        this.io.to(socketId).emit(eventName, data);
     }
 
     /**
@@ -56,17 +56,17 @@ export class GameEventEmitter {
     /**
      * Emits an event to the teammate of the player
      * @param game - The game
-     * @param playerId - The player id
+     * @param playerUserId - The player user id
      * @param eventName - The event name
      * @param data - The data to send
      */
     emitToTeammate(
         game: ConGame,
-        playerId: string,
+        playerUserId: string,
         eventName: string,
         data: any = null
     ) {
-        const teammate = game.getPlayerTeammate(playerId);
+        const teammate = game.getPlayerTeammate(playerUserId);
         if (teammate) {
             this.emitToPlayer(teammate.socketId, eventName, data);
         }

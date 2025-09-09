@@ -156,7 +156,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
                     userSocketManager.joinGameRoom(userId, gameId);
 
-                    const data: PlayerJoinedData = await getUpdatedUsers(gameId);
+                    const data: PlayerJoinedData = await getUpdatedUsers(
+                        gameId
+                    );
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
                         socketId,
@@ -181,7 +183,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 req
             );
             const socketId = getSocketId(userId);
-            
+
             await gameStateManager.playerRejoinedGame(gameId, userId, socketId);
             const game = gameStateManager.getGame(gameId);
             const gameListing = createGameListing(game);
@@ -476,8 +478,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 req
             );
 
-            const cardFactory1 = ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
-            const cardFactory2 = ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
+            const cardFactory1 =
+                ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
+            const cardFactory2 =
+                ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
 
             if (!cardFactory1 || !cardFactory2) {
                 throw new ValidationError(
@@ -494,13 +498,16 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 cardFactory2() as ElementalWarriorStarterCard,
             ];
             const gameId = req.params.gameId;
-            const socketId = getSocketId(userId);
 
             await gameStateManager.verifyAndProcessChooseWarriorsEvent(
                 gameId,
                 async () => {
                     const game = gameStateManager.getGame(gameId);
-                    const player = game.getPlayer(socketId);
+
+                    const player = game.getPlayerByUserId(userId);
+                    if (!player) {
+                        throw new ValidationError("Player not found", "player");
+                    }
 
                     const team = game.getPlayerTeam(player.userId);
                     if (!team) {
@@ -514,7 +521,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
                     gameEventEmitter.emitToTeammate(
                         game,
-                        socketId,
+                        userId,
                         ChooseWarriorsEvent,
                         { userId, choices } as ChooseWarriorsData
                     );
@@ -535,13 +542,15 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 req
             );
             const gameId = req.params.gameId;
-            const socketId = getSocketId(userId);
 
             await gameStateManager.verifyAndProcessSwapWarriorsEvent(
                 gameId,
                 async () => {
                     const game = gameStateManager.getGame(gameId);
-                    const player = game.getPlayer(socketId);
+                    const player = game.getPlayerByUserId(userId);
+                    if (!player) {
+                        throw new ValidationError("Player not found", "player");
+                    }
                     const team = game.getPlayerTeam(player.userId);
                     if (!team) {
                         throw new ValidationError(
@@ -554,7 +563,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
                     gameEventEmitter.emitToTeammate(
                         game,
-                        socketId,
+                        userId,
                         SwapWarriorsEvent,
                         {
                             userId,
@@ -583,7 +592,11 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 gameId,
                 async () => {
                     const game = gameStateManager.getGame(gameId);
-                    game.getPlayer(socketId).finishPlayerSetup();
+                    const player = game.getPlayerByUserId(userId);
+                    if (!player) {
+                        throw new ValidationError("Player not found", "player");
+                    }
+                    player.finishPlayerSetup();
                     game.incrementPlayersFinishedSetup();
 
                     gameEventEmitter.emitToOtherPlayersInRoom(
@@ -615,7 +628,11 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 gameId,
                 async () => {
                     const game = gameStateManager.getGame(gameId);
-                    game.getPlayer(socketId).cancelPlayerSetup();
+                    const player = game.getPlayerByUserId(userId);
+                    if (!player) {
+                        throw new ValidationError("Player not found", "player");
+                    }
+                    player.cancelPlayerSetup();
                     game.decrementPlayersFinishedSetup();
 
                     gameEventEmitter.emitToOtherPlayersInRoom(

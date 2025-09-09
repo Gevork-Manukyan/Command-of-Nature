@@ -236,18 +236,17 @@ export class ConGame {
 
     /**
      * Gets the teammate of the player
-     * @param playerId - The socket ID of the player to get the teammate of
+     * @param playerUserId - The user ID of the player to get the teammate of
      * @returns The teammate of the player
      */
-    getPlayerTeammate(playerId: Player["socketId"]) {
-        const player = this.getPlayer(playerId);
-        const playerTeam = this.getPlayerTeam(playerId);
-        const teammateId = playerTeam?.getTeammateId(player.userId);
+    getPlayerTeammate(playerUserId: Player["userId"]) {
+        const playerTeam = this.getPlayerTeamByUserId(playerUserId);
+        const teammateId = playerTeam?.getTeammateId(playerUserId);
 
         if (!teammateId) {
             throw new NotFoundError(
                 "Teammate",
-                `Player ${playerId} has no teammate`
+                `Player ${playerUserId} has no teammate`
             );
         }
 
