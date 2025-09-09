@@ -10,6 +10,7 @@ import { InputJsonValue, JsonValue } from "@prisma/client/runtime/library";
 import { TeamSchema } from "@shared-types";
 import { Player } from "../Player/Player";
 import { reconstructCards } from "@shared-types/card-reconstruction";
+import { cardsInclude } from "src/lib/utilities/common";
 
 /**
  * Represents a team in the Command of Nature game
@@ -243,8 +244,8 @@ export class Team {
 
     // If chosen cards are not of the correct deck
     if (
-      !decklistWariors.includes(choice1) ||
-      !decklistWariors.includes(choice2)
+      !cardsInclude(decklistWariors, choice1) ||
+      !cardsInclude(decklistWariors, choice2)
     )
       throw new ValidationError(
         "Invalid warrior(s) passed for chosen deck",

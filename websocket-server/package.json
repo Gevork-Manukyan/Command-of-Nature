@@ -1,28 +1,29 @@
 {
-  "name": "websocket-server",
-  "version": "1.0.0",
-  "description": "A WebSocket server using TypeScript",
-  "main": "dist/server.js",
-  "scripts": {
-    "start": "node dist/server.js",
-    "prestart": "npm run build",
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "test": "jest"
-  },
-  "dependencies": {
-    "shared-types": "1.0.0",
-    "@prisma/client": "^6.13.0",
-    "prisma": "^6.13.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.7.0"
-  },
-  "keywords": [
-    "websocket",
-    "typescript",
-    "socket.io"
-  ],
-  "author": "",
-  "license": "ISC"
+    "name": "websocket-server",
+    "version": "1.0.0",
+    "description": "A WebSocket server using TypeScript",
+    "main": "dist/server.js",
+    "scripts": {
+        "start": "node dist/server.js",
+        "prestart": "npm run build",
+        "dev": "tsx watch src/server.ts",
+        "debug": "tsx --inspect src/server.ts",
+        "build": "tsc",
+        "test": "jest"
+    },
+    "dependencies": {
+        "shared-types": "1.0.0",
+        "@prisma/client": "^6.13.0",
+        "prisma": "^6.13.0"
+    },
+    "devDependencies": {
+        "tsx": "^4.7.0"
+    },
+    "keywords": [
+        "websocket",
+        "typescript",
+        "socket.io"
+    ],
+    "author": "",
+    "license": "ISC"
 }

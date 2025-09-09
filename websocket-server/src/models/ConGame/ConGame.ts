@@ -243,13 +243,7 @@ export class ConGame {
         const playerTeam = this.getPlayerTeamByUserId(playerUserId);
         const teammateId = playerTeam?.getTeammateId(playerUserId);
 
-        if (!teammateId) {
-            throw new NotFoundError(
-                "Teammate",
-                `Player ${playerUserId} has no teammate`
-            );
-        }
-
+        if (!teammateId) return null;
         return this.getPlayerByUserId(teammateId);
     }
 

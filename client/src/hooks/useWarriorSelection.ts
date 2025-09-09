@@ -93,13 +93,11 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     // -------------- HANDLERS --------------
     const handleConfirmWarriors = async () => {
         if (selectedWarriors.length === 2) {
-            console.log("Confirming warriors:", selectedWarriors);
             const warriorNames: [string, string] = [
                 selectedWarriors[0].name,
                 selectedWarriors[1].name,
             ];
-            const res = await chooseWarriors(gameId, { userId, choices: warriorNames });
-            console.log(res);
+            await chooseWarriors(gameId, { userId, choices: warriorNames });
         }
     };
 

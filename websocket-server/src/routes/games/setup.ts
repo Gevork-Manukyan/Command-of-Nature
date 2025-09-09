@@ -478,10 +478,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 req
             );
 
-            const cardFactory1 =
-                ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
-            const cardFactory2 =
-                ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
+            const cardFactory1 = ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
+            const cardFactory2 = ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
 
             if (!cardFactory1 || !cardFactory2) {
                 throw new ValidationError(
@@ -509,7 +507,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         throw new ValidationError("Player not found", "player");
                     }
 
-                    const team = game.getPlayerTeam(player.userId);
+                    const team = game.getPlayerTeamByUserId(player.userId);
                     if (!team) {
                         throw new ValidationError(
                             "Player not on team",
