@@ -38,8 +38,8 @@ export async function getUserSetupData(gameId: string, userId: string) {
     return getSetupUrlWithGameId("/user-setup-data", gameId, { userId }, "GET");
 }
 
-export async function getUserDeckWarriors(gameId: string, userId: string) {
-    return getSetupUrlWithGameId("/user-deck-warriors", gameId, { userId }, "GET");
+export async function getUserWarriorSelectionData(gameId: string, userId: string) {
+    return getSetupUrlWithGameId("/user-warrior-selection-data", gameId, { userId }, "GET");
 }
 
 /* ------------ Setup Endpoints ------------ */

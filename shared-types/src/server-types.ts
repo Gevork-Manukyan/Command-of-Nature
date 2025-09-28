@@ -134,7 +134,7 @@ export const startGameSchema = z.object({
     userId: z.string(),
 });
 
-export const getUserDeckWarriorsSchema = z.object({
+export const getUserWarriorSelectionDataSchema = z.object({
     userId: z.string(),
 });
 
@@ -233,7 +233,7 @@ export type ClearTeamsData = z.infer<typeof clearTeamsSchema>;
 export type TeamsClearedData = z.infer<typeof teamsClearedSchema>;
 export type AllTeamsJoinedData = z.infer<typeof allTeamsJoinedSchema>;
 export type StartGameData = z.infer<typeof startGameSchema>;
-export type GetUserDeckWarriorsData = z.infer<typeof getUserDeckWarriorsSchema>;
+export type GetUserWarriorSelectionDataData = z.infer<typeof getUserWarriorSelectionDataSchema>;
 export type ChooseWarriorsData = z.infer<typeof chooseWarriorsSchema>;
 export type SwapWarriorsData = z.infer<typeof swapWarriorsSchema>;
 export type PlayerFinishedSetupData = z.infer<typeof playerFinishedSetupSchema>;

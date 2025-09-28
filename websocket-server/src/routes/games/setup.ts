@@ -47,10 +47,10 @@ import {
     NextStateData,
     TeamsClearedData,
     StartGameEvent,
-    GetUserDeckWarriorsData,
-    getUserDeckWarriorsSchema,
-    OptionalAbilityCardSchema,
     ALL_CARDS,
+    GetUserWarriorSelectionDataData,
+    getUserWarriorSelectionDataSchema,
+    WarriorSelectionState,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -446,12 +446,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // GET /api/games/setup/:gameId/user-deck-warriors
+    // GET /api/games/setup/:gameId/user-warrior-selection-data
     router.get(
-        "/:gameId/user-deck-warriors",
+        "/:gameId/user-warrior-selection-data",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestQuery<GetUserDeckWarriorsData>(
-                getUserDeckWarriorsSchema,
+            const { userId } = validateRequestQuery<GetUserWarriorSelectionDataData>(
+                getUserWarriorSelectionDataSchema,
                 req
             );
 
@@ -461,10 +461,49 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const deckWarriors = player?.decklist?.warriors;
 
             if (!deckWarriors) {
-                res.status(404).json({ deckWarriors: [] });
+                return res.status(404).json({ deckWarriors: [] });
             }
 
-            res.status(200).json({ deckWarriors });
+            const warriorSelectionState = player?.hasChosenWarriors ? "swapping" : "selecting" as WarriorSelectionState;
+
+            // Get selected warriors based on team size
+            let selectedWarriors = null;
+            
+            // If player has chosen warriors, get the selected warriors and positions
+            if (player?.hasChosenWarriors) {
+                const team = game.getPlayerTeamByUserId(userId); 
+                if (!team) {
+                    throw new ValidationError("Team not found", "team");
+                }
+                const battlefield = team.getBattlefield();
+
+                if (team.getTeamSize() === 1) {
+                    // 1-player team: positions 4 and 6
+                    const warrior1 = battlefield.getCard(4);
+                    const warrior2 = battlefield.getCard(6);
+                    selectedWarriors = [warrior1, warrior2].filter(card => card !== null);
+                } else {
+                    // 2-player team: check which side the player's element matches
+                    const leftSage = battlefield.getCard(8);
+                    const rightSage = battlefield.getCard(11);
+                    
+                    if (player.getElement() === leftSage?.element) {
+                        const warrior1 = battlefield.getCard(7);
+                        const warrior2 = battlefield.getCard(9);
+                        selectedWarriors = [warrior1, warrior2].filter(card => card !== null);
+                    } else if (player.getElement() === rightSage?.element) {
+                        const warrior1 = battlefield.getCard(10);
+                        const warrior2 = battlefield.getCard(12);
+                        selectedWarriors = [warrior1, warrior2].filter(card => card !== null);
+                    }
+                }
+            }
+        
+            res.status(200).json({ 
+                deckWarriors,
+                warriorSelectionState,
+                selectedWarriors,
+            });
         })
     );
 

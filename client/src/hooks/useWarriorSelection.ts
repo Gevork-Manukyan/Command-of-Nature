@@ -11,11 +11,13 @@ import {
     ElementalWarriorStarterCard,
     ElementalWarriorStarterCardSchema,
     OptionalAbilityCardSchema,
+    WarriorSelectionState,
+    WarriorSelectionStateSchema,
 } from "@shared-types";
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
-import { chooseWarriors, getUserDeckWarriors, swapWarriors } from "@/services/game-api";
+import { chooseWarriors, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
 
 type UseWarriorSelectionProps = {
     userId: string;
@@ -27,7 +29,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const gameId = currentGameSession?.id!;
     const { updateCurrentPhase } = useCurrentPhaseContext();
     const [warriorSelectionState, setWarriorSelectionState] = useState<"selecting" | "swapping" | "finished">("selecting");
-    const [userWarriorSelection, setUserWarriorSelection] = useState<ElementalWarriorStarterCard[]>([]);
+    const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
 
     // -------------- SOCKET EVENT HANDLERS --------------
@@ -63,10 +65,14 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
 
     // Fetch user deck warriors
     useEffect(() => {
-        const fetchUserDeckWarriors = async () => {
-            const response = (await getUserDeckWarriors(gameId, userId)) as {
+        const fetchWarriorSelectionState = async () => {
+            const response = (await getUserWarriorSelectionData(gameId, userId)) as {
                 deckWarriors: unknown[];
+                warriorSelectionState: unknown;
+                selectedWarriors: unknown[];
             };
+
+            // Validate Deck Warriors
             const { deckWarriors } = response;
             const validatedUserDeckWarriors = deckWarriors.map(
                 (warrior: unknown) =>
@@ -74,9 +80,28 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                         OptionalAbilityCardSchema
                     ).parse(warrior)
             ) as ElementalWarriorStarterCard[];
-            setUserWarriorSelection(validatedUserDeckWarriors);
+            setUserDeckWarriors(validatedUserDeckWarriors);
+
+            // Validate Warrior Selection State
+            const { warriorSelectionState } = response;
+            const validatedWarriorSelectionState = WarriorSelectionStateSchema.parse(warriorSelectionState);
+            setWarriorSelectionState(validatedWarriorSelectionState);
+
+            // Validate Selected Warriors and Warrior Positions
+            const { selectedWarriors } = response;
+            if (selectedWarriors === null) {
+                setSelectedWarriors([]);
+            } else {
+                const validatedSelectedWarriors = selectedWarriors.map(
+                    (warrior: unknown) =>
+                        ElementalWarriorStarterCardSchema.merge(
+                            OptionalAbilityCardSchema
+                        ).parse(warrior)
+                ) as ElementalWarriorStarterCard[];
+                setSelectedWarriors(validatedSelectedWarriors);
+            }
         };
-        fetchUserDeckWarriors();
+        fetchWarriorSelectionState();
     }, [gameId, userId]);
 
     // -------------- WARRIOR SELECTION HANDLERS --------------
@@ -145,7 +170,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
 
 
     return {
-        userWarriorSelection,
+        userDeckWarriors,
         selectedWarriors,
         canSelectMore,
         warriorSelectionState,

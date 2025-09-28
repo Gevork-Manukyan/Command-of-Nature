@@ -13,7 +13,7 @@ export default function WarriorSelection() {
     const userId = session?.user.id!;
     const { isHost } = useIsHost(userId);
     const {
-        userWarriorSelection,
+        userDeckWarriors: userWarriorSelection,
         selectedWarriors,
         canSelectMore,
         warriorSelectionState,
