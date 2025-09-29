@@ -17,7 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
-import { chooseWarriors, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
+import { cancelSetup, chooseWarriors, finishSetup, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
 
 type UseWarriorSelectionProps = {
     userId: string;
@@ -28,7 +28,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id!;
     const { updateCurrentPhase } = useCurrentPhaseContext();
-    const [warriorSelectionState, setWarriorSelectionState] = useState<"selecting" | "swapping" | "finished">("selecting");
+    const [warriorSelectionState, setWarriorSelectionState] = useState<WarriorSelectionState>("selecting");
     const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
 
@@ -156,13 +156,13 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
         }
     };
 
-    const handlePlayerFinishedSetup = (data: NextStateData) => {
-        updateCurrentPhase(data);
+    const handlePlayerFinishedSetup = async () => {
+        await finishSetup(gameId, { userId });
         setWarriorSelectionState("finished");
     };
 
-    const handleCancelSetup = (data: NextStateData) => {
-        updateCurrentPhase(data);
+    const handleCancelSetup = async () => {
+        await cancelSetup(gameId, { userId });
         setWarriorSelectionState("selecting");
     };
 

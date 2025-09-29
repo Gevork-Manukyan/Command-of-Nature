@@ -203,6 +203,20 @@ export class Team {
   }
 
   /**
+   * Validates that a player is on the team
+   * @param player - The player to validate
+   * @throws ValidationError if the player is not on the team
+   */
+  private validatePlayerOnTeam(player: Player) {
+    if (!this.isPlayerOnTeam(player.userId)) {
+      throw new ValidationError(
+        `Player ${player.userId} is not on team ${this.teamNumber}`,
+        "team"
+      );
+    }
+  }
+
+  /**
    * Chooses warriors for a player
    * @param player - The player choosing warriors
    * @param choices - The warrior choices
@@ -211,13 +225,7 @@ export class Team {
     player: Player,
     choices: [ElementalWarriorStarterCard, ElementalWarriorStarterCard]
   ) {
-    // If player is not on team
-    if (!this.isPlayerOnTeam(player.userId)) {
-      throw new ValidationError(
-        `Player ${player.userId} is not on team ${this.teamNumber}`,
-        "team"
-      );
-    }
+    this.validatePlayerOnTeam(player);
 
     // If player has already chosen warriors
     if (player.hasChosenWarriors)
@@ -303,13 +311,7 @@ export class Team {
    * @param player - The player swapping warriors
    */
   swapWarriors(player: Player) {
-    // If player is not on team
-    if (!this.isPlayerOnTeam(player.userId)) {
-      throw new ValidationError(
-        `Player ${player.userId} is not on team ${this.teamNumber}`,
-        "team"
-      );
-    }
+    this.validatePlayerOnTeam(player);
 
     // One player on Team
     if (this.teamSize === 1) {
@@ -327,6 +329,47 @@ export class Team {
         "Player can only swap their own warriors",
         "element"
       );
+    }
+  }
+
+  /**
+   * Resets warrior choices for a player, allowing them to choose again
+   * @param player - The player to reset warrior choices for
+   */
+  resetWarriorChoices(player: Player) {
+    this.validatePlayerOnTeam(player);
+
+    // Reset player's warrior choice status
+    player.setHasChosenWarriors(false);
+
+    // Remove warriors from battlefield based on team size and player element
+    if (this.teamSize === 1) {
+      // For 1-player teams, remove from positions 4 and 6
+      try {
+        this.battlefield.removeCard(4);
+      } catch (e) {
+        // Position might be empty, ignore
+      }
+      try {
+        this.battlefield.removeCard(6);
+      } catch (e) {
+        // Position might be empty, ignore
+      }
+    } else {
+      // For 2-player teams, remove based on player's element
+      const leftSageElement = this.battlefield.getCard(8)?.element;
+      const rightSageElement = this.battlefield.getCard(11)?.element;
+      const playerElement = player.getElement();
+      
+      if (playerElement === leftSageElement) {
+        // Remove from positions 7 and 9
+        try { this.battlefield.removeCard(7); } catch (e) {}
+        try { this.battlefield.removeCard(9); } catch (e) {}
+      } else if (playerElement === rightSageElement) {
+        // Remove from positions 10 and 12
+        try { this.battlefield.removeCard(10); } catch (e) {}
+        try { this.battlefield.removeCard(12); } catch (e) {}
+      }
     }
   }
 

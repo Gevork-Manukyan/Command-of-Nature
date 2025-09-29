@@ -194,6 +194,7 @@ export class Player {
 
     cancelPlayerSetup() {
         this.isSetup = false;
+        this.hasChosenWarriors = false;
     }
 
     /* -------- GAME ACTIONS -------- */

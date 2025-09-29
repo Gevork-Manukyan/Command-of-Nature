@@ -21,6 +21,8 @@ export default function WarriorSelection() {
         isWarriorSelected,
         handleConfirmWarriors,
         handleSwapWarriors,
+        handlePlayerFinishedSetup,
+        handleCancelSetup,
     } = useWarriorSelection({ userId });
 
     return (
@@ -39,6 +41,8 @@ export default function WarriorSelection() {
             <WarriorSwapping 
                 selectedWarriors={selectedWarriors}
                 onSwapWarriors={handleSwapWarriors}
+                onPlayerFinishedSetup={handlePlayerFinishedSetup}
+                onCancelSetup={handleCancelSetup}
             />
         )}
         </>

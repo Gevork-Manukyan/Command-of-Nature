@@ -69,6 +69,7 @@ export class GameState {
                 acceptableEvents: [
                     TransitionEvent.CHOOSE_WARRIORS,
                     TransitionEvent.SWAP_WARRIORS,
+                    TransitionEvent.CANCEL_SETUP
                 ],
                 nextState: State.WARRIOR_SELECTION,
             },

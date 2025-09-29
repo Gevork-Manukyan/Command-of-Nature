@@ -670,6 +670,13 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         throw new ValidationError("Player not found", "player");
                     }
                     player.cancelPlayerSetup();
+                    
+                    // Reset warrior choices for the player
+                    const team = game.getPlayerTeamByUserId(player.userId);
+                    if (team) {
+                        team.resetWarriorChoices(player);
+                    }
+                    
                     game.decrementPlayersFinishedSetup();
 
                     gameEventEmitter.emitToOtherPlayersInRoom(

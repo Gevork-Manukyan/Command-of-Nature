@@ -7,9 +7,11 @@ import { Button } from "@/components/shadcn-ui/button";
 type WarriorSwappingProps = {
     selectedWarriors: ElementalWarriorStarterCard[];
     onSwapWarriors: () => void;
+    onPlayerFinishedSetup: () => void;
+    onCancelSetup: () => void;
 };
 
-export default function WarriorSwapping({ selectedWarriors, onSwapWarriors }: WarriorSwappingProps) {
+export default function WarriorSwapping({ selectedWarriors, onSwapWarriors, onPlayerFinishedSetup, onCancelSetup }: WarriorSwappingProps) {
     return (
         <>
             <H3>Warrior Swapping</H3>
@@ -30,13 +32,26 @@ export default function WarriorSwapping({ selectedWarriors, onSwapWarriors }: Wa
             </div>
             
             {/* Swap button */}
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-4">
+                <Button 
+                    onClick={onCancelSetup}
+                    variant="secondary" 
+                    className="px-8 py-2" 
+                >
+                    Back
+                </Button>
                 <Button 
                     onClick={onSwapWarriors}
                     className="px-8 py-2"
                     disabled={selectedWarriors.length !== 2}
                 >
                     Swap Warriors
+                </Button>
+                <Button 
+                    onClick={onPlayerFinishedSetup}
+                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-2"
+                >
+                    Finish
                 </Button>
             </div>
         </>
