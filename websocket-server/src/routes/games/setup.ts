@@ -463,18 +463,29 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const game = gameStateManager.getGame(gameId);
             const player = game.getPlayerByUserId(userId);
             const deckWarriors = player?.decklist?.warriors;
+            const hasChosenWarriors = player?.hasChosenWarriors;
+            const isSetup = player?.isSetup;
 
             if (!deckWarriors) {
                 return res.status(404).json({ deckWarriors: [] });
             }
 
-            const warriorSelectionState = player?.hasChosenWarriors ? "swapping" : "selecting" as WarriorSelectionState;
+            let warriorSelectionState: WarriorSelectionState;
+            if (!hasChosenWarriors) {
+                warriorSelectionState = "selecting";
+            } else if (hasChosenWarriors && !isSetup) {
+                warriorSelectionState = "swapping";
+            } else if (hasChosenWarriors && isSetup) {
+                warriorSelectionState = "finished";
+            } else {
+                return res.status(400).json({ error: "Invalid warrior selection state" });
+            }
 
             // Get selected warriors based on team size
             let selectedWarriors = null;
             
             // If player has chosen warriors, get the selected warriors and positions
-            if (player?.hasChosenWarriors) {
+            if (hasChosenWarriors) {
                 const team = game.getPlayerTeamByUserId(userId); 
                 if (!team) {
                     throw new ValidationError("Team not found", "team");
@@ -502,11 +513,14 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     }
                 }
             }
+
+            const isAllPlayersSetup = game.checkAllPlayersFinishedSetup();
         
             res.status(200).json({ 
                 deckWarriors,
                 warriorSelectionState,
                 selectedWarriors,
+                isAllPlayersSetup,
             });
         })
     );

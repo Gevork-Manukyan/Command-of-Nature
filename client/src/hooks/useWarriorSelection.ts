@@ -79,6 +79,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 deckWarriors: unknown[];
                 warriorSelectionState: unknown;
                 selectedWarriors: unknown[];
+                isAllPlayersSetup: boolean;
             };
 
             // Validate Deck Warriors
@@ -109,6 +110,10 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 ) as ElementalWarriorStarterCard[];
                 setSelectedWarriors(validatedSelectedWarriors);
             }
+
+            // Set All Players Setup
+            const { isAllPlayersSetup } = response;
+            setAllPlayersSetup(isAllPlayersSetup);
         };
         fetchWarriorSelectionState();
     }, [gameId, userId]);
