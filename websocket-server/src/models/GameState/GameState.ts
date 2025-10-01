@@ -69,12 +69,13 @@ export class GameState {
                 acceptableEvents: [
                     TransitionEvent.CHOOSE_WARRIORS,
                     TransitionEvent.SWAP_WARRIORS,
-                    TransitionEvent.CANCEL_SETUP
+                    TransitionEvent.CANCEL_SETUP,
+                    TransitionEvent.PLAYER_FINISHED_SETUP
                 ],
                 nextState: State.WARRIOR_SELECTION,
             },
             {
-                acceptableEvents: [TransitionEvent.PLAYER_FINISHED_SETUP],
+                acceptableEvents: [TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE],
                 nextState: State.SETUP_COMPLETE,
             }
         ]);

@@ -7,6 +7,8 @@ import {
     PickWarriorsEvent,
     StartTurnEvent,
     WaitingTurnEvent,
+    AllPlayersSetupStatusEvent,
+    AllPlayersSetupStatusData,
 } from "@shared-types";
 
 export class GameEventEmitter {
@@ -121,5 +123,22 @@ export class GameEventEmitter {
     emitStartTurn(activePlayers: Player[], waitingPlayers: Player[]) {
         this.emitToPlayers(activePlayers, StartTurnEvent);
         this.emitToPlayers(waitingPlayers, WaitingTurnEvent);
+    }
+
+    /**
+     * Checks if all players are setup and emits status to the host
+     * @param game - The game instance
+     */
+    checkAndEmitAllPlayersSetupStatus(game: ConGame) {
+        const allPlayersSetup = game.checkAllPlayersFinishedSetup();
+        const host = game.getHost();
+        
+        if (host) {
+            this.emitToPlayer(
+                host.socketId,
+                AllPlayersSetupStatusEvent,
+                { allPlayersSetup } as AllPlayersSetupStatusData
+            );
+        }
     }
 }

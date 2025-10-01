@@ -139,6 +139,10 @@ export class ConGame {
         return this.players;
     }
 
+    getHost(): Player | undefined {
+        return this.players.find((player) => player.isGameHost);
+    }
+
     /**
      * Gets a player from the game
      * @param playerId - The socket ID of the player to get
@@ -413,6 +417,14 @@ export class ConGame {
         this.numPlayersFinishedSetup--;
         if (this.numPlayersFinishedSetup < 0) this.numPlayersFinishedSetup = 0;
         return this.numPlayersFinishedSetup;
+    }
+
+    /**
+     * Checks if all players have finished setup
+     * @returns True if all players have finished setup, false otherwise
+     */
+    checkAllPlayersFinishedSetup() {
+        return this.numPlayersFinishedSetup === this.numPlayersTotal;
     }
 
     /**

@@ -13,7 +13,7 @@ import {
     SwapWarriorsData,
     PlayerFinishedSetupData,
     CancelSetupData,
-    AllPlayersSetupData,
+    BeginBattleData,
     ExitGameData,
     RejoinGameData,
     LeaveGameData,
@@ -117,8 +117,8 @@ export async function cancelSetup(gameId: string, data: CancelSetupData) {
     return getSetupUrlWithGameId("/cancel-setup", gameId, data, "POST");
 }
 
-export async function allPlayersSetup(gameId: string, data: AllPlayersSetupData) {
-    return getSetupUrlWithGameId("/all-players-setup", gameId, data, "POST");
+export async function beginBattle(gameId: string, data: BeginBattleData) {
+    return getSetupUrlWithGameId("/begin-battle", gameId, data, "POST");
 }
 
 /* ------------ Gameplay Endpoints ------------ */

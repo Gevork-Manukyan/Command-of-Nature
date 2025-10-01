@@ -15,7 +15,8 @@ import {
     SwapWarriorsEvent,
     PlayerFinishedSetupEvent,
     CancelSetupEvent,
-    AllPlayersSetupEvent,
+    BeginBattleEvent,
+    AllPlayersSetupStatusEvent,
     ExitGameEvent,
     RejoinGameEvent,
     LeaveGameEvent,
@@ -155,8 +156,12 @@ export const cancelSetupSchema = z.object({
     userId: z.string(),
 });
 
-export const allPlayersSetupSchema = z.object({
+export const beginBattleSchema = z.object({
     userId: z.string(),
+});
+
+export const allPlayersSetupStatusSchema = z.object({
+    allPlayersSetup: z.boolean(),
 });
 
 export const exitGameSchema = z.object({
@@ -204,7 +209,8 @@ export const EventSchemas = {
     [SwapWarriorsEvent]: swapWarriorsSchema,
     [PlayerFinishedSetupEvent]: playerFinishedSetupSchema,
     [CancelSetupEvent]: cancelSetupSchema,
-    [AllPlayersSetupEvent]: allPlayersSetupSchema,
+    [BeginBattleEvent]: beginBattleSchema,
+    [AllPlayersSetupStatusEvent]: allPlayersSetupStatusSchema,
     [ExitGameEvent]: exitGameSchema,
     [RejoinGameEvent]: rejoinGameSchema,
     [LeaveGameEvent]: leaveGameSchema,
@@ -238,7 +244,8 @@ export type ChooseWarriorsData = z.infer<typeof chooseWarriorsSchema>;
 export type SwapWarriorsData = z.infer<typeof swapWarriorsSchema>;
 export type PlayerFinishedSetupData = z.infer<typeof playerFinishedSetupSchema>;
 export type CancelSetupData = z.infer<typeof cancelSetupSchema>;
-export type AllPlayersSetupData = z.infer<typeof allPlayersSetupSchema>;
+export type BeginBattleData = z.infer<typeof beginBattleSchema>;
+export type AllPlayersSetupStatusData = z.infer<typeof allPlayersSetupStatusSchema>;
 export type ExitGameData = z.infer<typeof exitGameSchema>;
 export type RejoinGameData = z.infer<typeof rejoinGameSchema>;
 export type LeaveGameData = z.infer<typeof leaveGameSchema>;
@@ -268,7 +275,8 @@ export type SocketEventMap = {
     [SwapWarriorsEvent]: SwapWarriorsData;
     [PlayerFinishedSetupEvent]: PlayerFinishedSetupData;
     [CancelSetupEvent]: CancelSetupData;
-    [AllPlayersSetupEvent]: AllPlayersSetupData;
+    [BeginBattleEvent]: BeginBattleData;
+    [AllPlayersSetupStatusEvent]: AllPlayersSetupStatusData;
     [ExitGameEvent]: ExitGameData;
     [RejoinGameEvent]: RejoinGameData;
     [LeaveGameEvent]: LeaveGameData;

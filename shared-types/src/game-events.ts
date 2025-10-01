@@ -29,7 +29,8 @@ export const ChooseWarriorsEvent = "choose-warriors";   // Client sends to serve
 export const SwapWarriorsEvent = "swap-warriors";
 export const PlayerFinishedSetupEvent = "player-finished-setup";
 export const CancelSetupEvent = "cancel-setup";
-export const AllPlayersSetupEvent = "all-players-setup";
+export const AllPlayersSetupStatusEvent = "all-players-setup-status";
+export const BeginBattleEvent = "begin-battle";
 
 // GAMEPLAY EVENTS
 export const GetDayBreakCardsEvent = "get-day-break-cards";

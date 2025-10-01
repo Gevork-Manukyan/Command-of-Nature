@@ -43,6 +43,9 @@ import {
     ToggleReadyStatusData,
     toggleReadyStatusSchema,
     AllPlayersJoinedEvent,
+    BeginBattleEvent,
+    AllPlayersSetupStatusEvent,
+    AllPlayersSetupStatusData,
     State,
     NextStateData,
     TeamsClearedData,
@@ -89,6 +92,7 @@ function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
         2: game.team2.userIds,
     };
 }
+
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
@@ -642,6 +646,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         PlayerFinishedSetupEvent,
                         { userId } as PlayerFinishedSetupData
                     );
+
+                    gameEventEmitter.checkAndEmitAllPlayersSetupStatus(game);
                 }
             );
 
@@ -685,6 +691,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         CancelSetupEvent,
                         { userId } as CancelSetupData
                     );
+
+                    gameEventEmitter.checkAndEmitAllPlayersSetupStatus(game);
                 }
             );
 
@@ -692,10 +700,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
-    // POST /api/games/setup/:gameId/all-players-setup
+    // POST /api/games/setup/:gameId/begin-battle
     router.post(
-        "/:gameId/all-players-setup",
+        "/:gameId/begin-battle",
         requireHostForAllPlayersSetup,
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
@@ -719,7 +726,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 }
             );
 
-            res.status(200).json({ message: "All players setup successfully" });
+            res.status(200).json({ message: "Battle begun successfully" });
         })
     );
 
