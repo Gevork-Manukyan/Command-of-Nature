@@ -85,10 +85,7 @@ export default function GameLayout({
     if (!(isLeaving || isRejoiningGame) && !currentGameSession) {
         return (
             <div className="flex flex-col min-h-screen">
-                <ErrorScreen
-                    message="Game session not found"
-                    onGoBack={goToLobby}
-                />
+                <ErrorScreen message="Game session not found" />
             </div>
         );
     }
