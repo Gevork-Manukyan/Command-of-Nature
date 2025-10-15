@@ -1,10 +1,10 @@
 "use client";
-import H3 from "./components/h3";
+import H3 from "../components/h3";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/shadcn-ui/button";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { ErrorScreen } from "@/components/error/error-screen";
-import NextPhaseButton from "./components/NextPhaseButton";
+import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function ReadyUp() {
     const { handleToggleReady, isHost, handleAllPlayersReady } = useGameSetupContext();

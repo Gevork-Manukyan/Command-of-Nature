@@ -1,24 +1,15 @@
 import { Server, Namespace } from "socket.io";
 import { gameId } from "../types";
 import { ConGame, Player } from "../models";
-import { GameStateManager } from "./GameStateManager";
 import { InternalServerError } from "../custom-errors";
-import {
-    PickWarriorsEvent,
-    StartTurnEvent,
-    WaitingTurnEvent,
-    AllPlayersSetupStatusEvent,
-    AllPlayersSetupStatusData,
-} from "@shared-types";
+import {  AllPlayersSetupStatusEvent, AllPlayersSetupStatusData } from "@shared-types";
 
 export class GameEventEmitter {
     private static instance: GameEventEmitter;
     private io: Server | Namespace;
-    private gameStateManager: GameStateManager;
 
     private constructor(io: Server | Namespace) {
         this.io = io;
-        this.gameStateManager = GameStateManager.getInstance();
     }
 
     static getInstance(io?: Server | Namespace): GameEventEmitter {
@@ -98,31 +89,6 @@ export class GameEventEmitter {
      */
     emitToAllPlayers(gameId: gameId, eventName: string, data: any = null) {
         this.io.in(gameId).emit(eventName, data);
-    }
-
-    /**
-     * TODO: i don't think this is needed anymore
-     * Emits an event to all players in the game to pick warriors
-     * @param players - The players to emit to
-     */
-    emitPickWarriors(players: Player[]) {
-        players.forEach((player) => {
-            this.emitToPlayer(
-                player.socketId,
-                PickWarriorsEvent,
-                player.decklist
-            );
-        });
-    }
-
-    /**
-     * Emits an event to all players in the game to start their turn
-     * @param activePlayers - The active players
-     * @param waitingPlayers - The waiting players
-     */
-    emitStartTurn(activePlayers: Player[], waitingPlayers: Player[]) {
-        this.emitToPlayers(activePlayers, StartTurnEvent);
-        this.emitToPlayers(waitingPlayers, WaitingTurnEvent);
     }
 
     /**

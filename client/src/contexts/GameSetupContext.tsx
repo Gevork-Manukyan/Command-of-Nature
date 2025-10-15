@@ -195,9 +195,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             updateCurrentPhase(data);
         };
 
-        const handleSocketReadyStatusToggled = (
-            data: ReadyStatusToggledData
-        ) => {
+        const handleSocketReadyStatusToggled = (data: ReadyStatusToggledData) => {
             const validatedData = readyStatusToggledSchema.parse(data);
             setUserPlayers((prev) => updateSetupReadyStatusData(prev, validatedData.userId, validatedData.isReady));
         };

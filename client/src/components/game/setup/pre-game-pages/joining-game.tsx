@@ -1,6 +1,6 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
-import H3 from "./components/h3";
-import NextPhaseButton from "./components/NextPhaseButton";
+import H3 from "../components/h3";
+import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function JoiningGame() {
     const { userPlayers, isHost, handleAllPlayersJoined, numPlayersTotal } = useGameSetupContext();

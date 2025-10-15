@@ -1,6 +1,6 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
-import H3 from "./components/h3";
-import NextPhaseButton from "./components/NextPhaseButton";
+import H3 from "../components/h3";
+import NextPhaseButton from "../components/NextPhaseButton";
 import { Button } from "@/components/shadcn-ui/button";
 
 export default function TeamSelection() {

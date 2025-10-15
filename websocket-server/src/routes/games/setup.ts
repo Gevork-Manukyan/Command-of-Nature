@@ -43,9 +43,6 @@ import {
     ToggleReadyStatusData,
     toggleReadyStatusSchema,
     AllPlayersJoinedEvent,
-    BeginBattleEvent,
-    AllPlayersSetupStatusEvent,
-    AllPlayersSetupStatusData,
     State,
     NextStateData,
     TeamsClearedData,
@@ -54,6 +51,9 @@ import {
     GetUserWarriorSelectionDataData,
     getUserWarriorSelectionDataSchema,
     WarriorSelectionState,
+    BeginBattleEvent,
+    WaitingTurnEvent,
+    StartTurnEvent,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -631,7 +631,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/finish-setup
     router.post(
         "/:gameId/finish-setup",
@@ -669,7 +668,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // TODO: implement on client side
     // POST /api/games/setup/:gameId/cancel-setup
     router.post(
         "/:gameId/cancel-setup",
@@ -733,10 +731,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     }
 
                     const activeGame = gameStateManager.beginBattle(game);
-                    gameEventEmitter.emitStartTurn(
-                        activeGame.getActiveTeamPlayers(),
-                        activeGame.getWaitingTeamPlayers()
-                    );
+
+                    gameEventEmitter.emitToAllPlayers(gameId, BeginBattleEvent, { nextState: State.PHASE1 } as NextStateData);
+                    gameEventEmitter.emitToPlayers(activeGame.getActiveTeamPlayers(), StartTurnEvent);
+                    gameEventEmitter.emitToPlayers(activeGame.getWaitingTeamPlayers(), WaitingTurnEvent);
                 }
             );
 

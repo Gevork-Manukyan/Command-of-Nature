@@ -1,10 +1,10 @@
 "use client";
 
 import { ErrorScreen } from "@/components/error/error-screen";
-import JoiningGame from "@/components/game/setup/joining-game";
-import ReadyUp from "@/components/game/setup/ready-up";
-import SageSelection from "@/components/game/setup/sage-selection";
-import TeamSelection from "@/components/game/setup/team-selection";
+import JoiningGame from "@/components/game/setup/pre-game-pages/joining-game";
+import ReadyUp from "@/components/game/setup/pre-game-pages/ready-up";
+import SageSelection from "@/components/game/setup/pre-game-pages/sage-selection";
+import TeamSelection from "@/components/game/setup/pre-game-pages/team-selection";
 import { LoadingScreen } from "@/components/loading/loading-screen";
 import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";

@@ -3,8 +3,8 @@
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { Sage } from "@shared-types";
 import { useState, useEffect } from "react";
-import H3 from "./components/h3";
-import NextPhaseButton from "./components/NextPhaseButton";
+import H3 from "../components/h3";
+import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function SageSelection() {
     const { 
