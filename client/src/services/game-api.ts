@@ -15,7 +15,7 @@ import {
     CancelSetupData,
     BeginBattleData,
     ExitGameData,
-    RejoinGameData,
+    VerifySessionData,
     LeaveGameData,
     GetDayBreakCardsData,
     ActivateDayBreakData,
@@ -55,8 +55,8 @@ export async function joinGame(data: JoinGameData) {
     return validatedResponse;
 }
 
-export async function rejoinGame(data: RejoinGameData) {
-    const response = await getSetupUrl("/rejoin", data, "POST");
+export async function verifySession(data: VerifySessionData) {
+    const response = await getSetupUrl("/verify-session", data, "POST");
     const validatedResponse = GameListingSchema.parse(response);
     return validatedResponse;
 }

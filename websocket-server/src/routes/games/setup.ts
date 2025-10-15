@@ -29,8 +29,8 @@ import {
     PlayerRejoinedEvent,
     ReadyStatusToggledData,
     ReadyStatusToggledEvent,
-    RejoinGameData,
-    rejoinGameSchema,
+    VerifySessionData,
+    verifySessionSchema,
     SageSelectedData,
     SageSelectedEvent,
     SelectSageData,
@@ -178,28 +178,23 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
         })
     );
 
-    // POST /api/games/setup/rejoin
+    // POST /api/games/setup/verify-session
     router.post(
-        "/rejoin",
+        "/verify-session",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, gameId } = validateRequestBody<RejoinGameData>(
-                rejoinGameSchema,
+            const { userId, gameId } = validateRequestBody<VerifySessionData>(
+                verifySessionSchema,
                 req
             );
-            const socketId = getSocketId(userId);
 
-            await gameStateManager.playerRejoinedGame(gameId, userId, socketId);
+            // Verify the user is in the game (auto-rejoin in server.ts handles socket updates)
             const game = gameStateManager.getGame(gameId);
-            const gameListing = createGameListing(game);
+            const player = game.getPlayerByUserId(userId);
+            if (!player) {
+                throw new ValidationError("User not found in game", "userId");
+            }
 
-            userSocketManager.joinGameRoom(userId, gameId);
-            const data: PlayerRejoinedData = await getUpdatedUsers(gameId);
-            gameEventEmitter.emitToOtherPlayersInRoom(
-                gameId,
-                socketId,
-                PlayerRejoinedEvent,
-                data
-            );
+            const gameListing = createGameListing(game);
             res.json(gameListing);
         })
     );

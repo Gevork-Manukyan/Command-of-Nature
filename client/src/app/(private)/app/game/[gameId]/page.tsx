@@ -27,6 +27,11 @@ export default function GamePage() {
     return (
         <div className="flex flex-col items-center min-h-screen">
             {isSelectionPhase && <WarriorSelection />}
+            {!isSelectionPhase && 
+                <div>
+                    <h1>Playing Game... (NOT IMPLEMENTED)</h1>
+                </div>
+            }
         </div>
     );
 } 

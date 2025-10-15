@@ -119,7 +119,7 @@ export class GameStateManager {
      * @param userId - The id of the user to add
      * @param socketId - The id of the socket to add
      */
-    async playerRejoinedGame(
+    async playerRejoinGame(
         gameId: gameId,
         userId: string,
         socketId: string

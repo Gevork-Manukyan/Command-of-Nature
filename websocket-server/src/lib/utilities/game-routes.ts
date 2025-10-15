@@ -7,6 +7,11 @@ import { getUserProfilesByGameId } from "./db";
 export const gameStateManager = GameStateManager.getInstance();
 export const userSocketManager = UserSocketManager.getInstance();
 
+/**
+ * Gets the updated users for a game
+ * @param gameId - The id of the game to get the updated users for
+ * @returns The updated users for the game
+ */
 export async function getUpdatedUsers(gameId: string): Promise<UserSetupDataResponse> {
     const game = gameStateManager.getGame(gameId);
     const userSetupData = await getUserProfilesByGameId(gameId);

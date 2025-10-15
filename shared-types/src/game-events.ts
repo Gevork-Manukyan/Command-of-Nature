@@ -7,7 +7,7 @@ export const PlayerLeftEvent = "player-left";
 export const PlayerRejoinedEvent = "player-rejoined";
 export const AllPlayersJoinedEvent = "all-players-joined";
 export const ExitGameEvent = "exit-game";
-export const RejoinGameEvent = "rejoin-game";
+export const VerifySessionEvent = "verify-session";
 export const LeaveGameEvent = "leave-game";
 
 // SET UP EVENTS

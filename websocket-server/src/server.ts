@@ -4,12 +4,14 @@ import express from "express";
 import cors from "cors";
 import usersRouter from "./routes/users";
 import { GameEventEmitter, GameStateManager } from "./services";
-import { RegisterUserSocketEvent, RegisterUserData } from "@shared-types";
+import { RegisterUserSocketEvent, RegisterUserData, PlayerRejoinedEvent } from "@shared-types";
 import { UserSocketManager } from "./services/UserSocketManager";
 import createGamesRouter from "./routes/games";
 import { errorHandler } from "./middleware/errorHandler";
 import { env } from "./lib/env";
 import { prisma } from "./lib/prisma";
+import { getUserActiveGame } from "./lib/utilities/db";
+import { getUpdatedUsers } from "./lib/utilities/game-routes";
 
 const app = express();
 app.use(cors());
@@ -39,7 +41,7 @@ app.use("/api/users", usersRouter);
 // Error handling middleware (must be last)
 app.use(errorHandler as express.ErrorRequestHandler);
 
-gameNamespace.on("connection", (socket) => {
+gameNamespace.on("connection", async (socket) => {
     socket.on("error", (error: Error) => {
         console.error("Socket error:", error);
     });
@@ -50,6 +52,27 @@ gameNamespace.on("connection", (socket) => {
     if (userId) {
         userSocketManager.registerSocket(userId, socket);
         socket.emit(RegisterUserSocketEvent);
+        
+        // Auto-rejoin active game
+        try {
+            const activeGameId = await getUserActiveGame(userId);
+            if (activeGameId) {
+                console.log(`User ${userId} has active game ${activeGameId}, auto-rejoining...`);
+                await gameStateManager.playerRejoinGame(activeGameId, userId, socket.id);
+                userSocketManager.joinGameRoom(userId, activeGameId);
+                
+                const data = await getUpdatedUsers(activeGameId);
+                gameEventEmitter.emitToOtherPlayersInRoom(
+                    activeGameId,
+                    socket.id,
+                    PlayerRejoinedEvent,
+                    data
+                );
+                console.log(`User ${userId} successfully auto-rejoined game ${activeGameId}`);
+            }
+        } catch (error) {
+            console.error(`Failed to auto-rejoin user ${userId}:`, error);
+        }
     } else {
         console.warn("Socket connected without userId in query parameters");
     }
@@ -60,8 +83,8 @@ gameNamespace.on("connection", (socket) => {
         socket.emit(RegisterUserSocketEvent);
     });
 
-    socket.on("disconnect", () => {
-        console.log(`Socket ${socket.id} disconnected`);
+    socket.on("disconnect", (reason) => {
+        console.log(`Socket ${socket.id} disconnected. Reason: ${reason}`);
         userSocketManager.unregisterSocket(socket.id);
     });
     /*

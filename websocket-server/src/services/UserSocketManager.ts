@@ -14,6 +14,11 @@ export class UserSocketManager {
     }
 
     registerSocket(userId: string, socket: Socket): void {
+        const existingSocket = this.userIdToSocket.get(userId);
+        if (existingSocket && existingSocket.id !== socket.id) {
+            console.log(`Disconnecting old socket ${existingSocket.id} for user ${userId}, replacing with ${socket.id}`);
+            existingSocket.disconnect(true);
+        }
         this.userIdToSocket.set(userId, socket);
     }
 
@@ -47,5 +52,19 @@ export class UserSocketManager {
                 break;
             }
         }
+    }
+
+    isUserConnected(userId: string): boolean {
+        return this.userIdToSocket.has(userId);
+    }
+
+    getConnectedUsersInGame(gameId: string): string[] {
+        const connectedUsers: string[] = [];
+        for (const [userId, socket] of this.userIdToSocket.entries()) {
+            if (socket.rooms.has(gameId)) {
+                connectedUsers.push(userId);
+            }
+        }
+        return connectedUsers;
     }
 }

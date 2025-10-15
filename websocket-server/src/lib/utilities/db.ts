@@ -57,3 +57,37 @@ export async function deleteUserActiveGames(userId: string, gameId: string) {
         },
     });
 }
+
+export async function getUserActiveGame(userId: string): Promise<string | null> {
+    const userGame = await prisma.userGame.findFirst({
+        where: {
+            userId,
+        },
+        include: {
+            game: {
+                include: {
+                    gameState: true,
+                },
+            },
+        },
+    });
+
+    if (!userGame) {
+        return null;
+    }
+
+    // Check if the game is still active (not finished)
+    // A game is considered finished if it has no gameState or if the current state is GAME_FINISHED
+    if (!userGame.game.gameState) {
+        return null;
+    }
+
+    // Parse the currentTransition JSON to check the current state
+    const currentTransition = userGame.game.gameState.currentTransition as any;
+    const currentState = currentTransition?.currentState;
+    if (currentState === "game-finished") {
+        return null;
+    }
+
+    return userGame.gameId;
+}

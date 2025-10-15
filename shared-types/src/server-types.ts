@@ -18,7 +18,7 @@ import {
     BeginBattleEvent,
     AllPlayersSetupStatusEvent,
     ExitGameEvent,
-    RejoinGameEvent,
+    VerifySessionEvent,
     LeaveGameEvent,
     GetDayBreakCardsEvent,
     ActivateDayBreakEvent,
@@ -55,7 +55,7 @@ export const joinGameSchema = z.object({
     password: z.string().optional(),
 });
 
-export const rejoinGameSchema = z.object({
+export const verifySessionSchema = z.object({
     userId: z.string(),
     gameId: z.string(),
 });
@@ -212,7 +212,7 @@ export const EventSchemas = {
     [BeginBattleEvent]: beginBattleSchema,
     [AllPlayersSetupStatusEvent]: allPlayersSetupStatusSchema,
     [ExitGameEvent]: exitGameSchema,
-    [RejoinGameEvent]: rejoinGameSchema,
+    [VerifySessionEvent]: verifySessionSchema,
     [LeaveGameEvent]: leaveGameSchema,
     [PlayerLeftEvent]: playerLeftSchema,
     [GetDayBreakCardsEvent]: getDayBreakCardsSchema,
@@ -247,7 +247,7 @@ export type CancelSetupData = z.infer<typeof cancelSetupSchema>;
 export type BeginBattleData = z.infer<typeof beginBattleSchema>;
 export type AllPlayersSetupStatusData = z.infer<typeof allPlayersSetupStatusSchema>;
 export type ExitGameData = z.infer<typeof exitGameSchema>;
-export type RejoinGameData = z.infer<typeof rejoinGameSchema>;
+export type VerifySessionData = z.infer<typeof verifySessionSchema>;
 export type LeaveGameData = z.infer<typeof leaveGameSchema>;
 export type PlayerLeftData = z.infer<typeof playerLeftSchema>;
 export type GetDayBreakCardsData = z.infer<typeof getDayBreakCardsSchema>;
@@ -278,7 +278,7 @@ export type SocketEventMap = {
     [BeginBattleEvent]: BeginBattleData;
     [AllPlayersSetupStatusEvent]: AllPlayersSetupStatusData;
     [ExitGameEvent]: ExitGameData;
-    [RejoinGameEvent]: RejoinGameData;
+    [VerifySessionEvent]: VerifySessionData;
     [LeaveGameEvent]: LeaveGameData;
     [PlayerLeftEvent]: PlayerLeftData;
     [GetDayBreakCardsEvent]: GetDayBreakCardsData;

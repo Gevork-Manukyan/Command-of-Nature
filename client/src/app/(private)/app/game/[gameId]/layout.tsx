@@ -8,7 +8,7 @@ import { LoadingScreen } from "@/components/loading/loading-screen";
 import { ErrorScreen } from "@/components/error/error-screen";
 import { useSocketContext } from "@/contexts/SocketContext";
 import { useSession } from "next-auth/react";
-import { rejoinGame as rejoinGameApi } from "@/services/game-api";
+import { verifySession } from "@/services/game-api";
 import { isUserInGame } from "@/actions/user-actions";
 import { CurrentPhaseProvider } from "@/contexts/CurrentPhaseContext";
 
@@ -21,10 +21,8 @@ export default function GameLayout({
     const { data: session } = useSession();
     const userId = session?.user.id!;
     const { isSocketConnected } = useSocketContext();
-    const { currentGameSession, isLoadingGameSession, updateCurrentSession } =
-        useGameSessionContext();
-    const gameId =
-        params.gameId === currentGameSession?.id ? currentGameSession?.id : "";
+    const { currentGameSession, isLoadingGameSession, updateCurrentSession } = useGameSessionContext();
+    const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : "";
     const {
         error: navigationError,
         isLeaving,
@@ -37,40 +35,35 @@ export default function GameLayout({
     const [isRejoiningGame, setIsRejoiningGame] = useState(false);
     const [rejoinError, setRejoinError] = useState<string>("");
 
-    // Handle game rejoining - this happens once when entering any game page
+    // Handle game session verification - server auto-rejoins on socket connection
     useEffect(() => {
         if (!userId || !isSocketConnected) return;
 
         const checkIfUserInGame = async (userId: string, gameId: string) => {
-            const playerGame = await isUserInGame(userId, gameId);
-            if (playerGame) {
-                updateCurrentSession(playerGame);
-            }
-        };
-
-        if (!currentGameSession && !isLoadingGameSession) {
-            checkIfUserInGame(userId, params.gameId as string);
-        }
-
-        const rejoinGame = async () => {
             try {
                 setIsRejoiningGame(true);
                 setRejoinError("");
-                await rejoinGameApi({ userId, gameId });
+                const playerGame = await isUserInGame(userId, gameId);
+                if (playerGame) {
+                    updateCurrentSession(playerGame);
+                } else {
+                    await verifySession({ userId, gameId });
+                    updateCurrentSession(null);
+                }
                 setIsRejoiningGame(false);
             } catch (err) {
-                console.error("Failed to rejoin game:", err);
+                console.error("Failed to verify game session:", err);
                 setRejoinError(
-                    err instanceof Error ? err.message : "Failed to rejoin game"
+                    err instanceof Error ? err.message : "Failed to verify game session"
                 );
                 setIsRejoiningGame(false);
             }
         };
 
-        if (gameId) {
-            rejoinGame();
+        if (!currentGameSession && !isLoadingGameSession && gameId) {
+            checkIfUserInGame(userId, gameId);
         }
-    }, [userId, currentGameSession, isSocketConnected]);
+    }, [userId, currentGameSession, isSocketConnected, gameId]);
 
     // Handle loading states
     if (isLoadingGameSession) {
