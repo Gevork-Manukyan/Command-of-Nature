@@ -2,7 +2,7 @@ import { DropletDeck, LeafDeck, PebbleDeck, TwigDeck } from "../../constants";
 import { CustomError, ValidationError, HostOnlyActionError, InvalidSageError, InvalidDataError } from "../../custom-errors";
 import { Socket } from "socket.io";
 import { GameStateManager } from "../../services/GameStateManager";
-import { EventSchemas, SocketEventMap, Sage, AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupEvent, ExitGameEvent } from "@shared-types";
+import { EventSchemas, SocketEventMap, Sage, AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupStatusEvent, ExitGameEvent } from "@shared-types";
 import { convertToCustomError } from "./common";
 
 export function getSageDecklist(sage: Sage | null) {
@@ -72,7 +72,7 @@ export function processEventMiddleware<T extends keyof SocketEventMap>(socket: S
     const data = result.data;
 
     // Check for host-only actions
-    const HOST_ONLY_EVENTS = [AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupEvent, ExitGameEvent];
+    const HOST_ONLY_EVENTS = [AllSagesSelectedEvent, AllTeamsJoinedEvent, StartGameEvent, ClearTeamsEvent, AllPlayersSetupStatusEvent, ExitGameEvent];
     for (const event of HOST_ONLY_EVENTS) {
       if (eventName === event) {
         const eventData = data as SocketEventMap[typeof eventName];
