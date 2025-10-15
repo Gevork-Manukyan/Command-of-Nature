@@ -24,7 +24,6 @@ export default function GameLayout({
     const { currentGameSession, isLoadingGameSession, updateCurrentSession } = useGameSessionContext();
     const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : "";
     const {
-        error: navigationError,
         isLeaving,
         goToLobby,
         leaveGame,
@@ -79,8 +78,8 @@ export default function GameLayout({
     }
 
     // Handle error states
-    if (navigationError || rejoinError) {
-        return <ErrorScreen message={rejoinError || navigationError} />;
+    if (rejoinError) {
+        return <ErrorScreen message={rejoinError} />;
     }
 
     if (!(isLeaving || isRejoiningGame) && !currentGameSession) {

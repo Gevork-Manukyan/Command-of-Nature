@@ -80,8 +80,13 @@ export default function createGameplayRouter(
 
             try {
                 const socketId = getSocketId(userId);
+                const game = gameStateManager.getGame(gameId);
+                const isLastPlayer = game.players.length === 1;
 
-                await deleteUserActiveGames(userId, gameId);
+                if (!isLastPlayer) {
+                    await deleteUserActiveGames(userId, gameId);
+                }
+
                 await gameStateManager.removePlayerFromGame(gameId, socketId);
                 userSocketManager.leaveGameRoom(userId, gameId);
                 const data: PlayerLeftData = await getUpdatedUsers(gameId);
@@ -99,7 +104,13 @@ export default function createGameplayRouter(
                     error instanceof GameConflictError
                 ) {
                     try {
-                        await deleteUserActiveGames(userId, gameId);
+                        const game = gameStateManager.getGame(gameId);
+                        const isLastPlayer = game.players.length === 1;
+
+                        if (!isLastPlayer) {
+                            await deleteUserActiveGames(userId, gameId);
+                        }
+                        
                         res.status(200).json({
                             message: "Game left successfully",
                         });

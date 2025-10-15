@@ -8,7 +8,6 @@ import { useGameSessionContext } from '@/contexts/GameSessionContext';
 export function useGameNavigation(gameId: string, userId: string) {
     const router = useRouter();
     const { currentGameSession, updateCurrentSession } = useGameSessionContext();
-    const [error, setError] = useState<string>('');
     const [isLeaving, setIsLeaving] = useState(false);
 
     const goToLobby = async () => {
@@ -28,17 +27,15 @@ export function useGameNavigation(gameId: string, userId: string) {
 
         try {
             await leaveGameApi(gameId, { userId });
-            router.push('/app/lobby');
-            updateCurrentSession(null);
         } catch (err) {
             console.error('Failed to leave game:', err);
-            setError(err instanceof Error ? err.message : 'Failed to leave game');
-            setIsLeaving(false);
         }
+
+        router.push('/app/lobby');
+        updateCurrentSession(null);
     };
 
     return {
-        error,
         isLeaving,
         goToLobby,
         leaveGame,

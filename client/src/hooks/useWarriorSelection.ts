@@ -30,7 +30,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id!;
     const { updateCurrentPhase } = useCurrentPhaseContext();
-    const [warriorSelectionState, setWarriorSelectionState] = useState<WarriorSelectionState>("selecting");
+    const [warriorSelectionState, setWarriorSelectionState] = useState<WarriorSelectionState | null>(null);
     const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [allPlayersSetup, setAllPlayersSetup] = useState<boolean>(false);
