@@ -25,8 +25,6 @@ import {
     playerFinishedSetupSchema,
     PlayerJoinedData,
     PlayerJoinedEvent,
-    PlayerRejoinedData,
-    PlayerRejoinedEvent,
     ReadyStatusToggledData,
     ReadyStatusToggledEvent,
     VerifySessionData,

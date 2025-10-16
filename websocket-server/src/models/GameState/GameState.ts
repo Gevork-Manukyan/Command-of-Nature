@@ -76,18 +76,8 @@ export class GameState {
             },
             {
                 acceptableEvents: [TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE],
-                nextState: State.SETUP_COMPLETE,
-            }
-        ]);
-        this.addTransition(State.SETUP_COMPLETE, [
-            {
-                acceptableEvents: [TransitionEvent.CANCEL_SETUP],
-                nextState: State.WARRIOR_SELECTION,
-            },
-            {
-                acceptableEvents: [TransitionEvent.ALL_PLAYERS_SETUP_COMPLETE],
                 nextState: State.PHASE1,
-            },
+            }
         ]);
         this.addTransition(State.PHASE1, [
             {
