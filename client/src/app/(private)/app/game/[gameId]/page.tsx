@@ -1,5 +1,6 @@
 "use client";
 
+import Gameplay from '@/components/game/gameplay/Gameplay';
 import WarriorSelection from '@/components/game/setup/warrior-pages/warrior-selection';
 import { LoadingScreen } from '@/components/loading/loading-screen';
 import { useGameStartedManager } from '@/hooks/useGameStartedManager';
@@ -27,11 +28,7 @@ export default function GamePage() {
     return (
         <div className="flex flex-col items-center min-h-screen">
             {isSelectionPhase && <WarriorSelection />}
-            {!isSelectionPhase && 
-                <div>
-                    <h1>Playing Game... (NOT IMPLEMENTED)</h1>
-                </div>
-            }
+            {!isSelectionPhase &&  <Gameplay />}
         </div>
     );
 } 
