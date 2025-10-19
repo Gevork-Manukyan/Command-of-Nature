@@ -49,7 +49,7 @@ gameNamespace.on("connection", async (socket) => {
     /* -------- AUTO-REGISTER USER ID ON CONNECT -------- */
     // Extract userId from query parameters
     const userId = socket.handshake.query.userId as string;
-    if (userId) {
+    if (userId && userId !== 'undefined' && userId !== 'null') {
         userSocketManager.registerSocket(userId, socket);
         socket.emit(RegisterUserSocketEvent);
         
