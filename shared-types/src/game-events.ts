@@ -33,7 +33,16 @@ export const AllPlayersSetupStatusEvent = "all-players-setup-status";
 export const BeginBattleEvent = "begin-battle";
 
 // GAMEPLAY EVENTS
-export const GetDayBreakCardsEvent = "get-day-break-cards";
-export const ActivateDayBreakEvent = "activate-day-break";
 export const StartTurnEvent = "start-turn";
 export const WaitingTurnEvent = "waiting-turn";
+export const EndTurnEvent = "end-turn";
+export const ActivateDayBreakEvent = "activate-day-break";
+export const SummonElementalEvent = "summon-elemental";
+export const PlayItemCardEvent = "play-item-card";
+export const SwapTwoElementalsEvent = "swap-two-elementals";
+export const DrawCardEvent = "draw-card";
+export const SageLevelUpEvent = "sage-level-up";
+export const BuyItemCardEvent = "buy-item-card";
+export const BuyElementalCardEvent = "buy-elemental-card";
+export const SellCardEvent = "sell-card";
+export const RefreshMarketEvent = "refresh-market";

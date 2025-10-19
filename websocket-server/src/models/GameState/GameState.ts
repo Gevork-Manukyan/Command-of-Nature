@@ -81,18 +81,8 @@ export class GameState {
         ]);
         this.addTransition(State.PHASE1, [
             {
-                acceptableEvents: [TransitionEvent.GET_DAY_BREAK_CARDS],
-                nextState: State.RESOLVE_DAY_BREAK_CARDS,
-            },
-            {
-                acceptableEvents: [TransitionEvent.NEXT_PHASE],
-                nextState: State.PHASE2,
-            },
-        ]);
-        this.addTransition(State.RESOLVE_DAY_BREAK_CARDS, [
-            {
-                acceptableEvents: [TransitionEvent.DAY_BREAK_CARD],
-                nextState: State.RESOLVE_DAY_BREAK_CARDS,
+                acceptableEvents: [TransitionEvent.ACTIVATE_DAY_BREAK_CARD],
+                nextState: State.PHASE1,
             },
             {
                 acceptableEvents: [TransitionEvent.NEXT_PHASE],
@@ -132,10 +122,10 @@ export class GameState {
             },
             {
                 acceptableEvents: [TransitionEvent.NEXT_PHASE],
-                nextState: State.DISCARDING_CARDS,
+                nextState: State.PHASE4,
             },
         ]);
-        this.addTransition(State.DISCARDING_CARDS, [
+        this.addTransition(State.PHASE4, [
             {
                 acceptableEvents: [TransitionEvent.DONE_DISCARDING_CARDS],
                 nextState: State.DRAWING_NEW_HAND,

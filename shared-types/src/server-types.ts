@@ -20,7 +20,6 @@ import {
     ExitGameEvent,
     VerifySessionEvent,
     LeaveGameEvent,
-    GetDayBreakCardsEvent,
     ActivateDayBreakEvent,
     RegisterUserSocketEvent,
     ReadyStatusToggledEvent,
@@ -215,7 +214,6 @@ export const EventSchemas = {
     [VerifySessionEvent]: verifySessionSchema,
     [LeaveGameEvent]: leaveGameSchema,
     [PlayerLeftEvent]: playerLeftSchema,
-    [GetDayBreakCardsEvent]: getDayBreakCardsSchema,
     [ActivateDayBreakEvent]: activateDayBreakSchema,
 } as const;
 
@@ -281,6 +279,5 @@ export type SocketEventMap = {
     [VerifySessionEvent]: VerifySessionData;
     [LeaveGameEvent]: LeaveGameData;
     [PlayerLeftEvent]: PlayerLeftData;
-    [GetDayBreakCardsEvent]: GetDayBreakCardsData;
     [ActivateDayBreakEvent]: ActivateDayBreakData;
 };

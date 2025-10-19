@@ -601,18 +601,6 @@ export class GameStateManager {
         );
     }
 
-    // ###### Get Day Break Cards ######
-    async verifyAndProcessGetDayBreakCardsEvent(
-        gameId: gameId,
-        fn: EventProcessor
-    ): Promise<void> {
-        await this.verifyAndProcessEvent(
-            gameId,
-            TransitionEvent.GET_DAY_BREAK_CARDS,
-            fn
-        );
-    }
-
     // ###### Activate Day Break ######
     async verifyAndProcessActivateDayBreakEvent(
         gameId: gameId,
@@ -620,7 +608,7 @@ export class GameStateManager {
     ): Promise<void> {
         await this.verifyAndProcessEvent(
             gameId,
-            TransitionEvent.DAY_BREAK_CARD,
+            TransitionEvent.ACTIVATE_DAY_BREAK_CARD,
             fn
         );
     }

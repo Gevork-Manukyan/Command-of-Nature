@@ -141,7 +141,7 @@ export async function getDayBreakCards(
     gameId: string,
     data: GetDayBreakCardsData
 ) {
-    return getGameplayUrlWithGameId("/day-break-cards", gameId, data, "POST");
+    return getGameplayUrlWithGameId("/day-break-cards", gameId, data, "GET");
 }
 
 export async function activateDayBreak(

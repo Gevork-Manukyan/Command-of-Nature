@@ -8,7 +8,6 @@ import {
     ExitGameEvent,
     exitGameSchema,
     GetDayBreakCardsData,
-    GetDayBreakCardsEvent,
     getDayBreakCardsSchema,
     LeaveGameData,
     leaveGameSchema,
@@ -19,7 +18,7 @@ import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
 import { Request, Response } from "express";
 import { requireHostForGameExit } from "src/middleware/hostOnly";
-import { validateRequestBody } from "src/lib/utilities/routes";
+import { validateRequestBody, validateRequestQuery } from "src/lib/utilities/routes";
 import { GameEventEmitter } from "../../services";
 import { deleteUserActiveGames } from "src/lib/utilities/db";
 import {
@@ -131,32 +130,20 @@ export default function createGameplayRouter(
         })
     );
 
-    // POST /api/games/gameplay/:gameId/day-break-cards
-    router.post("/:gameId/day-break-cards", async (req, res) => {
-        const { userId } = validateRequestBody<GetDayBreakCardsData>(
-            getDayBreakCardsSchema,
-            req
-        );
-        const gameId = req.params.gameId;
-        const socketId = getSocketId(userId);
+    // GET /api/games/gameplay/:gameId/day-break-cards
+    router.get("/:gameId/day-break-cards", asyncHandler(async (req: Request, res: Response) => {
+            const { userId } = validateRequestQuery<GetDayBreakCardsData>(
+                getDayBreakCardsSchema,
+                req
+            );
+            const gameId = req.params.gameId;
+            const socketId = getSocketId(userId);
 
-        gameStateManager.verifyAndProcessGetDayBreakCardsEvent(
-            gameId,
-            async () => {
-                const game = gameStateManager.getActiveGame(gameId);
-                const dayBreakCards = game.getDayBreakCards(socketId);
-                gameEventEmitter.emitToPlayers(
-                    game.getActiveTeamPlayers(),
-                    GetDayBreakCardsEvent,
-                    dayBreakCards
-                );
-            }
-        );
-
-        res.status(200).json({
-            message: "Day break cards fetched successfully",
-        });
-    });
+            const game = gameStateManager.getActiveGame(gameId);
+            const dayBreakCards = game.getDayBreakCards(socketId);
+            res.status(200).json(dayBreakCards);
+        })
+    );
 
     // POST /api/games/gameplay/:gameId/activate-day-break
     router.post("/:gameId/activate-day-break", async (req, res) => {
