@@ -46,3 +46,12 @@ export const BuyItemCardEvent = "buy-item-card";
 export const BuyElementalCardEvent = "buy-elemental-card";
 export const SellCardEvent = "sell-card";
 export const RefreshMarketEvent = "refresh-market";
+
+// Game state update events
+export const GameStateUpdatedEvent = "game-state-updated";
+export const HandUpdatedEvent = "hand-updated";
+export const BattlefieldUpdatedEvent = "battlefield-updated";
+export const ShopUpdatedEvent = "shop-updated";
+export const PhaseChangedEvent = "phase-changed";
+export const TurnChangedEvent = "turn-changed";
+export const ActionPointsChangedEvent = "action-points-changed";

@@ -2,8 +2,6 @@ import express from "express";
 import { GameEventEmitter } from "../../services";
 import { ValidationError } from "../../custom-errors";
 import {
-    AllSagesSelectedEvent,
-    AllTeamsJoinedEvent,
     CancelSetupData,
     CancelSetupEvent,
     cancelSetupSchema,
@@ -40,18 +38,15 @@ import {
     TeamJoinedEvent,
     ToggleReadyStatusData,
     toggleReadyStatusSchema,
-    AllPlayersJoinedEvent,
     State,
-    NextStateData,
     TeamsClearedData,
-    StartGameEvent,
     ALL_CARDS,
     GetUserWarriorSelectionDataData,
     getUserWarriorSelectionDataSchema,
     WarriorSelectionState,
-    BeginBattleEvent,
     WaitingTurnEvent,
     StartTurnEvent,
+    PhaseChangedEvent,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -210,8 +205,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     await gameStateManager.allPlayersJoined(gameId);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        AllPlayersJoinedEvent,
-                        { nextState: State.SAGE_SELECTION } as NextStateData
+                        PhaseChangedEvent,
+                        { 
+                            currentPhase: State.SAGE_SELECTION
+                        }
                     );
                 }
             );
@@ -289,8 +286,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     await gameStateManager.allPlayersSelectedSage(gameId);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        AllSagesSelectedEvent,
-                        { nextState: State.JOINING_TEAMS } as NextStateData
+                        PhaseChangedEvent,
+                        { 
+                            currentPhase: State.JOINING_TEAMS
+                        }
                     );
                 }
             );
@@ -365,8 +364,10 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     await gameStateManager.allTeamsJoined(gameId);
                     gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        AllTeamsJoinedEvent,
-                        { nextState: State.READY_UP } as NextStateData
+                        PhaseChangedEvent,
+                        { 
+                            currentPhase: State.READY_UP
+                        }
                     );
                 }
             );
@@ -419,9 +420,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 gameId,
                 async () => {
                     await gameStateManager.startGame(gameId);
-                    gameEventEmitter.emitToAllPlayers(gameId, StartGameEvent, {
-                        nextState: State.WARRIOR_SELECTION,
-                    } as NextStateData);
+                    gameEventEmitter.emitToAllPlayers(gameId, PhaseChangedEvent, {
+                        currentPhase: State.WARRIOR_SELECTION
+                    });
                 }
             );
 
@@ -436,9 +437,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const gameId = req.params.gameId;
             try {
                 const game = gameStateManager.getGame(gameId);
-                res.status(200).json({ isStarted: game.isStarted });
+                res.status(200).json({ isActiveGame: game.isActiveGame });
             } catch (e) {
-                res.status(404).json({ isStarted: false });
+                res.status(404).json({ isActiveGame: false });
             }
         })
     );
@@ -723,9 +724,11 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         );
                     }
 
-                    const activeGame = gameStateManager.beginBattle(game);
-
-                    gameEventEmitter.emitToAllPlayers(gameId, BeginBattleEvent, { nextState: State.PHASE1 } as NextStateData);
+                    const activeGame = await gameStateManager.beginBattle(gameId);
+                    gameEventEmitter.emitToAllPlayers(gameId, PhaseChangedEvent, { 
+                        currentPhase: State.PHASE1, 
+                        activeTeamNumber: activeGame.getActiveTeam().getTeamNumber() 
+                    });
                     gameEventEmitter.emitToPlayers(activeGame.getActiveTeamPlayers(), StartTurnEvent);
                     gameEventEmitter.emitToPlayers(activeGame.getWaitingTeamPlayers(), WaitingTurnEvent);
                 }

@@ -13,8 +13,8 @@ describe("ConGame", () => {
     describe("constructor", () => {
       test("initializes the game with the correct properties", () => {
         expect(mockGame.id).toBe("game-1");
-        expect(mockGame.isStarted).toBe(false);
-        expect(mockGame.getHasFinishedSetup()).toBe(false);
+        expect(mockGame.isActiveGame).toBe(false);
+        expect(mockGame.getIsBattleStarted()).toBe(false);
         expect(mockGame.numPlayersTotal).toBe(4);
         expect(mockGame.numPlayersReady).toBe(0);
         expect(mockGame.numPlayersFinishedSetup).toBe(0);
@@ -30,10 +30,10 @@ describe("ConGame", () => {
       });
     });
   
-    describe("setStarted", () => {
-      test("sets the game start status", () => {
-        mockGame.setStarted(true);
-        expect(mockGame.isStarted).toBe(true);
+    describe("setActiveGame", () => {
+      test("sets the active game status", () => {
+        mockGame.setIsActiveGame(true);
+        expect(mockGame.isActiveGame).toBe(true);
       });
     });
   
@@ -216,7 +216,7 @@ describe("ConGame", () => {
 
         mockGame.initGame();
   
-        expect(mockGame.isStarted).toBe(true);
+        expect(mockGame.isActiveGame).toBe(true);
         expect(mockGame.initPlayerDecks).toHaveBeenCalled();
         expect(mockGame.initPlayerFields).toHaveBeenCalled();
       });

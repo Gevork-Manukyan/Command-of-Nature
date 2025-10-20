@@ -22,7 +22,6 @@ import {
     playerLeftSchema,
     PlayerLeftEvent,
     AllPlayersJoinedEvent,
-    NextStateData,
     TeamJoinedData,
     teamJoinedSchema,
     TeamsClearedData,
@@ -45,7 +44,7 @@ import {
 } from "@/services/game-api";
 import { useSession } from "next-auth/react";
 import { UserSetup } from "@shared-types";
-import { useCurrentPhaseContext } from "./CurrentPhaseContext";
+import { useGameStateContext } from "./GameStateContext";
 import { useIsHost } from "@/hooks/useIsHost";
 
 type GameSetupContextType = {
@@ -123,7 +122,7 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id || "";
     const numPlayersTotal = currentGameSession?.numPlayersTotal || 0;
-    const { updateCurrentPhase } = useCurrentPhaseContext();
+    const { refreshGameState } = useGameStateContext();
     const [error, setError] = useState<string>("");
     const { data: session } = useSession();
     const userId = session?.user.id!;
@@ -167,9 +166,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             await checkIsHost();
         };
 
-        const handleSocketAllPlayersJoined = (data: NextStateData) => {
-            updateCurrentPhase(data);
-        };
 
         const handleSocketSageSelected = (data: SageSelectedData) => {
             const parsedData = sageSelectedSchema.parse(data);
@@ -177,9 +173,6 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setUserPlayers((prev) => updateSetupSageData(prev, parsedData.userId, parsedData.sage));
         };
 
-        const handleSocketAllSagesSelected = (data: NextStateData) => {
-            updateCurrentPhase(data);
-        };
 
         const handleSocketTeamJoined = (data: TeamJoinedData) => {
             const validatedData = teamJoinedSchema.parse(data);
@@ -191,18 +184,28 @@ export function GameSetupProvider({ children }: GameSetupProviderProps) {
             setUserPlayers((prev) => updateSetupTeamData(prev, validatedData.updatedTeams));
         };
 
-        const handleSocketAllTeamsJoined = (data: NextStateData) => {
-            updateCurrentPhase(data);
-        };
 
         const handleSocketReadyStatusToggled = (data: ReadyStatusToggledData) => {
             const validatedData = readyStatusToggledSchema.parse(data);
             setUserPlayers((prev) => updateSetupReadyStatusData(prev, validatedData.userId, validatedData.isReady));
         };
 
-        const handleSocketStartGame = (data: NextStateData) => {
-            updateCurrentPhase(data);
+        const handleSocketAllPlayersJoined = () => {
+            // Reserved for future setup-specific logic
         };
+
+        const handleSocketAllSagesSelected = () => {
+            // Reserved for future setup-specific logic
+        };
+
+        const handleSocketAllTeamsJoined = () => {
+            // Reserved for future setup-specific logic
+        };
+
+        const handleSocketStartGame = () => {
+            // Reserved for future setup-specific logic
+        };
+
 
         // -------------- REGISTER SOCKET EVENT LISTENERS --------------
         socketService.on(PlayerJoinedEvent, handleSocketPlayerJoined);

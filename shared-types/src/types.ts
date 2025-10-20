@@ -11,10 +11,5 @@ export const UserSetupSchema = z.object({
 })
 export type UserSetup = z.infer<typeof UserSetupSchema>;
 
-export const NextStateDataSchema = z.object({
-    nextState: z.nativeEnum(State),
-});
-export type NextStateData = z.infer<typeof NextStateDataSchema>;
-
 export const WarriorSelectionStateSchema = z.enum(["selecting", "swapping", "finished"]);
 export type WarriorSelectionState = z.infer<typeof WarriorSelectionStateSchema>;

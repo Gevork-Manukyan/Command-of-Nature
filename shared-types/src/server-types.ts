@@ -184,6 +184,90 @@ export const activateDayBreakSchema = z.object({
     spaceOption: AllSpaceOptionsSchema,
 });
 
+// Gameplay data schemas
+export const PlayerGameDataSchema = z.object({
+    userId: z.string(),
+    socketId: z.string(),
+    sage: SageSchema.nullable(),
+    level: z.number(),
+    hand: z.array(z.any()), // TODO: Card array - only visible to team
+    deckCount: z.number(),
+    discardCount: z.number(),
+});
+
+export const TeamGameDataSchema = z.object({
+    teamNumber: z.union([z.literal(1), z.literal(2)]),
+    gold: z.number(),
+    battlefield: z.any(), // TODO: Battlefield object
+    playerIds: z.array(z.string()),
+});
+
+export const SetupGameStateSchema = z.object({
+    gameId: z.string(),
+    currentPhase: z.string(),
+});
+
+export const GameplayGameStateSchema = SetupGameStateSchema.extend({
+    activeTeamNumber: z.union([z.literal(1), z.literal(2)]),
+    actionPoints: z.number(),
+    maxActionPoints: z.number(),
+    teams: z.tuple([TeamGameDataSchema, TeamGameDataSchema]),
+    creatureShop: z.array(z.any()), // TODO: ElementalCard array
+    itemShop: z.array(z.any()), // TODO: ItemCard array
+    myTeam: TeamGameDataSchema,
+    myTeamPlayers: z.array(PlayerGameDataSchema),
+    opponentTeamPlayers: z.array(PlayerGameDataSchema.omit({ hand: true })),
+});
+
+export const GameStateDataSchema = z.union([
+    SetupGameStateSchema,
+    GameplayGameStateSchema,
+]);
+
+export const TeamHandsDataSchema = z.object({
+    myTeamPlayers: z.array(PlayerGameDataSchema),
+});
+
+export const getUserGameStateSchema = z.object({
+    userId: z.string(),
+});
+
+export const getUserTeamHandsSchema = z.object({
+    userId: z.string(),
+});
+
+// Gameplay event data schemas
+export const BattlefieldUpdatedDataSchema = z.object({
+    teamNumber: z.union([z.literal(1), z.literal(2)]),
+    battlefield: z.any(), // TODO: Battlefield object
+});
+
+export const HandUpdatedDataSchema = z.object({
+    userId: z.string(),
+    hand: z.array(z.any()), // TODO: Card array
+});
+
+export const ShopUpdatedDataSchema = z.object({
+    creatureShop: z.array(z.any()), // TODO: ElementalCard array
+    itemShop: z.array(z.any()), // TODO: ItemCard array
+});
+
+export const PhaseChangedDataSchema = z.object({
+    currentPhase: z.string(), // TODO: State type
+    activeTeamNumber: z.union([z.literal(1), z.literal(2)]).optional(),
+});
+
+export const TurnChangedDataSchema = z.object({
+    activeTeamNumber: z.union([z.literal(1), z.literal(2)]),
+    actionPoints: z.number(),
+    maxActionPoints: z.number(),
+});
+
+export const ActionPointsChangedDataSchema = z.object({
+    actionPoints: z.number(),
+    maxActionPoints: z.number(),
+});
+
 // Define EventSchemas record
 export const EventSchemas = {
     [RegisterUserSocketEvent]: registerUserSocketSchema,
@@ -250,6 +334,18 @@ export type LeaveGameData = z.infer<typeof leaveGameSchema>;
 export type PlayerLeftData = z.infer<typeof playerLeftSchema>;
 export type GetDayBreakCardsData = z.infer<typeof getDayBreakCardsSchema>;
 export type ActivateDayBreakData = z.infer<typeof activateDayBreakSchema>;
+export type PlayerGameData = z.infer<typeof PlayerGameDataSchema>;
+export type TeamGameData = z.infer<typeof TeamGameDataSchema>;
+export type SetupGameState = z.infer<typeof SetupGameStateSchema>;
+export type GameplayGameState = z.infer<typeof GameplayGameStateSchema>;
+export type GameStateData = z.infer<typeof GameStateDataSchema>;
+export type TeamHandsData = z.infer<typeof TeamHandsDataSchema>;
+export type BattlefieldUpdatedData = z.infer<typeof BattlefieldUpdatedDataSchema>;
+export type HandUpdatedData = z.infer<typeof HandUpdatedDataSchema>;
+export type ShopUpdatedData = z.infer<typeof ShopUpdatedDataSchema>;
+export type PhaseChangedData = z.infer<typeof PhaseChangedDataSchema>;
+export type TurnChangedData = z.infer<typeof TurnChangedDataSchema>;
+export type ActionPointsChangedData = z.infer<typeof ActionPointsChangedDataSchema>;
 
 // Create a mapped type for socket events
 export type SocketEventMap = {

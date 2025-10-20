@@ -102,7 +102,7 @@ export class GameStateManager {
             throw new GameFullError();
         }
 
-        if (game.isStarted) {
+        if (game.isActiveGame) {
             throw new GameAlreadyStartedError();
         }
 
@@ -260,10 +260,13 @@ export class GameStateManager {
         return currPlayer.isReady;
     }
 
-    async startGame(gameId: gameId): Promise<void> {
-        const game = this.getGame(gameId);
+    async startGame(gameId: gameId): Promise<ActiveConGame> {
+        const game = this.getGame(gameId) as ConGame;
         game.initGame();
-        await this.saveGame(game);
+        const activeGame = new ActiveConGame(game);
+        this.setGame(gameId, activeGame);
+        await this.saveGame(activeGame);
+        return activeGame;
     }
 
     /**
@@ -333,8 +336,7 @@ export class GameStateManager {
     getGameState(gameId: gameId): GameState {
         const gameState = this.currentGames[gameId];
         if (!gameState) throw new GameConflictError(gameId);
-        if (!gameState.state)
-            throw new GameConflictError(gameId, "Game state not loaded");
+        if (!gameState.state) throw new GameConflictError(gameId, "Game state not loaded");
         return gameState.state;
     }
 
@@ -366,7 +368,7 @@ export class GameStateManager {
      * @returns True if the game is an active game, false otherwise
      */
     private isActiveGame(game: ConGame): game is ActiveConGame {
-        return game.getHasFinishedSetup();
+        return game.isActiveGame;
     }
 
     /**
@@ -389,12 +391,13 @@ export class GameStateManager {
 
     /**
      * Begins a battle
-     * @param game - The game to begin
+     * @param gameId - The game ID to begin battle for
      * @returns The active game
      */
-    beginBattle(game: ConGame): ActiveConGame {
-        const activeGame = game.finishedSetup();
-        this.setGame(game.id, activeGame);
+    async beginBattle(gameId: gameId): Promise<ActiveConGame> {
+        const activeGame = this.getGame(gameId) as ActiveConGame;
+        activeGame.setIsBattleStarted(true);
+        await this.saveGame(activeGame);
         return activeGame;
     }
 

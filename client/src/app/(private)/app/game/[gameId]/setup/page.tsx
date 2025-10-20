@@ -6,26 +6,34 @@ import ReadyUp from "@/components/game/setup/pre-game-pages/ready-up";
 import SageSelection from "@/components/game/setup/pre-game-pages/sage-selection";
 import TeamSelection from "@/components/game/setup/pre-game-pages/team-selection";
 import { LoadingScreen } from "@/components/loading/loading-screen";
-import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
+import { useGameStateContext } from "@/contexts/GameStateContext";
 import { useGameSetupContext } from "@/contexts/GameSetupContext";
-import { useGameStartedManager } from "@/hooks/useGameStartedManager";
 import { State } from "@shared-types";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function GameSetupPage() {
     const { error } = useGameSetupContext();
-    const { currentPhase } = useCurrentPhaseContext();
+    const { currentPhase, isSetupPhase, isGameplayPhase } = useGameStateContext();
+    const router = useRouter();
     const params = useParams();
     const gameId = params.gameId as string;
-    const { isSetupPhase } = useGameStartedManager(gameId);
+    
+    // Handle redirects when phase changes
+    useEffect(() => {
+        if (!currentPhase) return;
+
+        if (isGameplayPhase) {
+            router.replace(`/app/game/${gameId}`);
+        }
+    }, [currentPhase, isGameplayPhase, gameId, router]);
     
     // Show loading while phase is being determined
     if (currentPhase === null) {
         return <LoadingScreen />
     }
 
-    // Only render if we're actually in a setup phase
-    // The useGameStartedManager hook will handle redirecting to setup
     if (!isSetupPhase) {
         return null; 
     }
@@ -48,34 +56,6 @@ export default function GameSetupPage() {
 
             {/* Ready Up */}
             {currentPhase === State.READY_UP && <ReadyUp />}
-
-            {/* Action Buttons */}
-            {/* <div className="flex justify-center gap-4">
-                {currentPhase === State.WARRIOR_SELECTION && (
-                    <button
-                        onClick={() => console.log("Select Warriors")}
-                        className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                    >
-                        Select Warriors
-                    </button>
-                )}
-                {currentPhase === State.READY_UP && (
-                    <button
-                        onClick={() => console.log("Toggle Ready")}
-                        className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                    >
-                        Toggle Ready
-                    </button>
-                )}
-                {currentPhase === State.SETUP_COMPLETE && (
-                    <button
-                        onClick={() => console.log("Finish Setup")}
-                        className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                    >
-                        Start Game
-                    </button>
-                )}
-            </div> */}
         </section>
     );
 }

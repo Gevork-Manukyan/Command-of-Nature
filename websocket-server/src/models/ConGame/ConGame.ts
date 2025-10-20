@@ -16,6 +16,7 @@ import {
     SpaceOption,
     SageSchema,
     CARD_NAMES,
+    State,
 } from "@shared-types";
 import { drawCardFromDeck } from "../../lib";
 import { Player } from "../Player/Player";
@@ -41,8 +42,8 @@ export class ConGame {
     gameName: string;
     isPrivate: boolean;
     password: string | null;
-    isStarted: boolean = false;
-    protected hasFinishedSetup: boolean = false;
+    isActiveGame: boolean = false;
+    isBattleStarted: boolean = false;
     numPlayersTotal: 2 | 4;
     numPlayersReady: number = 0;
     numPlayersFinishedSetup: number = 0;
@@ -99,19 +100,27 @@ export class ConGame {
     }
 
     /**
-     * Sets the started status of the game
-     * @param value - The value to set the started status to
+     * Sets the active game status of the game
+     * @param value - The value to set the active game status to
      */
-    setStarted(value: boolean) {
-        this.isStarted = value;
+    setIsActiveGame(value: boolean) {
+        this.isActiveGame = value;
     }
 
     /**
-     * Gets the has finished setup status of the game
-     * @returns The has finished setup status of the game
+     * Gets the battle started status of the game
+     * @returns The battle started status of the game
      */
-    getHasFinishedSetup() {
-        return this.hasFinishedSetup;
+    getIsBattleStarted() {
+        return this.isBattleStarted;
+    }
+
+    /**
+     * Sets the battle started status of the game
+     * @param value - The value to set the battle started status to
+     */
+    setIsBattleStarted(value: boolean) {
+        this.isBattleStarted = value;
     }
 
     /**
@@ -449,7 +458,7 @@ export class ConGame {
         this.initPlayerFields();
         this.initCreatureShop();
         this.initItemShop();
-        this.setStarted(true);
+        this.setIsActiveGame(true);
     }
 
     /**
@@ -599,15 +608,6 @@ export class ConGame {
     }
 
     /**
-     * Marks the game setup as finished and returns an ActiveConGame instance
-     * @returns A new active game instance
-     */
-    finishedSetup(): ActiveConGame {
-        this.hasFinishedSetup = true;
-        return new ActiveConGame(this);
-    }
-
-    /**
      * Creates a new ConGame instance from plain data
      * @param data - The plain data to create the instance from
      * @returns A new ConGame instance
@@ -645,8 +645,8 @@ export class ConGame {
 
         // Copy all properties
         Object.assign(game, {
-            isStarted: data.isStarted,
-            hasFinishedSetup: data.hasFinishedSetup,
+            isActiveGame: data.isActiveGame,
+            isBattleStarted: data.isBattleStarted,
             numPlayersReady: data.numPlayersReady,
             numPlayersFinishedSetup: data.numPlayersFinishedSetup,
             players,
@@ -671,8 +671,8 @@ export class ConGame {
             gameName: this.gameName,
             isPrivate: this.isPrivate,
             password: this.password,
-            isStarted: this.isStarted,
-            hasFinishedSetup: this.hasFinishedSetup,
+            isActiveGame: this.isActiveGame,
+            isBattleStarted: this.isBattleStarted,
             numPlayersTotal: this.numPlayersTotal,
             numPlayersReady: this.numPlayersReady,
             numPlayersFinishedSetup: this.numPlayersFinishedSetup,
@@ -709,7 +709,7 @@ export class ConGame {
  */
 export class ActiveConGame extends ConGame {
     private activeTeam: keyof TeamOrder = "first";
-    private currentPhase: "phase1" | "phase2" | "phase3" | "phase4" = "phase1";
+    private currentPhase: State.PHASE1 | State.PHASE2 | State.PHASE3 | State.PHASE4 = State.PHASE1;
     private actionPoints: number;
     private maxActionPoints: 3 | 6;
 
@@ -718,8 +718,12 @@ export class ActiveConGame extends ConGame {
             conGame.numPlayersTotal,
             conGame.gameName,
             conGame.isPrivate,
-            conGame.password
+            conGame.password,
+            conGame.id
         );
+
+        // Copy all properties from the original game
+        Object.assign(this, conGame);
 
         this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
         this.actionPoints = this.maxActionPoints;
@@ -763,7 +767,7 @@ export class ActiveConGame extends ConGame {
      * Gets the current game phase
      * @returns The current phase
      */
-    getCurrentPhase(): "phase1" | "phase2" | "phase3" | "phase4" {
+    getCurrentPhase(): State.PHASE1 | State.PHASE2 | State.PHASE3 | State.PHASE4 {
         return this.currentPhase;
     }
 
@@ -771,26 +775,26 @@ export class ActiveConGame extends ConGame {
      * Advances the game to phase 2
      */
     endPhase1() {
-        this.currentPhase = "phase2";
+        this.currentPhase = State.PHASE2;
     }
 
     /**
      * Advances the game to phase 3
      */
     endPhase2() {
-        this.currentPhase = "phase3";
+        this.currentPhase = State.PHASE3;
     }
 
     /**
      * Advances the game to phase 4
      */
     endPhase3() {
-        this.currentPhase = "phase4";
+        this.currentPhase = State.PHASE4;
     }
 
     endPhase4() {
         // End turn and reset all variables
-        this.currentPhase = "phase1";
+        this.currentPhase = State.PHASE1;
         this.toggleActiveTeam();
         this.resetActionPoints();
     }
@@ -801,6 +805,14 @@ export class ActiveConGame extends ConGame {
      */
     getActionPoints(): number {
         return this.actionPoints;
+    }
+
+    /**
+     * Gets the maximum number of action points
+     * @returns The maximum number of action points
+     */
+    getMaxActionPoints(): 3 | 6 {
+        return this.maxActionPoints;
     }
 
     resetActionPoints() {
@@ -893,10 +905,10 @@ export class ActiveConGame extends ConGame {
         Object.assign(activeGame, {
             activeTeam: data.activeTeam as keyof TeamOrder,
             currentPhase: data.currentPhase as
-                | "phase1"
-                | "phase2"
-                | "phase3"
-                | "phase4",
+                | State.PHASE1
+                | State.PHASE2
+                | State.PHASE3
+                | State.PHASE4,
             actionPoints: data.actionPoints!,
             maxActionPoints: data.maxActionPoints as 3 | 6,
         });

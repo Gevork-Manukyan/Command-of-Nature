@@ -9,7 +9,6 @@ import {
     AllPlayersSetupStatusEvent,
     AllPlayersSetupStatusData,
     PickWarriorsEvent,
-    NextStateData,
     ElementalWarriorStarterCard,
     ElementalWarriorStarterCardSchema,
     OptionalAbilityCardSchema,
@@ -18,7 +17,7 @@ import {
 } from "@shared-types";
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
-import { useCurrentPhaseContext } from "@/contexts/CurrentPhaseContext";
+import { useGameStateContext } from "@/contexts/GameStateContext";
 import { beginBattle, cancelSetup, chooseWarriors, finishSetup, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
 
 type UseWarriorSelectionProps = {
@@ -29,7 +28,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const router = useRouter();
     const { currentGameSession } = useGameSessionContext();
     const gameId = currentGameSession?.id!;
-    const { updateCurrentPhase } = useCurrentPhaseContext();
+    const { refreshGameState } = useGameStateContext();
     const [warriorSelectionState, setWarriorSelectionState] = useState<WarriorSelectionState | null>(null);
     const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
@@ -48,8 +47,8 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
         setAllPlayersSetup(data.allPlayersSetup);
     };
     
-    const handleSocketBeginBattle = (data: NextStateData) => {
-        updateCurrentPhase(data);
+    const handleSocketBeginBattle = () => {
+        // Reserved for future warrior selection-specific logic
     };
 
     useEffect(() => {

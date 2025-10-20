@@ -155,3 +155,12 @@ export async function activateDayBreak(
         "POST"
     );
 }
+
+/* ------------ Gameplay Data Endpoints ------------ */
+export async function getGameState(gameId: string, userId: string) {
+    return getGameplayUrlWithGameId("/game-state", gameId, { userId }, "GET");
+}
+
+export async function getTeamHands(gameId: string, userId: string) {
+    return getGameplayUrlWithGameId("/team-hands", gameId, { userId }, "GET");
+}

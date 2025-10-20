@@ -31,7 +31,7 @@ router.get("/:userId/games", async (req: Request, res: Response) => {
             gameId: parsedGames.id,
             gameName: parsedGames.gameName,
             isPrivate: parsedGames.isPrivate,
-            isStarted: parsedGames.isStarted,
+            isActiveGame: parsedGames.isActiveGame,
             numPlayersTotal: parsedGames.numPlayersTotal,
             currentPlayers: parsedGames.players.length,
         }));
