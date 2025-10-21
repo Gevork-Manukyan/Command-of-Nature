@@ -12,13 +12,13 @@ import ShopDisplay from "./ShopDisplay";
 import ActionPanel from "./ActionPanel";
 
 export default function Gameplay() {
-    const { gameState, isLoading, error } = useGameStateContext();
+    const { gameState, isLoading, error, isGameplayState } = useGameStateContext();
     const { currentGameSession } = useGameSessionContext();
     const { data: session } = useSession();
 
     if (isLoading) return <LoadingScreen />;
     if (error) return <ErrorScreen message={error} />;
-    if (!gameState) return <ErrorScreen message="No game state available" />;
+    if (!gameState || !isGameplayState(gameState)) return <ErrorScreen message="No game state available" />;
     if (!currentGameSession) return <ErrorScreen message="No game session found" />;
     if (!session?.user?.id) return <ErrorScreen message="User not authenticated" />;
 

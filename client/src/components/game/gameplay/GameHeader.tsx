@@ -1,9 +1,9 @@
 "use client";
 
-import { GameStateData } from "@shared-types";
+import { GameplayGameState } from "@shared-types";
 
 interface GameHeaderProps {
-    gameState: GameStateData;
+    gameState: GameplayGameState;
     gameName: string;
 }
 

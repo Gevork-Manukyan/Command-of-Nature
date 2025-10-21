@@ -1,9 +1,9 @@
 "use client";
 
-import { GameStateData } from "@shared-types";
+import { GameplayGameState } from "@shared-types";
 
 interface ShopDisplayProps {
-    gameState: GameStateData;
+    gameState: GameplayGameState;
 }
 
 export default function ShopDisplay({ gameState }: ShopDisplayProps) {

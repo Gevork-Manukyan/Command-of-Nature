@@ -22,6 +22,7 @@ type GameStateContextType = {
     refreshGameState: () => Promise<void>;
     isGameplayPhase: boolean;
     isSetupPhase: boolean;
+    isGameplayState: (state: GameStateData | null) => state is GameplayGameState;
 }
 
 const GameStateContext = createContext<GameStateContextType | undefined>(undefined);
@@ -229,7 +230,8 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
                 error, 
                 refreshGameState: fetchGameState,
                 isGameplayPhase,
-                isSetupPhase
+                isSetupPhase,
+                isGameplayState
             }}
         >
             {children}
