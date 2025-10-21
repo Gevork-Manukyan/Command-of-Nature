@@ -264,7 +264,6 @@ export class GameStateManager {
         const game = this.getGame(gameId) as ConGame;
         game.initGame();
         const activeGame = new ActiveConGame(game);
-        this.setGame(gameId, activeGame);
         await this.saveGame(activeGame);
         return activeGame;
     }

@@ -458,7 +458,6 @@ export class ConGame {
         this.initPlayerFields();
         this.initCreatureShop();
         this.initItemShop();
-        this.setIsActiveGame(true);
     }
 
     /**
@@ -727,6 +726,7 @@ export class ActiveConGame extends ConGame {
 
         this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
         this.actionPoints = this.maxActionPoints;
+        this.isActiveGame = true;
     }
 
     /**

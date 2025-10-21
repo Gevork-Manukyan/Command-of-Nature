@@ -37,6 +37,7 @@ import {
     userSocketManager,
 } from "src/lib/utilities/game-routes";
 import { NotFoundError, GameConflictError } from "../../custom-errors";
+import { ActiveConGame, Player } from "src/models";
 
 export default function createGameplayRouter(
     gameEventEmitter: GameEventEmitter
@@ -194,32 +195,34 @@ export default function createGameplayRouter(
     });
 
     // Helper function to build game state data with team-based visibility
-    function buildGameStateData(game: any, userId: string): GameStateData {
-        const player = game.getPlayerByUserId(userId);
+    function buildGameStateData(game: ActiveConGame, userId: string): GameStateData {
         const myTeam = game.getPlayerTeamByUserId(userId);
-        const opponentTeam = game.getOpposingTeam(myTeam);
+        const opponentTeam = myTeam ? game.getOpposingTeam(myTeam) : null;
+
+        if (!myTeam || !opponentTeam) {
+            throw new NotFoundError("Team not found");
+        }
         
         // Build team-specific player data with visibility rules
         const myTeamPlayers = game.players
-            .filter((p: any) => myTeam.isPlayerOnTeam(p.userId))
-            .map((p: any) => ({
+            .filter((p: Player) => myTeam.isPlayerOnTeam(p.userId))
+            .map((p: Player) => ({
                 userId: p.userId,
                 socketId: p.socketId,
                 sage: p.sage,
                 level: p.level,
-                hand: p.getHand(), // Visible to team
+                hand: p.getHand(),
                 deckCount: p.getDeck().length,
                 discardCount: p.getDiscardPile().length,
             }));
             
         const opponentTeamPlayers = game.players
-            .filter((p: any) => opponentTeam.isPlayerOnTeam(p.userId))
-            .map((p: any) => ({
+            .filter((p) => opponentTeam.isPlayerOnTeam(p.userId))
+            .map((p) => ({
                 userId: p.userId,
                 socketId: p.socketId,
                 sage: p.sage,
                 level: p.level,
-                // hand: omitted - private to their team
                 deckCount: p.getDeck().length,
                 discardCount: p.getDiscardPile().length,
             }));
@@ -229,7 +232,7 @@ export default function createGameplayRouter(
             currentPhase: game.getCurrentPhase(),
             activeTeamNumber: game.getActiveTeam().getTeamNumber(),
             actionPoints: game.getActionPoints(),
-            maxActionPoints: game.maxActionPoints,
+            maxActionPoints: game.getMaxActionPoints(),
             teams: [
                 {
                     teamNumber: game.team1.getTeamNumber(),
@@ -257,12 +260,16 @@ export default function createGameplayRouter(
         };
     }
 
-    function buildTeamHandsData(game: any, userId: string): TeamHandsData {
+    function buildTeamHandsData(game: ActiveConGame, userId: string): TeamHandsData {
         const myTeam = game.getPlayerTeamByUserId(userId);
+
+        if (!myTeam) {
+            throw new NotFoundError("Team not found");
+        }
         
         const myTeamPlayers = game.players
-            .filter((p: any) => myTeam.isPlayerOnTeam(p.userId))
-            .map((p: any) => ({
+            .filter((p) => myTeam.isPlayerOnTeam(p.userId))
+            .map((p) => ({
                 userId: p.userId,
                 socketId: p.socketId,
                 sage: p.sage,
