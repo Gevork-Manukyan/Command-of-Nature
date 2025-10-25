@@ -1,10 +1,19 @@
-import { useGameSetupContext } from "@/contexts/GameSetupContext";
+import { useGameStateContext } from "@/contexts/GameStateContext";
+import { useSetupActions } from "@/hooks/useSetupActions";
+import { useIsHost } from "@/hooks/useIsHost";
 import H3 from "../components/h3";
 import NextPhaseButton from "../components/NextPhaseButton";
 import { Button } from "@/components/shadcn-ui/button";
 
 export default function TeamSelection() {
-    const { handleTeamJoin, isHost, handleAllTeamsJoined, numPlayersTotal, handleClearTeams, userPlayers } = useGameSetupContext();
+    const { gameState, isSetupState } = useGameStateContext();
+    const { handleTeamJoin, handleAllTeamsJoined, handleClearTeams } = useSetupActions();
+    const isHost = useIsHost();
+    
+    // Derived state
+    const setupState = isSetupState(gameState) ? gameState : null;
+    const userPlayers = setupState?.userSetupData || [];
+    const numPlayersTotal = userPlayers.length;
     const teams = {
         1: userPlayers.filter((user) => user.team === 1),
         2: userPlayers.filter((user) => user.team === 2),

@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData } from "@shared-types";
-import { getGameState, getCurrentPhase } from '@/services/game-api';
+import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData, PlayerJoinedData, PlayerLeftData, SageSelectedData, TeamJoinedData, TeamsClearedData, ReadyStatusToggledData, SetupGameStateSchema, GameplayGameStateSchema, playerJoinedSchema, playerLeftSchema, sageSelectedSchema, teamJoinedSchema, teamsClearedSchema, readyStatusToggledSchema } from "@shared-types";
+import { getGameState, getCurrentPhase, getSetupGameState } from '@/services/game-api';
 import { socketService } from '@/services/socket';
 import { 
     BattlefieldUpdatedEvent, 
@@ -10,7 +10,13 @@ import {
     ShopUpdatedEvent, 
     PhaseChangedEvent, 
     TurnChangedEvent, 
-    ActionPointsChangedEvent
+    ActionPointsChangedEvent,
+    PlayerJoinedEvent,
+    PlayerLeftEvent,
+    SageSelectedEvent,
+    TeamJoinedEvent,
+    ClearTeamsEvent,
+    ReadyStatusToggledEvent
 } from "@shared-types/game-events";
 import { State } from "@shared-types/gamestate-types";
 
@@ -23,6 +29,7 @@ type GameStateContextType = {
     isGameplayPhase: boolean;
     isSetupPhase: boolean;
     isGameplayState: (state: GameStateData | null) => state is GameplayGameState;
+    isSetupState: (state: GameStateData | null) => state is SetupGameState;
 }
 
 const GameStateContext = createContext<GameStateContextType | undefined>(undefined);
@@ -64,7 +71,12 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
     
     // Type guard to check if gameState is a gameplay state
     const isGameplayState = (state: GameStateData | null): state is GameplayGameState => {
-        return state !== null && 'teams' in state;
+        return state !== null && 'activeTeamNumber' in state;
+    };
+
+    // Type guard to check if gameState is a setup state
+    const isSetupState = (state: GameStateData | null): state is SetupGameState => {
+        return isGameplayState(state) === false;
     };
 
     const fetchGameState = useCallback(async () => {
@@ -79,13 +91,13 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
             if (GAMEPLAY_PHASES.has(serverPhase as State)) {
                 // For gameplay phases, fetch full game state
                 const data = await getGameState(gameId, userId);
-                setGameState(data);
+                const validatedData = GameplayGameStateSchema.parse(data);
+                setGameState(validatedData);
             } else {
-                // For setup phases, create a minimal game state with just the phase
-                setGameState({
-                    gameId,
-                    currentPhase: serverPhase as State,
-                } as SetupGameState);
+                // For setup phases, fetch complete setup state
+                const data = await getSetupGameState(gameId);
+                const validatedData = SetupGameStateSchema.parse(data);
+                setGameState(validatedData);
             }
         } catch (err) {
             console.error('Failed to fetch game state:', err);
@@ -99,7 +111,92 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
         fetchGameState();
     }, [fetchGameState]);
 
-    // Unified event handlers
+    // -------------- SETUP EVENT HANDLERS --------------
+    const handlePlayerJoined = useCallback((data: PlayerJoinedData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = playerJoinedSchema.parse(data);
+            return {
+                ...prev,
+                userSetupData: validatedData.userSetupData,
+            };
+        });
+    }, []);
+
+    const handlePlayerLeft = useCallback((data: PlayerLeftData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = playerLeftSchema.parse(data);
+            return {
+                ...prev,
+                userSetupData: validatedData.userSetupData,
+                hostUserId: validatedData.hostUserId,
+            };
+        });
+    }, []);
+
+    const handleSageSelected = useCallback((data: SageSelectedData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = sageSelectedSchema.parse(data);
+            return {
+                ...prev,
+                availableSages: validatedData.availableSages,
+                userSetupData: prev.userSetupData.map(user => 
+                    user.userId === validatedData.userId ? { ...user, sage: validatedData.sage } : user
+                ),
+            };
+        });
+    }, []);
+
+    const handleTeamJoined = useCallback((data: TeamJoinedData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = teamJoinedSchema.parse(data);
+            const updatedTeams = validatedData.updatedTeams;
+            return {
+                ...prev,
+                teams: updatedTeams,
+                userSetupData: prev.userSetupData.map(user => {
+                    const userId = user.userId;
+                    if (updatedTeams[1].includes(userId)) {
+                        return { ...user, team: 1 };
+                    }
+                    if (updatedTeams[2].includes(userId)) {
+                        return { ...user, team: 2 };
+                    }
+                    return { ...user, team: null };
+                }),
+            };
+        });
+    }, []);
+
+    const handleTeamsCleared = useCallback((data: TeamsClearedData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = teamsClearedSchema.parse(data);
+            return {
+                ...prev,
+                teams: validatedData.updatedTeams,
+                userSetupData: prev.userSetupData.map(user => ({ ...user, team: null })),
+            };
+        });
+    }, []);
+
+    const handleReadyStatusToggled = useCallback((data: ReadyStatusToggledData) => {
+        setGameState(prev => {
+            if (!prev || !isSetupState(prev)) return prev;
+            const validatedData = readyStatusToggledSchema.parse(data);
+            return {
+                ...prev,
+                userSetupData: prev.userSetupData.map(user =>
+                    user.userId === validatedData.userId ? { ...user, isReady: validatedData.isReady } : user
+                ),
+            };
+        });
+    }, []);
+
+    // -------------- GAMEPLAY EVENT HANDLERS --------------
     const handleBattlefieldUpdate = useCallback((data: BattlefieldUpdatedData) => {
         setGameState(prev => {
             if (!prev || !isGameplayState(prev)) return prev;
@@ -166,6 +263,7 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
         });
     }, []);
 
+    // -------------- PHASE CHANGE EVENT HANDLER --------------
     const handlePhaseChange = useCallback(async (data: PhaseChangedData) => {
         const newPhase = data.currentPhase as State;
         setCurrentPhase(newPhase);
@@ -204,6 +302,15 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
     useEffect(() => {
         if (!gameId) return;
 
+        // -------------- SETUP EVENT LISTENERS --------------
+        socketService.on(PlayerJoinedEvent, handlePlayerJoined);
+        socketService.on(PlayerLeftEvent, handlePlayerLeft);
+        socketService.on(SageSelectedEvent, handleSageSelected);
+        socketService.on(TeamJoinedEvent, handleTeamJoined);
+        socketService.on(ClearTeamsEvent, handleTeamsCleared);
+        socketService.on(ReadyStatusToggledEvent, handleReadyStatusToggled);
+
+        // -------------- GAMEPLAY EVENT LISTENERS --------------
         socketService.on(BattlefieldUpdatedEvent, handleBattlefieldUpdate);
         socketService.on(HandUpdatedEvent, handleHandUpdate);
         socketService.on(ShopUpdatedEvent, handleShopUpdate);
@@ -212,6 +319,15 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
         socketService.on(ActionPointsChangedEvent, handleActionPointsChange);
         
         return () => {
+            // -------------- SETUP EVENT LISTENERS --------------
+            socketService.off(PlayerJoinedEvent, handlePlayerJoined);
+            socketService.off(PlayerLeftEvent, handlePlayerLeft);
+            socketService.off(SageSelectedEvent, handleSageSelected);
+            socketService.off(TeamJoinedEvent, handleTeamJoined);
+            socketService.off(ClearTeamsEvent, handleTeamsCleared);
+            socketService.off(ReadyStatusToggledEvent, handleReadyStatusToggled);
+
+            // -------------- GAMEPLAY EVENT LISTENERS --------------
             socketService.off(BattlefieldUpdatedEvent, handleBattlefieldUpdate);
             socketService.off(HandUpdatedEvent, handleHandUpdate);
             socketService.off(ShopUpdatedEvent, handleShopUpdate);
@@ -219,7 +335,7 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
             socketService.off(TurnChangedEvent, handleTurnChange);
             socketService.off(ActionPointsChangedEvent, handleActionPointsChange);
         };
-    }, [gameId, handleBattlefieldUpdate, handleHandUpdate, handleShopUpdate, handlePhaseChange, handleTurnChange, handleActionPointsChange]);
+    }, [gameId, handleBattlefieldUpdate, handleHandUpdate, handleShopUpdate, handlePhaseChange, handleTurnChange, handleActionPointsChange, handlePlayerJoined, handlePlayerLeft, handleSageSelected, handleTeamJoined, handleTeamsCleared, handleReadyStatusToggled]);
 
     return (
         <GameStateContext.Provider 
@@ -231,7 +347,8 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
                 refreshGameState: fetchGameState,
                 isGameplayPhase,
                 isSetupPhase,
-                isGameplayState
+                isGameplayState,
+                isSetupState
             }}
         >
             {children}

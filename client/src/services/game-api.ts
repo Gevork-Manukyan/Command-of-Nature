@@ -38,10 +38,6 @@ export async function getSetupGameState(gameId: string) {
     return getSetupUrlWithGameId("/game-state", gameId, {}, "GET");
 }
 
-export async function getUserSetupData(gameId: string, userId: string) {
-    return getSetupUrlWithGameId("/user-setup-data", gameId, { userId }, "GET");
-}
-
 export async function getUserWarriorSelectionData(gameId: string, userId: string) {
     return getSetupUrlWithGameId("/user-warrior-selection-data", gameId, { userId }, "GET");
 }

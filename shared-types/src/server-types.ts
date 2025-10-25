@@ -173,6 +173,7 @@ export const leaveGameSchema = z.object({
 
 export const playerLeftSchema = z.object({
     userSetupData: z.array(UserSetupSchema),
+    hostUserId: z.string(),
 });
 
 export const getDayBreakCardsSchema = z.object({
@@ -216,6 +217,7 @@ export const SetupGameStateSchema = z.object({
         1: z.array(z.string()),
         2: z.array(z.string()),
     }),
+    hostUserId: z.string(),
 });
 
 export const GameplayGameStateSchema = z.object({

@@ -1,15 +1,22 @@
 "use client";
 import H3 from "../components/h3";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/shadcn-ui/button";
-import { useGameSetupContext } from "@/contexts/GameSetupContext";
+import { useGameStateContext } from "@/contexts/GameStateContext";
+import { useSetupActions } from "@/hooks/useSetupActions";
+import { useIsHost } from "@/hooks/useIsHost";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { ErrorScreen } from "@/components/error/error-screen";
 import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function ReadyUp() {
-    const { handleToggleReady, isHost, handleAllPlayersReady } = useGameSetupContext();
-    const userId = useSession().data?.user.id;
-    const { userPlayers } = useGameSetupContext();
+    const { gameState, isSetupState } = useGameStateContext();
+    const { handleToggleReady, handleAllPlayersReady } = useSetupActions();
+    const isHost = useIsHost();
+    const userId = useCurrentUser();
+    
+    // Derived state
+    const setupState = isSetupState(gameState) ? gameState : null;
+    const userPlayers = setupState?.userSetupData || [];
     const userSetupData = userPlayers.find((user) => user.userId === userId);
     const otherPlayers = userPlayers.filter((user) => user.userId !== userId);
 

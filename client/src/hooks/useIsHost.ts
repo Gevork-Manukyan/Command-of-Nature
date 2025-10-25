@@ -1,28 +1,16 @@
 "use client";
 
-import { isPlayerHostOfGame } from "@/actions/game-actions";
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
-import { useEffect, useState } from "react";
+import { useGameStateContext } from "@/contexts/GameStateContext";
+import { useSession } from "next-auth/react";
 
-export function useIsHost(userId: string) {
-    const { currentGameSession } = useGameSessionContext();
-    const [isHost, setIsHost] = useState(false);
+export function useIsHost() {
+    const { gameState, isSetupState } = useGameStateContext();
+    const { data: session } = useSession();
+    const currentUserId = session?.user.id;
 
-    const checkIsHost = async () => {
-        if (!userId || !currentGameSession) return;
-        const isHost = await isPlayerHostOfGame(
-            userId,
-            currentGameSession.id
-        );
-        setIsHost(isHost);
-    };
-
-    useEffect(() => {
-        checkIsHost();
-    }, [currentGameSession, userId]);
-
-    return {
-        isHost,
-        checkIsHost
+    if (isSetupState(gameState)) {
+        return gameState.hostUserId === currentUserId;
     }
+
+    return false;
 }

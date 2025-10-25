@@ -7,15 +7,13 @@ import SageSelection from "@/components/game/setup/pre-game-pages/sage-selection
 import TeamSelection from "@/components/game/setup/pre-game-pages/team-selection";
 import { LoadingScreen } from "@/components/loading/loading-screen";
 import { useGameStateContext } from "@/contexts/GameStateContext";
-import { useGameSetupContext } from "@/contexts/GameSetupContext";
 import { State } from "@shared-types";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function GameSetupPage() {
-    const { error } = useGameSetupContext();
-    const { currentPhase, isSetupPhase, isGameplayPhase } = useGameStateContext();
+    const { currentPhase, isSetupPhase, isGameplayPhase, error } = useGameStateContext();
     const router = useRouter();
     const params = useParams();
     const gameId = params.gameId as string;

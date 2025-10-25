@@ -11,7 +11,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { env } from "./lib/env";
 import { prisma } from "./lib/prisma";
 import { getUserActiveGame } from "./lib/utilities/db";
-import { getUpdatedUsers } from "./lib/utilities/game-routes";
+import { getUserSetupData } from "./lib/utilities/game-routes";
 
 const app = express();
 app.use(cors());
@@ -61,7 +61,9 @@ gameNamespace.on("connection", async (socket) => {
                 await gameStateManager.playerRejoinGame(activeGameId, userId, socket.id);
                 userSocketManager.joinGameRoom(userId, activeGameId);
                 
-                const data = await getUpdatedUsers(activeGameId);
+                const data = {
+                    userSetupData: await getUserSetupData(gameStateManager.getGame(activeGameId))
+                };
                 gameEventEmitter.emitToOtherPlayersInRoom(
                     activeGameId,
                     socket.id,

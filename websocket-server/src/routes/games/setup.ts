@@ -11,7 +11,6 @@ import {
     ClearTeamsEvent,
     CreateGameData,
     ElementalWarriorStarterCard,
-    GameListing,
     GetSelectedSagesData,
     getSelectedSagesSchema,
     JoinGameData,
@@ -46,7 +45,7 @@ import {
     WarriorSelectionState,
     WaitingTurnEvent,
     StartTurnEvent,
-    PhaseChangedEvent,
+    PhaseChangedEvent
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -62,41 +61,26 @@ import {
     validateRequestBody,
     validateRequestQuery,
 } from "src/lib/utilities/routes";
-import { ConGame } from "src/models";
 import {
     gameStateManager,
-    getUpdatedUsers,
     userSocketManager,
+    buildSetupGameStateData,
+    createGameListing,
+    getTeams,
+    getUserSetupData,
 } from "src/lib/utilities/game-routes";
-
-function createGameListing(game: ConGame): GameListing {
-    return {
-        id: game.id,
-        gameName: game.gameName,
-        isPrivate: game.isPrivate,
-        numPlayersTotal: game.numPlayersTotal,
-        numCurrentPlayers: game.players.length,
-    };
-}
-
-function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
-    return {
-        1: game.team1.userIds,
-        2: game.team2.userIds,
-    };
-}
-
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     const router = express.Router();
 
-    // GET /api/games/setup/:gameId/user-setup-data
+    // GET /api/games/setup/:gameId/game-state
     router.get(
-        "/:gameId/user-setup-data",
+        "/:gameId/game-state",
         asyncHandler(async (req: Request, res: Response) => {
             const gameId = req.params.gameId;
-            const response = await getUpdatedUsers(gameId);
-            res.json(response);
+            const game = gameStateManager.getGame(gameId);
+            const gameStateData = await buildSetupGameStateData(game);
+            res.json(gameStateData);
         })
     );
 
@@ -153,9 +137,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
                     userSocketManager.joinGameRoom(userId, gameId);
 
-                    const data: PlayerJoinedData = await getUpdatedUsers(
-                        gameId
-                    );
+                    const data: PlayerJoinedData = {
+                        userSetupData: await getUserSetupData(game)
+                    };
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
                         socketId,

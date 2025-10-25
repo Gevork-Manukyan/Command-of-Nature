@@ -1,41 +1,57 @@
-import { UserSetupDataResponse } from "@shared-types";
+import { GameListing, SetupGameState, UserSetup, UserSetupDataResponse } from "@shared-types";
 import { ValidationError } from "src/custom-errors";
 import { GameStateManager } from "src/services";
 import { UserSocketManager } from "src/services/UserSocketManager";
 import { getUserProfilesByGameId } from "./db";
+import { ConGame } from "src/models";
 
 export const gameStateManager = GameStateManager.getInstance();
 export const userSocketManager = UserSocketManager.getInstance();
 
-/**
- * Gets the updated users for a game
- * @param gameId - The id of the game to get the updated users for
- * @returns The updated users for the game
- */
-export async function getUpdatedUsers(gameId: string): Promise<UserSetupDataResponse> {
-    const game = gameStateManager.getGame(gameId);
-    const userSetupData = await getUserProfilesByGameId(gameId);
-
-    const response: UserSetupDataResponse = {
-        userSetupData: [],
+export function createGameListing(game: ConGame): GameListing {
+    return {
+        id: game.id,
+        gameName: game.gameName,
+        isPrivate: game.isPrivate,
+        numPlayersTotal: game.numPlayersTotal,
+        numCurrentPlayers: game.players.length,
     };
-    for (const user of userSetupData) {
-        const { userId, username } = user;
-        const player = game.getPlayerByUserId(userId);
-        if (!player) {
-            throw new ValidationError("Player not found", "player");
-        }
-        
-        const isReady = player.isReady;
-        const team = game.getPlayerTeamByUserId(userId)?.getTeamNumber() || null;
-        const sage = player.sage;
-        response.userSetupData.push({
-            userId,
-            username,
-            sage,
-            team,
-            isReady,
-        });
-    }
-    return response;
+}
+
+export function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
+    return {
+        1: game.team1.userIds,
+        2: game.team2.userIds,
+    };
+}
+
+export async function getUserSetupData(game: ConGame): Promise<UserSetup[]> {
+    const userProfiles = await getUserProfilesByGameId(game.id);
+    return game.players.map(player => ({
+        userId: player.userId,
+        username: userProfiles.find(profile => profile.userId === player.userId)?.username || player.userId,
+        sage: player.sage,
+        team: game.getPlayerTeamByUserId(player.userId)?.getTeamNumber() || null,
+        isReady: player.isReady,
+    }));
+}
+
+export async function buildSetupGameStateData(game: ConGame): Promise<SetupGameState> {
+    const userSetupData: UserSetup[] = await getUserSetupData(game);
+
+    // Get the current phase from the game state
+    const gameState = gameStateManager.getGameState(game.id);
+    const currentPhase = gameState.getCurrentTransition().currentState;
+
+    return {
+        gameId: game.id,
+        currentPhase,
+        userSetupData,
+        availableSages: game.getAvailableSages(),
+        teams: {
+            1: game.team1.userIds,
+            2: game.team2.userIds,
+        },
+        hostUserId: game.getHost()?.userId || "",
+    };
 }

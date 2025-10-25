@@ -13,16 +13,10 @@ import {
     leaveGameSchema,
     PlayerLeftData,
     PlayerLeftEvent,
-    GameStateData,
     TeamHandsData,
     getUserGameStateSchema,
     getUserTeamHandsSchema,
     BattlefieldUpdatedEvent,
-    HandUpdatedEvent,
-    ShopUpdatedEvent,
-    PhaseChangedEvent,
-    TurnChangedEvent,
-    ActionPointsChangedEvent,
     GameplayGameState,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
@@ -34,7 +28,7 @@ import { GameEventEmitter } from "../../services";
 import { deleteUserActiveGames } from "src/lib/utilities/db";
 import {
     gameStateManager,
-    getUpdatedUsers,
+    getUserSetupData,
     userSocketManager,
 } from "src/lib/utilities/game-routes";
 import { NotFoundError, GameConflictError } from "../../custom-errors";
@@ -100,7 +94,10 @@ export default function createGameplayRouter(
 
                 await gameStateManager.removePlayerFromGame(gameId, socketId);
                 userSocketManager.leaveGameRoom(userId, gameId);
-                const data: PlayerLeftData = await getUpdatedUsers(gameId);
+                const data: PlayerLeftData = {
+                    userSetupData: await getUserSetupData(game),
+                    hostUserId: game.getHost()?.userId || ""
+                };
                 gameEventEmitter.emitToOtherPlayersInRoom(
                     gameId,
                     socketId,

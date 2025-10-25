@@ -10,7 +10,7 @@ import ChooseWarriors from "./choose-warriors";
 export default function WarriorSelection() {
     const { data: session } = useSession();
     const userId = session?.user.id!;
-    const { isHost } = useIsHost(userId);
+    const isHost = useIsHost();
     const {
         userWarriorSelection,
         selectedWarriors,

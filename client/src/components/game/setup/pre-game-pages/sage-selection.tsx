@@ -1,26 +1,27 @@
 "use client";
 
-import { useGameSetupContext } from "@/contexts/GameSetupContext";
+import { useGameStateContext } from "@/contexts/GameStateContext";
+import { useSetupActions } from "@/hooks/useSetupActions";
+import { useIsHost } from "@/hooks/useIsHost";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { Sage } from "@shared-types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import H3 from "../components/h3";
 import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function SageSelection() {
-    const { 
-        numPlayersTotal,
-        isHost,
-        selectedSage,
-        availableSages,
-        fetchSelectedSages,
-        handleSageConfirm,
-        handleAllSagesSelected,
-    } = useGameSetupContext();
+    const { gameState, isSetupState } = useGameStateContext();
+    const { handleSageConfirm, handleAllSagesSelected } = useSetupActions();
+    const userId = useCurrentUser();
+    const isHost = useIsHost();
+    
+    // Extract setup state
+    const setupState = isSetupState(gameState) ? gameState : null;
+    const numPlayersTotal = setupState?.userSetupData.length || 0;
+    const selectedSage = setupState?.userSetupData.find(user => user.userId === userId)?.sage || null;
+    const availableSages = setupState?.availableSages || { Cedar: true, Gravel: true, Porella: true, Torrent: true };
     const [clickedSage, setClickedSage] = useState<Sage | null>(null);
 
-    useEffect(() => {
-        fetchSelectedSages();
-    }, [])
 
     const handleSageSelect = (sage: Sage) => {
         if (availableSages[sage]) {
