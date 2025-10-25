@@ -205,9 +205,22 @@ export const TeamGameDataSchema = z.object({
 export const SetupGameStateSchema = z.object({
     gameId: z.string(),
     currentPhase: z.string(),
+    userSetupData: z.array(UserSetupSchema),
+    availableSages: z.object({
+        Cedar: z.boolean(),
+        Gravel: z.boolean(),
+        Porella: z.boolean(),
+        Torrent: z.boolean(),
+    }),
+    teams: z.object({
+        1: z.array(z.string()),
+        2: z.array(z.string()),
+    }),
 });
 
-export const GameplayGameStateSchema = SetupGameStateSchema.extend({
+export const GameplayGameStateSchema = z.object({
+    gameId: z.string(),
+    currentPhase: z.string(),
     activeTeamNumber: z.union([z.literal(1), z.literal(2)]),
     actionPoints: z.number(),
     maxActionPoints: z.number(),

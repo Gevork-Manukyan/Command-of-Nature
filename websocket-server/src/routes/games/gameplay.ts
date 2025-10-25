@@ -23,6 +23,7 @@ import {
     PhaseChangedEvent,
     TurnChangedEvent,
     ActionPointsChangedEvent,
+    GameplayGameState,
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -195,7 +196,7 @@ export default function createGameplayRouter(
     });
 
     // Helper function to build game state data with team-based visibility
-    function buildGameStateData(game: ActiveConGame, userId: string): GameStateData {
+    function buildGameStateData(game: ActiveConGame, userId: string): GameplayGameState {
         const myTeam = game.getPlayerTeamByUserId(userId);
         const opponentTeam = myTeam ? game.getOpposingTeam(myTeam) : null;
 
