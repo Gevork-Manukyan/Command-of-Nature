@@ -420,6 +420,18 @@ export class Battlefield {
     }
 
     /**
+     * Converts the battlefield to a simplified format for client display
+     * @returns A simplified battlefield object with spaces mapping
+     */
+    toClientFormat(): { spaces: Record<string, ElementalCard | null> } {
+        const spaces: Record<string, ElementalCard | null> = {};
+        this.fieldArray.forEach((space) => {
+            spaces[space.spaceNumber.toString()] = space.value;
+        });
+        return { spaces };
+    }
+
+    /**
      * Converts the runtime instance to a plain object for Prisma
      * @returns A plain object representation of the Battlefield instance
      */

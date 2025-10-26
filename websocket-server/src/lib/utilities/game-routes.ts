@@ -105,13 +105,13 @@ export function buildGameStateData(game: ActiveConGame, userId: string): Gamepla
             {
                 teamNumber: game.team1.getTeamNumber(),
                 gold: game.team1.getGold(),
-                battlefield: game.team1.getBattlefield(),
+                battlefield: game.team1.getBattlefield().toClientFormat(),
                 playerIds: game.team1.userIds,
             },
             {
                 teamNumber: game.team2.getTeamNumber(),
                 gold: game.team2.getGold(),
-                battlefield: game.team2.getBattlefield(),
+                battlefield: game.team2.getBattlefield().toClientFormat(),
                 playerIds: game.team2.userIds,
             }
         ],
@@ -120,7 +120,7 @@ export function buildGameStateData(game: ActiveConGame, userId: string): Gamepla
         myTeam: {
             teamNumber: myTeam.getTeamNumber(),
             gold: myTeam.getGold(),
-            battlefield: myTeam.getBattlefield(),
+            battlefield: myTeam.getBattlefield().toClientFormat(),
             playerIds: myTeam.userIds,
         },
         myTeamPlayers,

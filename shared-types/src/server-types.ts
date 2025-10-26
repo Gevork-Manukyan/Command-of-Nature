@@ -224,10 +224,14 @@ export const PlayerGameDataSchema = z.object({
     discardCount: z.number(),
 });
 
+export const BattlefieldDisplaySchema = z.object({
+    spaces: z.record(z.string(), z.any().nullable()), // spaceNumber -> card or null (keys are strings in JSON)
+});
+
 export const TeamGameDataSchema = z.object({
     teamNumber: z.union([z.literal(1), z.literal(2)]),
     gold: z.number(),
-    battlefield: z.any(), // TODO: Battlefield object
+    battlefield: BattlefieldDisplaySchema,
     playerIds: z.array(z.string()),
 });
 
@@ -284,7 +288,7 @@ export const getUserTeamHandsSchema = z.object({
 // Gameplay event data schemas
 export const BattlefieldUpdatedDataSchema = z.object({
     teamNumber: z.union([z.literal(1), z.literal(2)]),
-    battlefield: z.any(), // TODO: Battlefield object
+    battlefield: BattlefieldDisplaySchema,
 });
 
 export const HandUpdatedDataSchema = z.object({

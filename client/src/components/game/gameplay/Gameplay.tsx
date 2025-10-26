@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { LoadingScreen } from "@/components/loading/loading-screen";
 import { ErrorScreen } from "@/components/error/error-screen";
 import GameHeader from "./GameHeader";
-import BattlefieldDisplay from "./BattlefieldDisplay";
+import BattlefieldDisplay from "./BattlefieldDisplay/BattlefieldDisplay";
 import HandDisplay from "./HandDisplay";
 import ShopDisplay from "./ShopDisplay";
 import ActionPanel from "./ActionPanel";

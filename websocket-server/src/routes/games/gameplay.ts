@@ -185,7 +185,7 @@ export default function createGameplayRouter(
                     BattlefieldUpdatedEvent,
                     { 
                         teamNumber: activeTeam.getTeamNumber(),
-                        battlefield: activeTeam.getBattlefield() 
+                        battlefield: activeTeam.getBattlefield().toClientFormat() 
                     }
                 );
             }
