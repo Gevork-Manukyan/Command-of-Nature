@@ -1,5 +1,4 @@
-import { GameListing, SetupGameState, UserSetup, UserSetupDataResponse } from "@shared-types";
-import { ValidationError } from "src/custom-errors";
+import { GameListing, SetupGameState, UserSetup } from "@shared-types";
 import { GameStateManager } from "src/services";
 import { UserSocketManager } from "src/services/UserSocketManager";
 import { getUserProfilesByGameId } from "./db";
@@ -23,6 +22,11 @@ export function getTeams(game: ConGame): { [key in 1 | 2]: string[] } {
         1: game.team1.userIds,
         2: game.team2.userIds,
     };
+}
+
+export async function getUserSetupDataByGameId(gameId: string): Promise<UserSetup[]> {
+    const game = gameStateManager.getGame(gameId);
+    return await getUserSetupData(game);
 }
 
 export async function getUserSetupData(game: ConGame): Promise<UserSetup[]> {

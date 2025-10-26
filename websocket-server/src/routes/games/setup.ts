@@ -68,6 +68,7 @@ import {
     createGameListing,
     getTeams,
     getUserSetupData,
+    getUserSetupDataByGameId,
 } from "src/lib/utilities/game-routes";
 
 export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
@@ -138,7 +139,7 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     userSocketManager.joinGameRoom(userId, gameId);
 
                     const data: PlayerJoinedData = {
-                        userSetupData: await getUserSetupData(game)
+                        userSetupData: await getUserSetupDataByGameId(gameId)
                     };
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
