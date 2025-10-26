@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { GameSessionProvider } from "@/contexts/GameSessionContext";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/shadcn-ui/sonner";
 
@@ -20,12 +19,10 @@ export default function RootLayout({
         <html lang="en">
             <body className={``}>
                 <SessionProvider>
-                    <GameSessionProvider>
-                        <Header />
-                        {children}
-                        <Footer />
-                        <Toaster />
-                    </GameSessionProvider>
+                    <Header />
+                    {children}
+                    <Footer />
+                    <Toaster />
                 </SessionProvider>
             </body>
         </html>

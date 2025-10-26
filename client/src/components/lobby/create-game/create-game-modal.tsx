@@ -1,6 +1,5 @@
 "use client";
 
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { CreateGameFormData, createGameFormSchema } from "@/lib/zod-schemas";
 import { createGame } from "@/services/game-api";
 import { Input } from "@/components/shadcn-ui/input";
@@ -19,7 +18,6 @@ export const CreateGameModal = () => {
     const { data: session } = useSession();
     const userId = session?.user.id!;
     const [isCreatingGame, setIsCreatingGame] = useState(false);
-    const { updateCurrentSession } = useGameSessionContext();
     const [apiError, setApiError] = useState("");
     const {
         register,
@@ -55,7 +53,6 @@ export const CreateGameModal = () => {
                 isPrivate: data.isPrivate,
                 password: data.isPrivate ? data.password : undefined,
             });
-            updateCurrentSession(response);
             router.push(`/app/game/${response.id}`);
             closeModal();
           } catch (err) {

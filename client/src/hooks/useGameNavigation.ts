@@ -2,27 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-import { exitGame, leaveGame as leaveGameApi } from '@/services/game-api';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import { leaveGame as leaveGameApi } from '@/services/game-api';
+import { useGameId } from '@/hooks/useGameId';
 
-export function useGameNavigation(gameId: string, userId: string) {
+interface UseGameNavigationProps {
+    userId: string;
+}
+
+export function useGameNavigation({ userId }: UseGameNavigationProps) {
     const router = useRouter();
-    const { currentGameSession, updateCurrentSession } = useGameSessionContext();
+    const gameId = useGameId();
     const [isLeaving, setIsLeaving] = useState(false);
 
     const goToLobby = async () => {
         setIsLeaving(true);
         router.push('/app/lobby');
-        if (!currentGameSession) return;
-        await exitGame(gameId, { userId });
     };
 
     const leaveGame = async () => {
-        if (!currentGameSession) {
-            router.push('/app/lobby');
-            return;
-        };
-
         setIsLeaving(true);
 
         try {
@@ -32,7 +29,6 @@ export function useGameNavigation(gameId: string, userId: string) {
         }
 
         router.push('/app/lobby');
-        updateCurrentSession(null);
     };
 
     return {

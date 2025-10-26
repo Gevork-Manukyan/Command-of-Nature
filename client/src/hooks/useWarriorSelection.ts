@@ -24,7 +24,7 @@ import {
     ChooseWarriorsEvent,
 } from "@shared-types";
 import { useRouter } from "next/navigation";
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
+import { useGameId } from "@/hooks/useGameId";
 import { beginBattle, cancelSetup, chooseWarriors, finishSetup, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
 import z from "zod";
 
@@ -38,8 +38,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [allPlayersSetup, setAllPlayersSetup] = useState<boolean>(false);
-    const { currentGameSession } = useGameSessionContext();
-    const gameId = currentGameSession?.id!;
+    const gameId = useGameId();
 
     // -------------- SOCKET EVENT HANDLERS --------------
     const handleSocketChooseWarriors = (data: ChooseWarriorsData) => {
@@ -104,7 +103,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
             socketService.off(AllPlayersSetupStatusEvent, handleSocketAllPlayersSetupStatus);
             socketService.off(BeginBattleEvent, handleSocketBeginBattle);
         };
-    }, [currentGameSession, router]);
+    }, [gameId, router]);
 
     // ----- Fetch user deck warriors and warrior selection state -----
     useEffect(() => {

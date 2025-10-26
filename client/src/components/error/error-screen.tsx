@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "../shadcn-ui/button";
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useRouter } from "next/navigation";
 
 interface ErrorScreenProps {
@@ -9,11 +8,9 @@ interface ErrorScreenProps {
 }
 
 export function ErrorScreen({ message }: ErrorScreenProps) {
-    const { clearCurrentSession } = useGameSessionContext();
     const router = useRouter();
 
     const handleGoBack = () => {
-        clearCurrentSession();
         router.push('/app/lobby');
     };
 

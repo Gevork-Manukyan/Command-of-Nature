@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import { useGameId } from '@/hooks/useGameId';
 import { activateDayBreakCard, completePhase1 } from '@/services/game-api';
 import { SpaceOption } from '@shared-types';
 
@@ -17,15 +17,15 @@ interface UseDaybreakActivationReturn {
 
 export function useDaybreakActivation(): UseDaybreakActivationReturn {
     const { data: session } = useSession();
-    const { currentGameSession } = useGameSessionContext();
+    const gameId = useGameId();
     const [activatedCards, setActivatedCards] = useState<Set<SpaceOption>>(new Set());
     const [isActivating, setIsActivating] = useState(false);
     const [isCompletingPhase, setIsCompletingPhase] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const activateDaybreak = useCallback(async (spaceOption: SpaceOption) => {
-        if (!session?.user?.id || !currentGameSession?.id) {
-            setError('No user session or game session found');
+        if (!session?.user?.id || !gameId) {
+            setError('No user session or game ID found');
             return;
         }
 
@@ -38,7 +38,7 @@ export function useDaybreakActivation(): UseDaybreakActivationReturn {
         setError(null);
 
         try {
-            await activateDayBreakCard(currentGameSession.id, { userId: session.user.id, spaceOption });
+            await activateDayBreakCard(gameId, { userId: session.user.id, spaceOption });
             
             // Add to local state
             setActivatedCards(prev => new Set(prev).add(spaceOption));
@@ -48,11 +48,11 @@ export function useDaybreakActivation(): UseDaybreakActivationReturn {
         } finally {
             setIsActivating(false);
         }
-    }, [session?.user?.id, currentGameSession?.id, activatedCards]);
+    }, [session?.user?.id, gameId, activatedCards]);
 
     const handleCompletePhase1 = useCallback(async () => {
-        if (!session?.user?.id || !currentGameSession?.id) {
-            setError('No user session or game session found');
+        if (!session?.user?.id || !gameId) {
+            setError('No user session or game ID found');
             return;
         }
 
@@ -60,14 +60,14 @@ export function useDaybreakActivation(): UseDaybreakActivationReturn {
         setError(null);
 
         try {
-            await completePhase1(currentGameSession.id, { userId: session.user.id });
+            await completePhase1(gameId, { userId: session.user.id });
         } catch (err) {
             console.error('Failed to complete Phase 1:', err);
             setError(err instanceof Error ? err.message : 'Failed to complete Phase 1');
         } finally {
             setIsCompletingPhase(false);
         }
-    }, [session?.user?.id, currentGameSession?.id]);
+    }, [session?.user?.id, gameId]);
 
     return {
         activatedCards,

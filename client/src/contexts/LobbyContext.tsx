@@ -2,11 +2,9 @@
 
 import { GameListing } from "@shared-types";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useGameSessionContext } from "./GameSessionContext";
 import { getGameListings } from "@/actions/game-actions";
 
 type LobbyContextType = {
-    currentGameSession: GameListing | null;
     error: string;
     isFetchingGames: boolean;
     isJoining: boolean;
@@ -28,7 +26,6 @@ export function LobbyProvider({ children }: LobbyProviderProps) {
     const [showModal, setShowModal] = useState(false);
     const [isFetchingGames, setIsFetchingGames] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
-    const { currentGameSession } = useGameSessionContext();
     const [error, setError] = useState<string>("");
 
     // Fetch all games from the server
@@ -55,7 +52,6 @@ export function LobbyProvider({ children }: LobbyProviderProps) {
     return (
         <LobbyContext.Provider
             value={{
-                currentGameSession,
                 error,
                 isFetchingGames,
                 isJoining,

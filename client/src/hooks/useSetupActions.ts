@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { useGameSessionContext } from '@/contexts/GameSessionContext';
+import { useGameId } from '@/hooks/useGameId';
 import {
     allPlayersJoined,
     allSagesSelected,
@@ -17,8 +17,7 @@ import { Sage } from '@shared-types';
 
 export function useSetupActions() {
     const { data: session } = useSession();
-    const { currentGameSession } = useGameSessionContext();
-    const gameId = currentGameSession?.id || "";
+    const gameId = useGameId();
     const userId = session?.user.id!;
 
     const handleAllPlayersJoined = useCallback(async () => {
@@ -26,9 +25,9 @@ export function useSetupActions() {
     }, [gameId, userId]);
 
     const handleSageConfirm = useCallback(async (sage: Sage) => {
-        if (!currentGameSession || !userId) return;
+        if (!gameId || !userId) return;
         await selectSage(gameId, { userId: userId, sage });
-    }, [gameId, userId, currentGameSession]);
+    }, [gameId, userId]);
 
     const handleAllSagesSelected = useCallback(async () => {
         await allSagesSelected(gameId, { userId });

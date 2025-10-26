@@ -25,7 +25,6 @@ import {
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
 import { Request, Response } from "express";
-import { requireHostForGameExit } from "src/middleware/hostOnly";
 import { validateRequestBody, validateRequestQuery } from "src/lib/utilities/routes";
 import { GameEventEmitter } from "../../services";
 import { deleteUserActiveGames } from "src/lib/utilities/db";
@@ -54,11 +53,10 @@ export default function createGameplayRouter(
         })
     );
 
-    // Exits the game for everyone. Only the host can exit the game.
+    // Exits the game for the current user only. Any player can exit the game.
     // POST /api/games/gameplay/:gameId/exit
     router.post(
         "/:gameId/exit",
-        requireHostForGameExit,
         asyncHandler(async (req: Request, res: Response) => {
             const { userId } = validateRequestBody<ExitGameData>(
                 exitGameSchema,

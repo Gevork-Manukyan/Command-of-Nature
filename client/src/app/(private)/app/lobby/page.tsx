@@ -1,19 +1,14 @@
-import { redirect } from "next/navigation";
-import { CreateGameModal } from "../../../../components/lobby/create-game/create-game-modal";
 import { LogoutBtn } from "@/components/logout-btn";
 import { CreateGameBtn } from "@/components/lobby/create-game/create-game-btn";
 import { JoinableGames } from "@/components/lobby/joinable-games";
 import { requireUserSession } from "@/lib/server/utils";
 import { getUserActiveGames } from "@/actions/user-actions";
+import { CreateGameModal } from "@/components/lobby/create-game/create-game-modal";
 
 export default async function LobbyPage() {
     const session = await requireUserSession();
     const user = await getUserActiveGames(session.user.id);
-    const currentGameId = user?.userGames?.[0]?.gameId;
-
-    if (currentGameId) {
-        redirect(`/app/game/${currentGameId}`);
-    }
+    const activeGames = user?.userGames || [];
 
     return (
         <>
@@ -30,7 +25,7 @@ export default async function LobbyPage() {
             </div>
 
             <CreateGameModal />
-            <JoinableGames />
+            <JoinableGames activeGames={activeGames} />
         </>
     );
 }

@@ -24,8 +24,6 @@ import {
     PlayerJoinedEvent,
     ReadyStatusToggledData,
     ReadyStatusToggledEvent,
-    VerifySessionData,
-    verifySessionSchema,
     SageSelectedData,
     SageSelectedEvent,
     SelectSageData,
@@ -155,27 +153,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             );
 
             const game = gameStateManager.getGame(gameId);
-            const gameListing = createGameListing(game);
-            res.json(gameListing);
-        })
-    );
-
-    // POST /api/games/setup/verify-session
-    router.post(
-        "/verify-session",
-        asyncHandler(async (req: Request, res: Response) => {
-            const { userId, gameId } = validateRequestBody<VerifySessionData>(
-                verifySessionSchema,
-                req
-            );
-
-            // Verify the user is in the game (auto-rejoin in server.ts handles socket updates)
-            const game = gameStateManager.getGame(gameId);
-            const player = game.getPlayerByUserId(userId);
-            if (!player) {
-                throw new ValidationError("User not found in game", "userId");
-            }
-
             const gameListing = createGameListing(game);
             res.json(gameListing);
         })

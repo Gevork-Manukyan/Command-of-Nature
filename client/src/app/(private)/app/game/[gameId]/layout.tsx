@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useGameNavigation } from "@/hooks/useGameNavigation";
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { LoadingScreen } from "@/components/loading/loading-screen";
 import { ErrorScreen } from "@/components/error/error-screen";
 import { useSocketContext } from "@/contexts/SocketContext";
 import { useSession } from "next-auth/react";
-import { verifySession } from "@/services/game-api";
 import { isUserInGame } from "@/actions/user-actions";
 import { GameStateProvider } from "@/contexts/GameStateContext";
+import { exitGame } from "@/services/game-api";
 
 export default function GameLayout({
     children,
@@ -18,59 +17,64 @@ export default function GameLayout({
     children: React.ReactNode;
 }) {
     const params = useParams();
+    const router = useRouter();
     const { data: session } = useSession();
     const userId = session?.user.id!;
     const { isSocketConnected } = useSocketContext();
-    const { currentGameSession, isLoadingGameSession, updateCurrentSession } = useGameSessionContext();
-    const gameId = params.gameId === currentGameSession?.id ? currentGameSession?.id : "";
+    const gameId = params.gameId as string;
     const {
         isLeaving,
         goToLobby,
         leaveGame,
-    } = useGameNavigation(gameId, userId);
+    } = useGameNavigation({ userId });
     const shortGameId = gameId.toString().slice(-6);
 
-    // Rejoin game state
-    const [isRejoiningGame, setIsRejoiningGame] = useState(false);
-    const [rejoinError, setRejoinError] = useState<string>("");
+    // Game membership verification
+    const [isVerifyingMembership, setIsVerifyingMembership] = useState(true);
+    const [membershipError, setMembershipError] = useState<string>("");
+    const [gameSession, setGameSession] = useState<any>(null);
 
-    // Handle game session verification - server auto-rejoins on socket connection
+    // Verify user membership in game
     useEffect(() => {
-        if (!userId || !isSocketConnected) return;
+        if (!userId || !gameId) return;
 
-        const checkIfUserInGame = async (userId: string, gameId: string) => {
+        const verifyMembership = async () => {
             try {
-                setIsRejoiningGame(true);
-                setRejoinError("");
-                const playerGame = await isUserInGame(userId, gameId);
-                if (playerGame) {
-                    updateCurrentSession(playerGame);
+                setIsVerifyingMembership(true);
+                setMembershipError("");
+                
+                const userGame = await isUserInGame(userId, gameId);
+                if (userGame) {
+                    setGameSession(userGame);
                 } else {
-                    await verifySession({ userId, gameId });
-                    updateCurrentSession(null);
+                    router.push('/app/lobby');
+                    return;
                 }
-                setIsRejoiningGame(false);
             } catch (err) {
-                console.error("Failed to verify game session:", err);
-                setRejoinError(
-                    err instanceof Error ? err.message : "Failed to verify game session"
+                console.error("Failed to verify game membership:", err);
+                setMembershipError(
+                    err instanceof Error ? err.message : "Failed to verify game membership"
                 );
-                setIsRejoiningGame(false);
+            } finally {
+                setIsVerifyingMembership(false);
             }
         };
 
-        if (!currentGameSession && !isLoadingGameSession && gameId) {
-            checkIfUserInGame(userId, gameId);
-        }
-    }, [userId, currentGameSession, isSocketConnected, gameId]);
+        verifyMembership();
+
+        // Cleanup: Exit game when component unmounts (user leaves game pages)
+        return () => {
+            if (userId && gameId) {
+                exitGame(gameId, { userId }).catch(err => {
+                    console.error("Failed to exit game on unmount:", err);
+                });
+            }
+        };
+    }, [userId, gameId, router]);
 
     // Handle loading states
-    if (isLoadingGameSession) {
-        return <LoadingScreen message={"Loading game..."} />;
-    }
-
-    if (isRejoiningGame) {
-        return <LoadingScreen message="Rejoining game..." />;
+    if (isVerifyingMembership) {
+        return <LoadingScreen message={"Verifying game access..."} />;
     }
 
     if (isLeaving) {
@@ -78,16 +82,8 @@ export default function GameLayout({
     }
 
     // Handle error states
-    if (rejoinError) {
-        return <ErrorScreen message={rejoinError} />;
-    }
-
-    if (!(isLeaving || isRejoiningGame) && !currentGameSession) {
-        return (
-            <div className="flex flex-col min-h-screen">
-                <ErrorScreen message="Game session not found" />
-            </div>
-        );
+    if (membershipError) {
+        return <ErrorScreen message={membershipError} />;
     }
 
     return (
@@ -95,7 +91,7 @@ export default function GameLayout({
             <section className="h-24 flex flex-row items-center justify-around">
                 <div>
                     <h1 className="text-4xl font-bold">
-                        Game: {currentGameSession?.gameName}
+                        Game: {gameSession?.gameName}
                     </h1>
                     <p className="text-xl">Game ID: {shortGameId}</p>
                 </div>

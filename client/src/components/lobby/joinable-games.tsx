@@ -6,27 +6,38 @@ import { LoadingSpinner } from "../loading/loading-spinner";
 import { EmptyState } from "./empty-state";
 import { GameCard } from "./game-card/game-card";
 import { LoadingScreen } from "../loading/loading-screen";
+import { ActiveGames } from "./active-games";
 
-export function JoinableGames() {
+interface JoinableGamesProps {
+    activeGames: Array<{ gameId: string }>;
+}
+
+export function JoinableGames({ activeGames }: JoinableGamesProps) {
     const { isFetchingGames, error, currentGames, isJoining } = useLobbyContext();
 
-    if (isFetchingGames) {
-        return <LoadingSpinner />;
-    } else if (error) {
-        return <ErrorMessage message={error} />;
-    } else if (!isFetchingGames && currentGames.length === 0) {
-        return <EmptyState />;
-    }
-
-    if (isJoining) {
-        return <LoadingScreen message="Joining game..." />;
-    }
-
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            {currentGames.map((game) => (
-                <GameCard key={game.id} game={game} />
-            ))}
-        </div>
+        <>
+            <ActiveGames activeGames={activeGames} />
+            <div className="bg-white rounded-xl shadow-lg p-8 mt-8">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                    Available Games
+                </h2>
+                {isFetchingGames ? (
+                    <LoadingSpinner />
+                ) : error ? (
+                    <ErrorMessage message={error} />
+                ) : !isFetchingGames && currentGames.length === 0 ? (
+                    <EmptyState />
+                ) : isJoining ? (
+                    <LoadingScreen message="Joining game..." />
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {currentGames.map((game) => (
+                            <GameCard key={game.id} game={game} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

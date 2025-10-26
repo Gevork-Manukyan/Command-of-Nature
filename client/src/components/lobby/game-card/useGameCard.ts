@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { GameListing } from "@shared-types";
 import { joinGame } from "@/services/game-api";
-import { useGameSessionContext } from "@/contexts/GameSessionContext";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -17,7 +16,6 @@ export function useGameCard(
     const userId = session?.user.id!;
     const [password, setPassword] = useState("");
     const [showPasswordInput, setShowPasswordInput] = useState(false);
-    const { updateCurrentSession } = useGameSessionContext();
     const { refreshGames } = useLobbyContext();
     const router = useRouter();
 
@@ -37,7 +35,6 @@ export function useGameCard(
                 password: password || undefined,
             });
             router.push(`/app/game/${response.id}`);
-            updateCurrentSession(response);
         }  catch (err) {
             toast.error('This game no longer exists or is no longer available.');
             refreshGames();
