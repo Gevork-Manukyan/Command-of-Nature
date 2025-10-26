@@ -9,10 +9,10 @@ import {
     AllTeamsJoinedData,
     ToggleReadyStatusData,
     StartGameData,
-    ChooseWarriorsData,
-    SwapWarriorsData,
-    PlayerFinishedSetupData,
-    CancelSetupData,
+    ChooseWarriorsRequestData,
+    SwapWarriorsRequestData,
+    PlayerFinishedSetupRequestData,
+    CancelSetupRequestData,
     BeginBattleData,
     ExitGameData,
     VerifySessionData,
@@ -101,19 +101,19 @@ export async function isGameStarted(gameId: string) {
     return getSetupUrlWithGameId("/is-started", gameId, {}, "GET");
 }
 
-export async function chooseWarriors(gameId: string, data: ChooseWarriorsData) {
+export async function chooseWarriors(gameId: string, data: ChooseWarriorsRequestData) {
     return getSetupUrlWithGameId("/choose-warriors", gameId, data, "POST");
 }
 
-export async function swapWarriors(gameId: string, data: SwapWarriorsData) {
+export async function swapWarriors(gameId: string, data: SwapWarriorsRequestData) {
     return getSetupUrlWithGameId("/swap-warriors", gameId, data, "POST");
 }
 
-export async function finishSetup(gameId: string, data: PlayerFinishedSetupData) {
+export async function finishSetup(gameId: string, data: PlayerFinishedSetupRequestData) {
     return getSetupUrlWithGameId("/finish-setup", gameId, data, "POST");
 }
 
-export async function cancelSetup(gameId: string, data: CancelSetupData) {
+export async function cancelSetup(gameId: string, data: CancelSetupRequestData) {
     return getSetupUrlWithGameId("/cancel-setup", gameId, data, "POST");
 }
 

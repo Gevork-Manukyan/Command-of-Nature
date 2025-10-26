@@ -10,7 +10,7 @@ export default function JoiningGame() {
     // Derived state
     const setupState = isSetupState(gameState) ? gameState : null;
     const userPlayers = setupState?.userSetupData || [];
-    const numPlayersTotal = setupState?.userSetupData.length || 0;
+    const numPlayersTotal = setupState?.numPlayersTotal || 0;
     
     return (
         <div>

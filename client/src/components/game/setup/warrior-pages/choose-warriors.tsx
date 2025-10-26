@@ -7,13 +7,20 @@ import { ElementalWarriorStarterCard } from "@shared-types";
 type ChooseWarriorsProps = {
     selectedWarriors: ElementalWarriorStarterCard[];
     userWarriorSelection: ElementalWarriorStarterCard[];
-    isWarriorSelected: (warrior: ElementalWarriorStarterCard) => boolean;
     canSelectMore: boolean;
+    isWarriorSelected: (warrior: ElementalWarriorStarterCard) => boolean;
     toggleWarriorSelection: (warrior: ElementalWarriorStarterCard) => void;
     handleConfirmWarriors: () => void;
 };
 
-export default function ChooseWarriors({ selectedWarriors, userWarriorSelection, isWarriorSelected, canSelectMore, toggleWarriorSelection, handleConfirmWarriors }: ChooseWarriorsProps) {
+export default function ChooseWarriors({ 
+    selectedWarriors, 
+    userWarriorSelection, 
+    canSelectMore, 
+    isWarriorSelected, 
+    toggleWarriorSelection, 
+    handleConfirmWarriors 
+}: ChooseWarriorsProps) {
     return (
         <>
             <H3>Warrior Selection</H3>

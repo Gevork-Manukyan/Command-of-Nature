@@ -13,11 +13,9 @@ import {
     leaveGameSchema,
     PlayerLeftData,
     PlayerLeftEvent,
-    TeamHandsData,
     getUserGameStateSchema,
     getUserTeamHandsSchema,
-    BattlefieldUpdatedEvent,
-    GameplayGameState,
+    BattlefieldUpdatedEvent
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -27,12 +25,13 @@ import { validateRequestBody, validateRequestQuery } from "src/lib/utilities/rou
 import { GameEventEmitter } from "../../services";
 import { deleteUserActiveGames } from "src/lib/utilities/db";
 import {
+    buildGameStateData,
+    buildTeamHandsData,
     gameStateManager,
     getUserSetupData,
     userSocketManager,
 } from "src/lib/utilities/game-routes";
 import { NotFoundError, GameConflictError } from "../../custom-errors";
-import { ActiveConGame, Player } from "src/models";
 
 export default function createGameplayRouter(
     gameEventEmitter: GameEventEmitter
@@ -191,94 +190,6 @@ export default function createGameplayRouter(
 
         res.status(200).json({ message: "Day break activated successfully" });
     });
-
-    // Helper function to build game state data with team-based visibility
-    function buildGameStateData(game: ActiveConGame, userId: string): GameplayGameState {
-        const myTeam = game.getPlayerTeamByUserId(userId);
-        const opponentTeam = myTeam ? game.getOpposingTeam(myTeam) : null;
-
-        if (!myTeam || !opponentTeam) {
-            throw new NotFoundError("Team not found");
-        }
-        
-        // Build team-specific player data with visibility rules
-        const myTeamPlayers = game.players
-            .filter((p: Player) => myTeam.isPlayerOnTeam(p.userId))
-            .map((p: Player) => ({
-                userId: p.userId,
-                socketId: p.socketId,
-                sage: p.sage,
-                level: p.level,
-                hand: p.getHand(),
-                deckCount: p.getDeck().length,
-                discardCount: p.getDiscardPile().length,
-            }));
-            
-        const opponentTeamPlayers = game.players
-            .filter((p) => opponentTeam.isPlayerOnTeam(p.userId))
-            .map((p) => ({
-                userId: p.userId,
-                socketId: p.socketId,
-                sage: p.sage,
-                level: p.level,
-                deckCount: p.getDeck().length,
-                discardCount: p.getDiscardPile().length,
-            }));
-        
-        return {
-            gameId: game.id,
-            currentPhase: game.getCurrentPhase(),
-            activeTeamNumber: game.getActiveTeam().getTeamNumber(),
-            actionPoints: game.getActionPoints(),
-            maxActionPoints: game.getMaxActionPoints(),
-            teams: [
-                {
-                    teamNumber: game.team1.getTeamNumber(),
-                    gold: game.team1.getGold(),
-                    battlefield: game.team1.getBattlefield(),
-                    playerIds: game.team1.userIds,
-                },
-                {
-                    teamNumber: game.team2.getTeamNumber(),
-                    gold: game.team2.getGold(),
-                    battlefield: game.team2.getBattlefield(),
-                    playerIds: game.team2.userIds,
-                }
-            ],
-            creatureShop: game.getCurrentCreatureShopCards(),
-            itemShop: game.getCurrentItemShopCards(),
-            myTeam: {
-                teamNumber: myTeam.getTeamNumber(),
-                gold: myTeam.getGold(),
-                battlefield: myTeam.getBattlefield(),
-                playerIds: myTeam.userIds,
-            },
-            myTeamPlayers,
-            opponentTeamPlayers,
-        };
-    }
-
-    function buildTeamHandsData(game: ActiveConGame, userId: string): TeamHandsData {
-        const myTeam = game.getPlayerTeamByUserId(userId);
-
-        if (!myTeam) {
-            throw new NotFoundError("Team not found");
-        }
-        
-        const myTeamPlayers = game.players
-            .filter((p) => myTeam.isPlayerOnTeam(p.userId))
-            .map((p) => ({
-                userId: p.userId,
-                socketId: p.socketId,
-                sage: p.sage,
-                level: p.level,
-                hand: p.getHand(),
-                deckCount: p.getDeck().length,
-                discardCount: p.getDiscardPile().length,
-            }));
-        
-        return { myTeamPlayers };
-    }
 
     // GET /api/games/gameplay/:gameId/game-state?userId=xxx
     // Returns complete game state with team-based visibility

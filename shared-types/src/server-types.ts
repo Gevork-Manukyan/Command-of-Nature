@@ -33,6 +33,8 @@ import {
     TeamsClearedEvent,
 } from "./game-events";
 import { ElementalWarriorStarterCardSchema } from "./card-classes";
+import { OptionalAbilityCardSchema } from "./card-types";
+import { WarriorSelectionStateSchema } from "./types";
 import { SageSchema } from "./card-types";
 import { UserSetupSchema } from "./types";
 
@@ -138,21 +140,42 @@ export const getUserWarriorSelectionDataSchema = z.object({
     userId: z.string(),
 });
 
-export const chooseWarriorsSchema = z.object({
+export const chooseWarriorsRequestSchema = z.object({
     userId: z.string(),
     choices: z.tuple([z.string(), z.string()]),
 });
 
+export const chooseWarriorsSchema = z.object({
+    userId: z.string(),
+    selectedWarriors: z.array(ElementalWarriorStarterCardSchema.merge(OptionalAbilityCardSchema)),
+    warriorSelectionState: WarriorSelectionStateSchema,
+});
+
+export const swapWarriorsRequestSchema = z.object({
+    userId: z.string(),
+});
+
 export const swapWarriorsSchema = z.object({
+    userId: z.string(),
+    selectedWarriors: z.array(ElementalWarriorStarterCardSchema.merge(OptionalAbilityCardSchema)),
+});
+
+export const playerFinishedSetupRequestSchema = z.object({
     userId: z.string(),
 });
 
 export const playerFinishedSetupSchema = z.object({
     userId: z.string(),
+    warriorSelectionState: WarriorSelectionStateSchema,
+});
+
+export const cancelSetupRequestSchema = z.object({
+    userId: z.string(),
 });
 
 export const cancelSetupSchema = z.object({
     userId: z.string(),
+    warriorSelectionState: WarriorSelectionStateSchema,
 });
 
 export const beginBattleSchema = z.object({
@@ -203,9 +226,14 @@ export const TeamGameDataSchema = z.object({
     playerIds: z.array(z.string()),
 });
 
-export const SetupGameStateSchema = z.object({
+const BaseGameStateSchema = z.object({
     gameId: z.string(),
     currentPhase: z.string(),
+    hostUserId: z.string(),
+    numPlayersTotal: z.number(),
+});
+
+export const SetupGameStateSchema = BaseGameStateSchema.extend({
     userSetupData: z.array(UserSetupSchema),
     availableSages: z.object({
         Cedar: z.boolean(),
@@ -217,12 +245,9 @@ export const SetupGameStateSchema = z.object({
         1: z.array(z.string()),
         2: z.array(z.string()),
     }),
-    hostUserId: z.string(),
 });
 
-export const GameplayGameStateSchema = z.object({
-    gameId: z.string(),
-    currentPhase: z.string(),
+export const GameplayGameStateSchema = BaseGameStateSchema.extend({
     activeTeamNumber: z.union([z.literal(1), z.literal(2)]),
     actionPoints: z.number(),
     maxActionPoints: z.number(),
@@ -337,9 +362,13 @@ export type TeamsClearedData = z.infer<typeof teamsClearedSchema>;
 export type AllTeamsJoinedData = z.infer<typeof allTeamsJoinedSchema>;
 export type StartGameData = z.infer<typeof startGameSchema>;
 export type GetUserWarriorSelectionDataData = z.infer<typeof getUserWarriorSelectionDataSchema>;
+export type ChooseWarriorsRequestData = z.infer<typeof chooseWarriorsRequestSchema>;
 export type ChooseWarriorsData = z.infer<typeof chooseWarriorsSchema>;
+export type SwapWarriorsRequestData = z.infer<typeof swapWarriorsRequestSchema>;
 export type SwapWarriorsData = z.infer<typeof swapWarriorsSchema>;
+export type PlayerFinishedSetupRequestData = z.infer<typeof playerFinishedSetupRequestSchema>;
 export type PlayerFinishedSetupData = z.infer<typeof playerFinishedSetupSchema>;
+export type CancelSetupRequestData = z.infer<typeof cancelSetupRequestSchema>;
 export type CancelSetupData = z.infer<typeof cancelSetupSchema>;
 export type BeginBattleData = z.infer<typeof beginBattleSchema>;
 export type AllPlayersSetupStatusData = z.infer<typeof allPlayersSetupStatusSchema>;

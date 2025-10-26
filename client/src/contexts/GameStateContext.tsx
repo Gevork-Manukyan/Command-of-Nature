@@ -4,7 +4,6 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData, PlayerJoinedData, PlayerLeftData, SageSelectedData, TeamJoinedData, TeamsClearedData, ReadyStatusToggledData, SetupGameStateSchema, GameplayGameStateSchema, playerJoinedSchema, playerLeftSchema, sageSelectedSchema, teamJoinedSchema, teamsClearedSchema, readyStatusToggledSchema } from "@shared-types";
 import { getGameState, getCurrentPhase, getSetupGameState } from '@/services/game-api';
 import { socketService } from '@/services/socket';
-import { useSession } from "next-auth/react";
 import { 
     BattlefieldUpdatedEvent, 
     HandUpdatedEvent, 
@@ -84,7 +83,7 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
     };
     
     // Check if current user is the host
-    const isHost = gameState && isSetupState(gameState) ? gameState.hostUserId === currentUserId : false;
+    const isHost = gameState ? gameState.hostUserId === currentUserId : false;
 
     const fetchGameState = useCallback(async () => {
         try {

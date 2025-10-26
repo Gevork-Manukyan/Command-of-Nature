@@ -35,6 +35,16 @@ export class GameEventEmitter {
     }
 
     /**
+     * Alias for emitToPlayer for clarity
+     * @param socketId - The player socket id
+     * @param eventName - The event name
+     * @param data - The data to send
+     */
+    emitToUser(socketId: string, eventName: string, data: any = null) {
+        this.emitToPlayer(socketId, eventName, data);
+    }
+
+    /**
      * Emits an event to all players in the game
      * @param players - The players to emit to
      * @param eventName - The event name

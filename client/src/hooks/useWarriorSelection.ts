@@ -8,17 +8,25 @@ import {
     BeginBattleEvent,
     AllPlayersSetupStatusEvent,
     AllPlayersSetupStatusData,
-    PickWarriorsEvent,
     ElementalWarriorStarterCard,
     ElementalWarriorStarterCardSchema,
     OptionalAbilityCardSchema,
     WarriorSelectionState,
     WarriorSelectionStateSchema,
+    ChooseWarriorsData,
+    SwapWarriorsData,
+    PlayerFinishedSetupData,
+    CancelSetupData,
+    chooseWarriorsSchema,
+    swapWarriorsSchema,
+    playerFinishedSetupSchema,
+    cancelSetupSchema,
+    ChooseWarriorsEvent,
 } from "@shared-types";
 import { useRouter } from "next/navigation";
 import { useGameSessionContext } from "@/contexts/GameSessionContext";
-import { useGameStateContext } from "@/contexts/GameStateContext";
 import { beginBattle, cancelSetup, chooseWarriors, finishSetup, getUserWarriorSelectionData, swapWarriors } from "@/services/game-api";
+import z from "zod";
 
 type UseWarriorSelectionProps = {
     userId: string;
@@ -26,34 +34,61 @@ type UseWarriorSelectionProps = {
 
 export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const router = useRouter();
-    const { currentGameSession } = useGameSessionContext();
-    const gameId = currentGameSession?.id!;
-    const { refreshGameState } = useGameStateContext();
     const [warriorSelectionState, setWarriorSelectionState] = useState<WarriorSelectionState | null>(null);
     const [userDeckWarriors, setUserDeckWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [selectedWarriors, setSelectedWarriors] = useState<ElementalWarriorStarterCard[]>([]);
     const [allPlayersSetup, setAllPlayersSetup] = useState<boolean>(false);
+    const { currentGameSession } = useGameSessionContext();
+    const gameId = currentGameSession?.id!;
 
     // -------------- SOCKET EVENT HANDLERS --------------
-    const handleSocketPickWarriors = () => {};
+    const handleSocketChooseWarriors = (data: ChooseWarriorsData) => {
+        const validatedData = chooseWarriorsSchema.parse(data);
+        
+        if (validatedData.userId === userId) {
+            // My own action - update my state
+            setSelectedWarriors(validatedData.selectedWarriors as ElementalWarriorStarterCard[]);
+            setWarriorSelectionState(validatedData.warriorSelectionState);
+        } else {
+            // Teammate's action - update their visibility (if needed for UI)
+            // This depends on if you show teammate's warriors in UI
+        }
+    };
 
-    const handleSocketSwapWarriors = () => {};
+    const handleSocketSwapWarriors = (data: SwapWarriorsData) => {
+        const validatedData = swapWarriorsSchema.parse(data);
+        
+        if (validatedData.userId === userId) {
+            setSelectedWarriors(validatedData.selectedWarriors as ElementalWarriorStarterCard[]);
+        }
+    };
 
-    const handleSocketPlayerFinishedSetup = () => {};
+    const handleSocketPlayerFinishedSetup = (data: PlayerFinishedSetupData) => {
+        const validatedData = playerFinishedSetupSchema.parse(data);
+        
+        if (validatedData.userId === userId) {
+            setWarriorSelectionState(validatedData.warriorSelectionState);
+        }
+        // Other players' status handled by AllPlayersSetupStatusEvent
+    };
 
-    const handleSocketCancelSetup = () => {};
+    const handleSocketCancelSetup = (data: CancelSetupData) => {
+        const validatedData = cancelSetupSchema.parse(data);
+        
+        if (validatedData.userId === userId) {
+            setWarriorSelectionState(validatedData.warriorSelectionState);
+        }
+    };
 
     const handleSocketAllPlayersSetupStatus = (data: AllPlayersSetupStatusData) => {
         setAllPlayersSetup(data.allPlayersSetup);
     };
     
-    const handleSocketBeginBattle = () => {
-        // Reserved for future warrior selection-specific logic
-    };
+    const handleSocketBeginBattle = () => {};
 
     useEffect(() => {
         // -------------- REGISTER SOCKET EVENT LISTENERS --------------
-        socketService.on(PickWarriorsEvent, handleSocketPickWarriors);
+        socketService.on(ChooseWarriorsEvent, handleSocketChooseWarriors);
         socketService.on(SwapWarriorsEvent, handleSocketSwapWarriors);
         socketService.on(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
         socketService.on(CancelSetupEvent, handleSocketCancelSetup);
@@ -62,7 +97,7 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
 
         return () => {
             // -------------- UNREGISTER SOCKET EVENT LISTENERS --------------
-            socketService.off(PickWarriorsEvent, handleSocketPickWarriors);
+            socketService.off(ChooseWarriorsEvent, handleSocketChooseWarriors);
             socketService.off(SwapWarriorsEvent, handleSocketSwapWarriors);
             socketService.off(PlayerFinishedSetupEvent, handleSocketPlayerFinishedSetup);
             socketService.off(CancelSetupEvent, handleSocketCancelSetup);
@@ -71,17 +106,17 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
         };
     }, [currentGameSession, router]);
 
-    // Fetch user deck warriors
+    // ----- Fetch user deck warriors and warrior selection state -----
     useEffect(() => {
         const fetchWarriorSelectionState = async () => {
             const response = (await getUserWarriorSelectionData(gameId, userId)) as {
                 deckWarriors: unknown[];
                 warriorSelectionState: unknown;
                 selectedWarriors: unknown[];
-                isAllPlayersSetup: boolean;
+                isAllPlayersSetup: unknown;
             };
 
-            // Validate Deck Warriors
+            // ----- Validate Deck Warriors -----
             const { deckWarriors } = response;
             const validatedUserDeckWarriors = deckWarriors.map(
                 (warrior: unknown) =>
@@ -91,12 +126,12 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
             ) as ElementalWarriorStarterCard[];
             setUserDeckWarriors(validatedUserDeckWarriors);
 
-            // Validate Warrior Selection State
+            // ----- Validate Warrior Selection State -----
             const { warriorSelectionState } = response;
             const validatedWarriorSelectionState = WarriorSelectionStateSchema.parse(warriorSelectionState);
             setWarriorSelectionState(validatedWarriorSelectionState);
 
-            // Validate Selected Warriors and Warrior Positions
+            // ----- Validate Selected Warriors and Warrior Positions -----
             const { selectedWarriors } = response;
             if (selectedWarriors === null) {
                 setSelectedWarriors([]);
@@ -110,9 +145,10 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 setSelectedWarriors(validatedSelectedWarriors);
             }
 
-            // Set All Players Setup
-            const { isAllPlayersSetup } = response;
-            setAllPlayersSetup(isAllPlayersSetup);
+            // ----- Validate All Players Setup -----
+            const { isAllPlayersSetup } = response
+            const validatedIsAllPlayersSetup = z.boolean().parse(isAllPlayersSetup);
+            setAllPlayersSetup(validatedIsAllPlayersSetup);
         };
         fetchWarriorSelectionState();
     }, [gameId, userId]);
@@ -125,7 +161,6 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
                 selectedWarriors[1].name,
             ];
             await chooseWarriors(gameId, { userId, choices: warriorNames });
-            setWarriorSelectionState("swapping");
         }
     };
 
@@ -163,20 +198,15 @@ export function useWarriorSelection({ userId }: UseWarriorSelectionProps) {
     const handleSwapWarriors = async () => {
         if (selectedWarriors.length === 2) {
             await swapWarriors(gameId, { userId });
-            setSelectedWarriors((prev) => {
-                return [prev[1], prev[0]];
-            });
         }
     };
 
     const handlePlayerFinishedSetup = async () => {
         await finishSetup(gameId, { userId });
-        setWarriorSelectionState("finished");
     };
 
     const handleCancelSetup = async () => {
         await cancelSetup(gameId, { userId });
-        setWarriorSelectionState("selecting");
     };
 
     const handleBeginBattle = async () => {

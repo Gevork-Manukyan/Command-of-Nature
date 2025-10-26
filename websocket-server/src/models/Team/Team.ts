@@ -309,22 +309,33 @@ export class Team {
   /**
    * Swaps warriors for a player
    * @param player - The player swapping warriors
+   * @returns Array of the new order of warriors after swapping
    */
-  swapWarriors(player: Player) {
+  swapWarriors(player: Player): ElementalWarriorStarterCard[] {
     this.validatePlayerOnTeam(player);
 
     // One player on Team
     if (this.teamSize === 1) {
       this.battlefield.swapCards(4, 6);
-      return;
+      const warrior1 = this.battlefield.getCard(4);
+      const warrior2 = this.battlefield.getCard(6);
+      return [warrior1, warrior2].filter(card => card !== null) as ElementalWarriorStarterCard[];
     }
 
     // Two players on Team
     if (player.getElement() === this.battlefield.getCard(8)?.element) {
       this.battlefield.swapCards(7, 9);
-    } else if (player.getElement() === this.battlefield.getCard(11)?.element) {
+      const warrior1 = this.battlefield.getCard(7);
+      const warrior2 = this.battlefield.getCard(9);
+      return [warrior1, warrior2].filter(card => card !== null) as ElementalWarriorStarterCard[];
+    } 
+    else if (player.getElement() === this.battlefield.getCard(11)?.element) {
       this.battlefield.swapCards(10, 12);
-    } else {
+      const warrior1 = this.battlefield.getCard(10);
+      const warrior2 = this.battlefield.getCard(12);
+      return [warrior1, warrior2].filter(card => card !== null) as ElementalWarriorStarterCard[];
+    } 
+    else {
       throw new ValidationError(
         "Player can only swap their own warriors",
         "element"

@@ -1,8 +1,9 @@
-import { GameListing, SetupGameState, UserSetup } from "@shared-types";
+import { GameListing, GameplayGameState, SetupGameState, TeamHandsData, UserSetup } from "@shared-types";
 import { GameStateManager } from "src/services";
 import { UserSocketManager } from "src/services/UserSocketManager";
 import { getUserProfilesByGameId } from "./db";
-import { ConGame } from "src/models";
+import { ActiveConGame, ConGame, Player } from "src/models";
+import { NotFoundError } from "src/custom-errors";
 
 export const gameStateManager = GameStateManager.getInstance();
 export const userSocketManager = UserSocketManager.getInstance();
@@ -57,5 +58,96 @@ export async function buildSetupGameStateData(game: ConGame): Promise<SetupGameS
             2: game.team2.userIds,
         },
         hostUserId: game.getHost()?.userId || "",
+        numPlayersTotal: game.numPlayersTotal,
     };
+}
+
+// Helper function to build game state data with team-based visibility
+export function buildGameStateData(game: ActiveConGame, userId: string): GameplayGameState {
+    const myTeam = game.getPlayerTeamByUserId(userId);
+    const opponentTeam = myTeam ? game.getOpposingTeam(myTeam) : null;
+
+    if (!myTeam || !opponentTeam) {
+        throw new NotFoundError("Team not found");
+    }
+    
+    // Build team-specific player data with visibility rules
+    const myTeamPlayers = game.players
+        .filter((p: Player) => myTeam.isPlayerOnTeam(p.userId))
+        .map((p: Player) => ({
+            userId: p.userId,
+            socketId: p.socketId,
+            sage: p.sage,
+            level: p.level,
+            hand: p.getHand(),
+            deckCount: p.getDeck().length,
+            discardCount: p.getDiscardPile().length,
+        }));
+        
+    const opponentTeamPlayers = game.players
+        .filter((p) => opponentTeam.isPlayerOnTeam(p.userId))
+        .map((p) => ({
+            userId: p.userId,
+            socketId: p.socketId,
+            sage: p.sage,
+            level: p.level,
+            deckCount: p.getDeck().length,
+            discardCount: p.getDiscardPile().length,
+        }));
+    
+    return {
+        gameId: game.id,
+        currentPhase: game.getCurrentPhase(),
+        activeTeamNumber: game.getActiveTeam().getTeamNumber(),
+        actionPoints: game.getActionPoints(),
+        maxActionPoints: game.getMaxActionPoints(),
+        teams: [
+            {
+                teamNumber: game.team1.getTeamNumber(),
+                gold: game.team1.getGold(),
+                battlefield: game.team1.getBattlefield(),
+                playerIds: game.team1.userIds,
+            },
+            {
+                teamNumber: game.team2.getTeamNumber(),
+                gold: game.team2.getGold(),
+                battlefield: game.team2.getBattlefield(),
+                playerIds: game.team2.userIds,
+            }
+        ],
+        creatureShop: game.getCurrentCreatureShopCards(),
+        itemShop: game.getCurrentItemShopCards(),
+        myTeam: {
+            teamNumber: myTeam.getTeamNumber(),
+            gold: myTeam.getGold(),
+            battlefield: myTeam.getBattlefield(),
+            playerIds: myTeam.userIds,
+        },
+        myTeamPlayers,
+        opponentTeamPlayers,
+        hostUserId: game.getHost()?.userId || "",
+        numPlayersTotal: game.numPlayersTotal,
+    };
+}
+
+export function buildTeamHandsData(game: ActiveConGame, userId: string): TeamHandsData {
+    const myTeam = game.getPlayerTeamByUserId(userId);
+
+    if (!myTeam) {
+        throw new NotFoundError("Team not found");
+    }
+    
+    const myTeamPlayers = game.players
+        .filter((p) => myTeam.isPlayerOnTeam(p.userId))
+        .map((p) => ({
+            userId: p.userId,
+            socketId: p.socketId,
+            sage: p.sage,
+            level: p.level,
+            hand: p.getHand(),
+            deckCount: p.getDeck().length,
+            discardCount: p.getDiscardPile().length,
+        }));
+    
+    return { myTeamPlayers };
 }

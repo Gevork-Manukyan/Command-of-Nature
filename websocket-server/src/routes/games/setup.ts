@@ -2,12 +2,12 @@ import express from "express";
 import { GameEventEmitter } from "../../services";
 import { ValidationError } from "../../custom-errors";
 import {
-    CancelSetupData,
+    CancelSetupRequestData,
+    cancelSetupRequestSchema,
     CancelSetupEvent,
-    cancelSetupSchema,
-    ChooseWarriorsData,
+    ChooseWarriorsRequestData,
+    chooseWarriorsRequestSchema,
     ChooseWarriorsEvent,
-    chooseWarriorsSchema,
     ClearTeamsEvent,
     CreateGameData,
     ElementalWarriorStarterCard,
@@ -17,9 +17,9 @@ import {
     joinGameSchema,
     JoinTeamData,
     joinTeamSchema,
-    PlayerFinishedSetupData,
+    PlayerFinishedSetupRequestData,
+    playerFinishedSetupRequestSchema,
     PlayerFinishedSetupEvent,
-    playerFinishedSetupSchema,
     PlayerJoinedData,
     PlayerJoinedEvent,
     ReadyStatusToggledData,
@@ -30,9 +30,9 @@ import {
     SageSelectedEvent,
     SelectSageData,
     selectSageSchema,
-    SwapWarriorsData,
+    SwapWarriorsRequestData,
+    swapWarriorsRequestSchema,
     SwapWarriorsEvent,
-    swapWarriorsSchema,
     TeamJoinedData,
     TeamJoinedEvent,
     ToggleReadyStatusData,
@@ -45,7 +45,11 @@ import {
     WarriorSelectionState,
     WaitingTurnEvent,
     StartTurnEvent,
-    PhaseChangedEvent
+    PhaseChangedEvent,
+    ChooseWarriorsData,
+    SwapWarriorsData,
+    PlayerFinishedSetupData,
+    CancelSetupData
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -508,10 +512,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/choose-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId, choices } = validateRequestBody<ChooseWarriorsData>(
-                chooseWarriorsSchema,
+            const { userId, choices } = validateRequestBody<ChooseWarriorsRequestData>(
+                chooseWarriorsRequestSchema,
                 req
             );
+            const gameId = req.params.gameId;
+            const socketId = getSocketId(userId);
 
             const cardFactory1 = ALL_CARDS[choices[0] as keyof typeof ALL_CARDS];
             const cardFactory2 = ALL_CARDS[choices[1] as keyof typeof ALL_CARDS];
@@ -530,7 +536,6 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                 cardFactory1() as ElementalWarriorStarterCard,
                 cardFactory2() as ElementalWarriorStarterCard,
             ];
-            const gameId = req.params.gameId;
 
             await gameStateManager.verifyAndProcessChooseWarriorsEvent(
                 gameId,
@@ -552,11 +557,25 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
 
                     team.chooseWarriors(player, parsedChoices);
 
+                    const eventData: ChooseWarriorsData = {
+                        userId, 
+                        selectedWarriors: parsedChoices, 
+                        warriorSelectionState: "swapping"
+                    };
+
+                    // Emit to user who made the action
+                    gameEventEmitter.emitToUser(
+                        socketId,
+                        ChooseWarriorsEvent,
+                        eventData
+                    );
+
+                    // Emit to teammate (partial visibility)
                     gameEventEmitter.emitToTeammate(
                         game,
                         userId,
                         ChooseWarriorsEvent,
-                        { userId, choices } as ChooseWarriorsData
+                        eventData
                     );
                 }
             );
@@ -571,11 +590,12 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/swap-warriors",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<SwapWarriorsData>(
-                swapWarriorsSchema,
+            const { userId } = validateRequestBody<SwapWarriorsRequestData>(
+                swapWarriorsRequestSchema,
                 req
             );
             const gameId = req.params.gameId;
+            const socketId = getSocketId(userId);
 
             await gameStateManager.verifyAndProcessSwapWarriorsEvent(
                 gameId,
@@ -593,15 +613,23 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         );
                     }
 
-                    team.swapWarriors(player);
+                    const selectedWarriors = team.swapWarriors(player);
 
+                    const eventData: SwapWarriorsData = { userId, selectedWarriors };
+
+                    // Emit to user who made the action
+                    gameEventEmitter.emitToUser(
+                        socketId,
+                        SwapWarriorsEvent,
+                        eventData
+                    );
+
+                    // Emit to teammate (partial visibility)
                     gameEventEmitter.emitToTeammate(
                         game,
                         userId,
                         SwapWarriorsEvent,
-                        {
-                            userId,
-                        } as SwapWarriorsData
+                        eventData
                     );
                 }
             );
@@ -614,8 +642,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/finish-setup",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<PlayerFinishedSetupData>(
-                playerFinishedSetupSchema,
+            const { userId } = validateRequestBody<PlayerFinishedSetupRequestData>(
+                playerFinishedSetupRequestSchema,
                 req
             );
             const gameId = req.params.gameId;
@@ -632,11 +660,24 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     player.finishPlayerSetup();
                     game.incrementPlayersFinishedSetup();
 
+                    const eventData: PlayerFinishedSetupData = { 
+                        userId, 
+                        warriorSelectionState: "finished"
+                    };
+
+                    // Emit to user who made the action
+                    gameEventEmitter.emitToUser(
+                        socketId,
+                        PlayerFinishedSetupEvent,
+                        eventData
+                    );
+
+                    // Emit to others (status only)
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
                         socketId,
                         PlayerFinishedSetupEvent,
-                        { userId } as PlayerFinishedSetupData
+                        eventData
                     );
 
                     gameEventEmitter.checkAndEmitAllPlayersSetupStatus(game);
@@ -651,8 +692,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
     router.post(
         "/:gameId/cancel-setup",
         asyncHandler(async (req: Request, res: Response) => {
-            const { userId } = validateRequestBody<CancelSetupData>(
-                cancelSetupSchema,
+            const { userId } = validateRequestBody<CancelSetupRequestData>(
+                cancelSetupRequestSchema,
                 req
             );
             const gameId = req.params.gameId;
@@ -676,11 +717,24 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                     
                     game.decrementPlayersFinishedSetup();
 
+                    const eventData: CancelSetupData = { 
+                        userId, 
+                        warriorSelectionState: "selecting"
+                    };
+
+                    // Emit to user who made the action
+                    gameEventEmitter.emitToUser(
+                        socketId,
+                        CancelSetupEvent,
+                        eventData
+                    );
+
+                    // Emit to others (status only)
                     gameEventEmitter.emitToOtherPlayersInRoom(
                         gameId,
                         socketId,
                         CancelSetupEvent,
-                        { userId } as CancelSetupData
+                        eventData
                     );
 
                     gameEventEmitter.checkAndEmitAllPlayersSetupStatus(game);
