@@ -54,3 +54,4 @@ export const ShopUpdatedEvent = "shop-updated";
 export const PhaseChangedEvent = "phase-changed";
 export const TurnChangedEvent = "turn-changed";
 export const ActionPointsChangedEvent = "action-points-changed";
+export const Phase1CompleteEvent = "phase1-complete";

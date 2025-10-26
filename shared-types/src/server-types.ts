@@ -208,6 +208,17 @@ export const activateDayBreakSchema = z.object({
     spaceOption: AllSpaceOptionsSchema,
 });
 
+export const phase1CompleteRequestSchema = z.object({
+    userId: z.string(),
+});
+
+export const phase1CompleteDataSchema = z.object({
+    userId: z.string(),
+    isReady: z.boolean(),
+    readyCount: z.number(),
+    totalPlayers: z.number(),
+});
+
 // Gameplay data schemas
 export const PlayerGameDataSchema = z.object({
     userId: z.string(),
@@ -378,6 +389,8 @@ export type LeaveGameData = z.infer<typeof leaveGameSchema>;
 export type PlayerLeftData = z.infer<typeof playerLeftSchema>;
 export type GetDayBreakCardsData = z.infer<typeof getDayBreakCardsSchema>;
 export type ActivateDayBreakData = z.infer<typeof activateDayBreakSchema>;
+export type Phase1CompleteRequestData = z.infer<typeof phase1CompleteRequestSchema>;
+export type Phase1CompleteData = z.infer<typeof phase1CompleteDataSchema>;
 export type PlayerGameData = z.infer<typeof PlayerGameDataSchema>;
 export type TeamGameData = z.infer<typeof TeamGameDataSchema>;
 export type SetupGameState = z.infer<typeof SetupGameStateSchema>;

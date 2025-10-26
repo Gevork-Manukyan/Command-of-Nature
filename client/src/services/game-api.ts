@@ -19,6 +19,7 @@ import {
     LeaveGameData,
     GetDayBreakCardsData,
     ActivateDayBreakData,
+    Phase1CompleteRequestData,
     GetSelectedSagesData,
     AllPlayersJoinedData,
 } from "@shared-types/server-types";
@@ -129,31 +130,19 @@ export async function exitGame(gameId: string, data: ExitGameData) {
 
 // leave the game and the session
 export async function leaveGame(gameId: string, data: LeaveGameData) {
-    return getGameplayUrlWithGameId(
-        "/leave",
-        gameId,
-        data,
-        "POST"
-    );
+    return getGameplayUrlWithGameId("/leave", gameId, data, "POST");
 }
 
-export async function getDayBreakCards(
-    gameId: string,
-    data: GetDayBreakCardsData
-) {
+export async function getDayBreakCards(gameId: string, data: GetDayBreakCardsData) {
     return getGameplayUrlWithGameId("/day-break-cards", gameId, data, "GET");
 }
 
-export async function activateDayBreak(
-    gameId: string,
-    data: ActivateDayBreakData
-) {
-    return getGameplayUrlWithGameId(
-        "/activate-day-break",
-        gameId,
-        data,
-        "POST"
-    );
+export async function activateDayBreakCard(gameId: string, data: ActivateDayBreakData) {
+    return getGameplayUrlWithGameId("/activate-day-break", gameId, data, "POST");
+}
+
+export async function completePhase1(gameId: string, data: Phase1CompleteRequestData) {
+    return getGameplayUrlWithGameId("/complete-phase1", gameId, data, "POST");
 }
 
 /* ------------ Gameplay Data Endpoints ------------ */

@@ -711,6 +711,8 @@ export class ActiveConGame extends ConGame {
     private currentPhase: State.PHASE1 | State.PHASE2 | State.PHASE3 | State.PHASE4 = State.PHASE1;
     private actionPoints: number;
     private maxActionPoints: 3 | 6;
+    private activatedDaybreakCards: Set<SpaceOption> = new Set();
+    private phase1ReadyPlayers: Set<string> = new Set();
 
     constructor(conGame: ConGame) {
         super(
@@ -772,10 +774,27 @@ export class ActiveConGame extends ConGame {
     }
 
     /**
-     * Advances the game to phase 2
+     * Completes Phase 1 and transitions to Phase 2
+     * @param playerId The player completing Phase 1
      */
-    endPhase1() {
-        this.currentPhase = State.PHASE2;
+    endPhase1(playerId: Player["socketId"]) {
+        const playerUserId = this.getPlayer(playerId).userId;
+        
+        if (this.numPlayersTotal === 2) {
+            // 2-player game: immediately transition to Phase 2
+            this.currentPhase = State.PHASE2;
+        } else {
+            // 4-player game: mark player ready, transition when both players ready
+            this.phase1ReadyPlayers.add(playerUserId);
+            
+            const readyCount = this.getPhase1ReadyCount();
+            
+            if (readyCount === 2) {
+                // Both players ready, transition to Phase 2
+                this.currentPhase = State.PHASE2;
+                this.phase1ReadyPlayers.clear();
+            }
+        }
     }
 
     /**
@@ -797,6 +816,25 @@ export class ActiveConGame extends ConGame {
         this.currentPhase = State.PHASE1;
         this.toggleActiveTeam();
         this.resetActionPoints();
+        this.resetDaybreakTracking();
+    }
+
+    /**
+     * Gets the number of players ready for Phase 1 completion
+     * @returns The number of players ready for Phase 1
+     */
+    getPhase1ReadyCount(): number {
+        const activeTeamPlayers = this.getActiveTeamPlayers();
+        const activeTeamUserIds = activeTeamPlayers.map(p => p.userId);
+        return activeTeamUserIds.filter(userId => this.phase1ReadyPlayers.has(userId)).length;
+    }
+
+    /**
+     * Resets daybreak activation tracking for a new turn
+     */
+    private resetDaybreakTracking() {
+        this.activatedDaybreakCards.clear();
+        this.phase1ReadyPlayers.clear();
     }
 
     /**
@@ -838,8 +876,19 @@ export class ActiveConGame extends ConGame {
      * @param spaceOption
      */
     activateDayBreak(playerId: Player["socketId"], spaceOption: SpaceOption) {
+        // Check if this card has already been activated this turn
+        if (this.activatedDaybreakCards.has(spaceOption)) {
+            throw new ValidationError(
+                "Daybreak card has already been activated this turn",
+                "spaceOption"
+            );
+        }
+
         const abilityResult = this.getPlayerTeam(playerId)?.activateDayBreak(spaceOption) || null;
         if (!abilityResult) return;
+        
+        // Mark this card as activated
+        this.activatedDaybreakCards.add(spaceOption);
         processAbility(this, abilityResult);
     }
 
@@ -886,6 +935,8 @@ export class ActiveConGame extends ConGame {
             currentPhase: this.currentPhase,
             actionPoints: this.actionPoints,
             maxActionPoints: this.maxActionPoints,
+            activatedDaybreakCards: Array.from(this.activatedDaybreakCards),
+            phase1ReadyPlayers: Array.from(this.phase1ReadyPlayers),
         };
     }
 
@@ -911,6 +962,8 @@ export class ActiveConGame extends ConGame {
                 | State.PHASE4,
             actionPoints: data.actionPoints!,
             maxActionPoints: data.maxActionPoints as 3 | 6,
+            activatedDaybreakCards: new Set((data as any).activatedDaybreakCards || []),
+            phase1ReadyPlayers: new Set((data as any).phase1ReadyPlayers || []),
         });
 
         return activeGame;

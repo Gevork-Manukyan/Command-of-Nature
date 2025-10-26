@@ -58,6 +58,8 @@ model ConGame {
   currentPhase    String? // 'phase1', 'phase2', 'phase3', 'phase4'
   actionPoints    Int?
   maxActionPoints Int?    // 3 or 6
+  activatedDaybreakCards Json[] // SpaceOption[]
+  phase1ReadyPlayers Json[] // string[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

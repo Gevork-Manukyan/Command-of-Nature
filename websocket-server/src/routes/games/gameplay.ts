@@ -1,5 +1,6 @@
 import express from "express";
-import { InvalidSpaceError } from "../../custom-errors";
+import { InvalidSpaceError, ValidationError } from "../../custom-errors";
+import { State } from "@shared-types/gamestate-types";
 import {
     ActivateDayBreakData,
     activateDayBreakSchema,
@@ -15,7 +16,11 @@ import {
     PlayerLeftEvent,
     getUserGameStateSchema,
     getUserTeamHandsSchema,
-    BattlefieldUpdatedEvent
+    BattlefieldUpdatedEvent,
+    Phase1CompleteRequestData,
+    phase1CompleteRequestSchema,
+    Phase1CompleteEvent,
+    PhaseChangedEvent
 } from "@shared-types";
 import { asyncHandler } from "src/middleware/asyncHandler";
 import { getSocketId } from "../../lib/utilities/common";
@@ -190,6 +195,66 @@ export default function createGameplayRouter(
 
         res.status(200).json({ message: "Day break activated successfully" });
     });
+
+    // POST /api/games/gameplay/:gameId/complete-phase1
+    router.post(
+        "/:gameId/complete-phase1",
+        asyncHandler(async (req: Request, res: Response) => {
+            const { userId } = validateRequestBody<Phase1CompleteRequestData>(
+                phase1CompleteRequestSchema,
+                req
+            );
+            const gameId = req.params.gameId;
+            const socketId = getSocketId(userId);
+
+            gameStateManager.verifyAndProcessNextPhaseEvent(
+                gameId,
+                async () => {
+                    const game = gameStateManager.getActiveGame(gameId);
+                    
+                    // Check if we're actually in Phase 1
+                    if (game.getCurrentPhase() !== State.PHASE1) {
+                        throw new ValidationError(
+                            "Game is not in Phase 1",
+                            "currentPhase"
+                        );
+                    }
+
+                    // Complete Phase 1
+                    game.endPhase1(socketId);
+                    
+                    // Emit events based on game type
+                    if (game.numPlayersTotal === 2) {
+                        // 2-player: immediately transition to Phase 2
+                        gameEventEmitter.emitToAllPlayers(gameId, PhaseChangedEvent, {
+                            currentPhase: State.PHASE2,
+                            activeTeamNumber: game.getActiveTeam().getTeamNumber()
+                        });
+                    } else {
+                        // 4-player: notify about player readiness
+                        const readyCount = game.getPhase1ReadyCount();
+                        
+                        gameEventEmitter.emitToAllPlayers(gameId, Phase1CompleteEvent, {
+                            userId,
+                            isReady: true,
+                            readyCount,
+                            totalPlayers: 2
+                        });
+                        
+                        // If both players ready, transition to Phase 2
+                        if (readyCount === 2) {
+                            gameEventEmitter.emitToAllPlayers(gameId, PhaseChangedEvent, {
+                                currentPhase: State.PHASE2,
+                                activeTeamNumber: game.getActiveTeam().getTeamNumber()
+                            });
+                        }
+                    }
+                }
+            );
+
+            res.status(200).json({ message: "Phase 1 completed successfully" });
+        })
+    );
 
     // GET /api/games/gameplay/:gameId/game-state?userId=xxx
     // Returns complete game state with team-based visibility

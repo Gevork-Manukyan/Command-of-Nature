@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData, PlayerJoinedData, PlayerLeftData, SageSelectedData, TeamJoinedData, TeamsClearedData, ReadyStatusToggledData, SetupGameStateSchema, GameplayGameStateSchema, playerJoinedSchema, playerLeftSchema, sageSelectedSchema, teamJoinedSchema, teamsClearedSchema, readyStatusToggledSchema } from "@shared-types";
+import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData, PlayerJoinedData, PlayerLeftData, SageSelectedData, TeamJoinedData, TeamsClearedData, ReadyStatusToggledData, Phase1CompleteData, SetupGameStateSchema, GameplayGameStateSchema, playerJoinedSchema, playerLeftSchema, sageSelectedSchema, teamJoinedSchema, teamsClearedSchema, readyStatusToggledSchema, phase1CompleteDataSchema } from "@shared-types";
 import { getGameState, getCurrentPhase, getSetupGameState } from '@/services/game-api';
 import { socketService } from '@/services/socket';
 import { 
@@ -16,7 +16,8 @@ import {
     SageSelectedEvent,
     TeamJoinedEvent,
     ClearTeamsEvent,
-    ReadyStatusToggledEvent
+    ReadyStatusToggledEvent,
+    Phase1CompleteEvent
 } from "@shared-types/game-events";
 import { State } from "@shared-types/gamestate-types";
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -202,6 +203,10 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
         });
     }, []);
 
+    const handlePhase1Complete = useCallback((data: Phase1CompleteData) => {
+        console.log('Phase 1 completion event:', data);
+    }, []);
+
     // -------------- GAMEPLAY EVENT HANDLERS --------------
     const handleBattlefieldUpdate = useCallback((data: BattlefieldUpdatedData) => {
         setGameState(prev => {
@@ -323,6 +328,7 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
         socketService.on(PhaseChangedEvent, handlePhaseChange);
         socketService.on(TurnChangedEvent, handleTurnChange);
         socketService.on(ActionPointsChangedEvent, handleActionPointsChange);
+        socketService.on(Phase1CompleteEvent, handlePhase1Complete);
         
         return () => {
             // -------------- SETUP EVENT LISTENERS --------------
@@ -340,8 +346,9 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
             socketService.off(PhaseChangedEvent, handlePhaseChange);
             socketService.off(TurnChangedEvent, handleTurnChange);
             socketService.off(ActionPointsChangedEvent, handleActionPointsChange);
+            socketService.off(Phase1CompleteEvent, handlePhase1Complete);
         };
-    }, [gameId, handleBattlefieldUpdate, handleHandUpdate, handleShopUpdate, handlePhaseChange, handleTurnChange, handleActionPointsChange, handlePlayerJoined, handlePlayerLeft, handleSageSelected, handleTeamJoined, handleTeamsCleared, handleReadyStatusToggled]);
+    }, [gameId, handleBattlefieldUpdate, handleHandUpdate, handleShopUpdate, handlePhaseChange, handleTurnChange, handleActionPointsChange, handlePlayerJoined, handlePlayerLeft, handleSageSelected, handleTeamJoined, handleTeamsCleared, handleReadyStatusToggled, handlePhase1Complete]);
 
     return (
         <GameStateContext.Provider 
