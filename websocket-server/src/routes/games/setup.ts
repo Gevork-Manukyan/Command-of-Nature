@@ -209,9 +209,8 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
                         .getGame(gameId)
                         .getAvailableSages();
 
-                    gameEventEmitter.emitToOtherPlayersInRoom(
+                    gameEventEmitter.emitToAllPlayers(
                         gameId,
-                        socketId,
                         SageSelectedEvent,
                         { userId, sage, availableSages } as SageSelectedData
                     );
