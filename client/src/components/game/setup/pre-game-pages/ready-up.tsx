@@ -3,15 +3,13 @@ import H3 from "../components/h3";
 import { Button } from "@/components/shadcn-ui/button";
 import { useGameStateContext } from "@/contexts/GameStateContext";
 import { useSetupActions } from "@/hooks/useSetupActions";
-import { useIsHost } from "@/hooks/useIsHost";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { ErrorScreen } from "@/components/error/error-screen";
 import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function ReadyUp() {
-    const { gameState, isSetupState } = useGameStateContext();
+    const { gameState, isSetupState, isHost } = useGameStateContext();
     const { handleToggleReady, handleAllPlayersReady } = useSetupActions();
-    const isHost = useIsHost();
     const userId = useCurrentUser();
     
     // Derived state

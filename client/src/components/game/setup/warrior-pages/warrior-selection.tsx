@@ -1,6 +1,6 @@
 "use client";
 
-import { useIsHost } from "@/hooks/useIsHost";
+import { useGameStateContext } from "@/contexts/GameStateContext";
 import { useWarriorSelection } from "@/hooks/useWarriorSelection";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/shadcn-ui/button";
@@ -10,7 +10,7 @@ import ChooseWarriors from "./choose-warriors";
 export default function WarriorSelection() {
     const { data: session } = useSession();
     const userId = session?.user.id!;
-    const isHost = useIsHost();
+    const { isHost } = useGameStateContext();
     const {
         userWarriorSelection,
         selectedWarriors,

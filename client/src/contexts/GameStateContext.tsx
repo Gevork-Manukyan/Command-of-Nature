@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { GameStateData, SetupGameState, GameplayGameState, BattlefieldUpdatedData, HandUpdatedData, ShopUpdatedData, PhaseChangedData, TurnChangedData, ActionPointsChangedData, PlayerJoinedData, PlayerLeftData, SageSelectedData, TeamJoinedData, TeamsClearedData, ReadyStatusToggledData, SetupGameStateSchema, GameplayGameStateSchema, playerJoinedSchema, playerLeftSchema, sageSelectedSchema, teamJoinedSchema, teamsClearedSchema, readyStatusToggledSchema } from "@shared-types";
 import { getGameState, getCurrentPhase, getSetupGameState } from '@/services/game-api';
 import { socketService } from '@/services/socket';
+import { useSession } from "next-auth/react";
 import { 
     BattlefieldUpdatedEvent, 
     HandUpdatedEvent, 
@@ -19,6 +20,7 @@ import {
     ReadyStatusToggledEvent
 } from "@shared-types/game-events";
 import { State } from "@shared-types/gamestate-types";
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 type GameStateContextType = {
     gameState: GameStateData | null;
@@ -30,6 +32,7 @@ type GameStateContextType = {
     isSetupPhase: boolean;
     isGameplayState: (state: GameStateData | null) => state is GameplayGameState;
     isSetupState: (state: GameStateData | null) => state is SetupGameState;
+    isHost: boolean;
 }
 
 const GameStateContext = createContext<GameStateContextType | undefined>(undefined);
@@ -64,6 +67,7 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
     const [currentPhase, setCurrentPhase] = useState<State | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const currentUserId = useCurrentUser();
 
     // Derived state
     const isGameplayPhase = currentPhase ? GAMEPLAY_PHASES.has(currentPhase) : false;
@@ -78,6 +82,9 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
     const isSetupState = (state: GameStateData | null): state is SetupGameState => {
         return isGameplayState(state) === false;
     };
+    
+    // Check if current user is the host
+    const isHost = gameState && isSetupState(gameState) ? gameState.hostUserId === currentUserId : false;
 
     const fetchGameState = useCallback(async () => {
         try {
@@ -348,7 +355,8 @@ export function GameStateProvider({ children, gameId, userId }: GameStateProvide
                 isGameplayPhase,
                 isSetupPhase,
                 isGameplayState,
-                isSetupState
+                isSetupState,
+                isHost
             }}
         >
             {children}

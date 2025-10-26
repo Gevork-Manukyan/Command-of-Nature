@@ -2,7 +2,6 @@
 
 import { useGameStateContext } from "@/contexts/GameStateContext";
 import { useSetupActions } from "@/hooks/useSetupActions";
-import { useIsHost } from "@/hooks/useIsHost";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { Sage } from "@shared-types";
 import { useState } from "react";
@@ -10,10 +9,9 @@ import H3 from "../components/h3";
 import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function SageSelection() {
-    const { gameState, isSetupState } = useGameStateContext();
+    const { gameState, isSetupState, isHost } = useGameStateContext();
     const { handleSageConfirm, handleAllSagesSelected } = useSetupActions();
     const userId = useCurrentUser();
-    const isHost = useIsHost();
     
     // Extract setup state
     const setupState = isSetupState(gameState) ? gameState : null;

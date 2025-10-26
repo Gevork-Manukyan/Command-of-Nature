@@ -1,13 +1,11 @@
 import { useGameStateContext } from "@/contexts/GameStateContext";
 import { useSetupActions } from "@/hooks/useSetupActions";
-import { useIsHost } from "@/hooks/useIsHost";
 import H3 from "../components/h3";
 import NextPhaseButton from "../components/NextPhaseButton";
 
 export default function JoiningGame() {
-    const { gameState, isSetupState } = useGameStateContext();
+    const { gameState, isSetupState, isHost } = useGameStateContext();
     const { handleAllPlayersJoined } = useSetupActions();
-    const isHost = useIsHost();
     
     // Derived state
     const setupState = isSetupState(gameState) ? gameState : null;
@@ -23,7 +21,7 @@ export default function JoiningGame() {
                 ))}
             </div>
 
-            {isHost && handleAllPlayersJoined && (
+            {isHost && (
                 <NextPhaseButton 
                     onClick={handleAllPlayersJoined} 
                     disabled={userPlayers.length !== numPlayersTotal}
