@@ -1,5 +1,5 @@
 import { ConGameService } from "../models/ConGame/con-game.service";
-import { ConGame } from "../models/ConGame/ConGame";
+import { ActiveConGame, ConGame } from "../models/ConGame/ConGame";
 import { GameStateService } from "../models/GameState/game-state.service";
 import { GameState } from "../models/GameState/GameState";
 import { GameStateInfo } from "../types";
@@ -107,9 +107,20 @@ export class GameDatabaseService {
     /**
      * Gets all games from the database
      */
-    async findAllGames(): Promise<ConGame[]> {
-        const games = await this.conGameService.findAllGames();
+    async findAllGames(): Promise<(ConGame | ActiveConGame)[]> {
+        const games = await this.findAllConGames();
+        const activeGames = await this.findAllActiveConGames();
+        return [...games, ...activeGames];
+    }
+
+    async findAllConGames(): Promise<ConGame[]> {
+        const games = await this.conGameService.findGamesByStatus(false);
         return games.map((game) => ConGame.fromPrisma(game));
+    }
+
+    async findAllActiveConGames(): Promise<ActiveConGame[]> {
+        const games = await this.conGameService.findGamesByStatus(true);
+        return games.map((game) => ActiveConGame.fromPrisma(game));
     }
 
     /**

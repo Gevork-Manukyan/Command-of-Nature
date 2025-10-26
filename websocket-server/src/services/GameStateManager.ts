@@ -102,7 +102,7 @@ export class GameStateManager {
             throw new GameFullError();
         }
 
-        if (game.isActiveGame) {
+        if (game.isActive) {
             throw new GameAlreadyStartedError();
         }
 
@@ -279,10 +279,7 @@ export class GameStateManager {
             // For each game, load its state and add it to the GameStateManager
             for (const game of games) {
                 try {
-                    const gameState =
-                        await this.gameDatabaseService.findGameStateByGameId(
-                            game.id
-                        );
+                    const gameState = await this.gameDatabaseService.findGameStateByGameId(game.id);
                     this.addGameAndState(game.id, game, gameState);
                     console.debug(`Loaded game ${game.id} from database`);
                 } catch (error) {
@@ -300,7 +297,7 @@ export class GameStateManager {
      * @param game - The game to add
      * @param gameState - The game state to add
      */
-    addGameAndState(gameId: gameId, game: ConGame, gameState: GameState): void {
+    addGameAndState(gameId: gameId, game: ConGame | ActiveConGame, gameState: GameState): void {
         this.currentGames[gameId] = {
             game: game,
             state: gameState,
@@ -312,7 +309,7 @@ export class GameStateManager {
      * @param gameId - The id of the game to get
      * @returns The game
      */
-    getGame(gameId: gameId): ConGame {
+    getGame(gameId: gameId): ConGame | ActiveConGame {
         const gameState = this.currentGames[gameId];
         if (!gameState) throw new GameNotFoundError(gameId);
         return gameState.game;
@@ -323,7 +320,7 @@ export class GameStateManager {
      * @param gameId - The id of the game to set
      * @param game - The game to set
      */
-    setGame(gameId: gameId, game: ConGame): void {
+    setGame(gameId: gameId, game: ConGame | ActiveConGame): void {
         this.currentGames[gameId].game = game;
     }
 
@@ -355,7 +352,7 @@ export class GameStateManager {
      */
     getActiveGame(gameId: gameId): ActiveConGame {
         const game = this.getGame(gameId);
-        if (!this.isActiveGame(game)) {
+        if (!this.isActive(game)) {
             throw new Error("Game has not finished setup yet.");
         }
         return game;
@@ -366,8 +363,8 @@ export class GameStateManager {
      * @param game - The game to check
      * @returns True if the game is an active game, false otherwise
      */
-    private isActiveGame(game: ConGame): game is ActiveConGame {
-        return game.isActiveGame;
+    private isActive(game: ConGame): game is ActiveConGame {
+        return game.isActive && 'getCurrentPhase' in game;
     }
 
     /**

@@ -55,7 +55,7 @@ export const ConGameSchema = z.object({
     gameName: z.string(),
     isPrivate: z.boolean(),
     password: z.string().nullable(),
-    isActiveGame: z.boolean(),
+    isActive: z.boolean(),
     isBattleStarted: z.boolean(),
     numPlayersTotal: z.literal(2).or(z.literal(4)),
     numPlayersReady: z.number(),
@@ -76,6 +76,6 @@ export const ActiveConGameSchema = ConGameSchema.extend({
     gameName: z.string(),
     isPrivate: z.boolean(),
     password: z.string().nullable(),
-    isActiveGame: z.boolean(),
+    isActive: z.boolean(),
     isBattleStarted: z.boolean(),
 });

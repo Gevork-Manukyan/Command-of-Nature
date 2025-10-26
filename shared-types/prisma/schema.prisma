@@ -37,7 +37,6 @@ model ConGame {
   gameName                 String
   isPrivate                Boolean
   password                 String?
-  isActiveGame             Boolean
   isBattleStarted          Boolean
   numPlayersTotal          Int // 2 or 4
   numPlayersReady          Int

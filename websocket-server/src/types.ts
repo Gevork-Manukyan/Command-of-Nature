@@ -1,10 +1,10 @@
-import { ConGame, GameState } from "./models";
+import { ConGame, GameState, ActiveConGame } from "./models";
 import { ConGame as ConGamePrisma } from "@prisma/client";
 
 export type gameId = string;
 
 export type GameStateInfo = {
-  game: ConGame;
+  game: ConGame | ActiveConGame;
   state: GameState;
 }
 

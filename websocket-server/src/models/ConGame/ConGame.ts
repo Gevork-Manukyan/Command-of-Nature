@@ -42,7 +42,7 @@ export class ConGame {
     gameName: string;
     isPrivate: boolean;
     password: string | null;
-    isActiveGame: boolean = false;
+    isActive: boolean = false;
     isBattleStarted: boolean = false;
     numPlayersTotal: 2 | 4;
     numPlayersReady: number = 0;
@@ -103,8 +103,8 @@ export class ConGame {
      * Sets the active game status of the game
      * @param value - The value to set the active game status to
      */
-    setIsActiveGame(value: boolean) {
-        this.isActiveGame = value;
+    setIsActive(value: boolean) {
+        this.isActive = value;
     }
 
     /**
@@ -644,7 +644,7 @@ export class ConGame {
 
         // Copy all properties
         Object.assign(game, {
-            isActiveGame: data.isActiveGame,
+            isActive: data.isActive,
             isBattleStarted: data.isBattleStarted,
             numPlayersReady: data.numPlayersReady,
             numPlayersFinishedSetup: data.numPlayersFinishedSetup,
@@ -670,7 +670,7 @@ export class ConGame {
             gameName: this.gameName,
             isPrivate: this.isPrivate,
             password: this.password,
-            isActiveGame: this.isActiveGame,
+            isActive: this.isActive,
             isBattleStarted: this.isBattleStarted,
             numPlayersTotal: this.numPlayersTotal,
             numPlayersReady: this.numPlayersReady,
@@ -691,7 +691,6 @@ export class ConGame {
                 card.getData()
             ),
 
-            isActive: false,
             activeTeam: "",
             currentPhase: "",
             actionPoints: 0,
@@ -728,7 +727,7 @@ export class ActiveConGame extends ConGame {
 
         this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
         this.actionPoints = this.maxActionPoints;
-        this.isActiveGame = true;
+        this.isActive = true;
     }
 
     /**
@@ -973,7 +972,7 @@ export class ActiveConGame extends ConGame {
 /**
  * Type guard to check if a ConGame is active
  */
-export function isActiveGame(game: ConGamePrisma): game is ConGamePrisma & {
+export function isActive(game: ConGamePrisma): game is ConGamePrisma & {
     isActive: true;
     activeTeam: string;
     currentPhase: string;

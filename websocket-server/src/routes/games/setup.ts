@@ -403,9 +403,9 @@ export default function createSetupRouter(gameEventEmitter: GameEventEmitter) {
             const gameId = req.params.gameId;
             try {
                 const game = gameStateManager.getGame(gameId);
-                res.status(200).json({ isActiveGame: game.isActiveGame });
+                res.status(200).json({ isActive: game.isActive });
             } catch (e) {
-                res.status(404).json({ isActiveGame: false });
+                res.status(404).json({ isActive: false });
             }
         })
     );
