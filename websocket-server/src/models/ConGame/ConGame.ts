@@ -725,6 +725,14 @@ export class ActiveConGame extends ConGame {
         // Copy all properties from the original game
         Object.assign(this, conGame);
 
+        // Ensure Sets are properly initialized (not overwritten by Object.assign)
+        if (!(this.activatedDaybreakCards instanceof Set)) {
+            this.activatedDaybreakCards = new Set();
+        }
+        if (!(this.phase1ReadyPlayers instanceof Set)) {
+            this.phase1ReadyPlayers = new Set();
+        }
+
         this.maxActionPoints = this.numPlayersTotal === 2 ? 3 : 6;
         this.actionPoints = this.maxActionPoints;
         this.isActive = true;
@@ -819,6 +827,18 @@ export class ActiveConGame extends ConGame {
     }
 
     /**
+     * Ensures daybreak tracking is cleared when entering Phase 1
+     * This should be called when starting a new turn in Phase 1
+     */
+    private ensureDaybreakTrackingCleared() {
+        if (this.currentPhase === State.PHASE1) {
+            // If we're in Phase 1, ensure the tracking is cleared (fresh turn)
+            this.activatedDaybreakCards.clear();
+            this.phase1ReadyPlayers.clear();
+        }
+    }
+
+    /**
      * Gets the number of players ready for Phase 1 completion
      * @returns The number of players ready for Phase 1
      */
@@ -875,6 +895,11 @@ export class ActiveConGame extends ConGame {
      * @param spaceOption
      */
     activateDayBreak(playerId: Player["socketId"], spaceOption: SpaceOption) {
+        // Ensure Set is properly initialized (defensive check)
+        if (!(this.activatedDaybreakCards instanceof Set)) {
+            this.activatedDaybreakCards = new Set();
+        }
+
         // Check if this card has already been activated this turn
         if (this.activatedDaybreakCards.has(spaceOption)) {
             throw new ValidationError(
@@ -883,12 +908,13 @@ export class ActiveConGame extends ConGame {
             );
         }
 
-        const abilityResult = this.getPlayerTeam(playerId)?.activateDayBreak(spaceOption) || null;
-        if (!abilityResult) return;
+        const effects = this.getPlayerTeam(playerId)?.activateDayBreak(spaceOption) || null;
+        if (!effects) return;
         
         // Mark this card as activated
         this.activatedDaybreakCards.add(spaceOption);
-        processAbility(this, abilityResult);
+        const player = this.getPlayer(playerId);
+        processAbility(this, effects, player);
     }
 
     buyCreature(playerId: Player["socketId"], creatureShopIndex: ShopIndex) {
@@ -961,9 +987,16 @@ export class ActiveConGame extends ConGame {
                 | State.PHASE4,
             actionPoints: data.actionPoints!,
             maxActionPoints: data.maxActionPoints as 3 | 6,
-            activatedDaybreakCards: new Set((data as any).activatedDaybreakCards || []),
-            phase1ReadyPlayers: new Set((data as any).phase1ReadyPlayers || []),
+            activatedDaybreakCards: new Set((data as any).activatedDaybreakCards || []) as Set<SpaceOption>,
+            phase1ReadyPlayers: new Set((data as any).phase1ReadyPlayers || []) as Set<string>,
         });
+
+        // If we're in Phase 1, clear daybreak tracking to ensure fresh state
+        // This prevents stale data from previous turns causing activation errors
+        if (activeGame.currentPhase === State.PHASE1) {
+            activeGame.activatedDaybreakCards.clear();
+            activeGame.phase1ReadyPlayers.clear();
+        }
 
         return activeGame;
     }

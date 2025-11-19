@@ -1,7 +1,7 @@
 import { ValidationError, NullSpaceError } from "../../custom-errors";
 import {
     ElementalCard,
-    AbilityResult,
+    GameEffect,
     SpaceOption,
     OnePlayerSpaceOptions,
     TwoPlayerSpaceOptions,
@@ -341,7 +341,7 @@ export class Battlefield {
      * Activates the Day Break ability of the card at the given space number
      * @param spaceOption The space number to activate the Day Break ability
      */
-    activateDayBreak(spaceOption: SpaceOption): AbilityResult[] {
+    activateDayBreak(spaceOption: SpaceOption): GameEffect[] {
         const targetSpace: BattlefieldSpace =
             this.getBattlefieldSpace(spaceOption);
         if (!targetSpace.validateDayBreakActivation()) {
@@ -350,7 +350,7 @@ export class Battlefield {
                 "INVALID_INPUT"
             );
         }
-        return targetSpace.value.ability();
+        return targetSpace.value.ability;
     }
 
     /**
